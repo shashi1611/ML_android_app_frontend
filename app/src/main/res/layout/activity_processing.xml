@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/bg1"
+    android:orientation="vertical"
+    tools:context=".ProcessingActivity">
+
+    <!-- Title CardView at the Top -->
+    <androidx.cardview.widget.CardView
+        android:id="@+id/app_title_text_Card"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="50dp"
+        android:layout_marginRight="10dp"
+        app:cardCornerRadius="10dp"
+        app:cardElevation="6dp">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:padding="10dp"
+            android:shadowColor="@android:color/black"
+            android:shadowRadius="4"
+            android:text="hello jhaatu app"
+            android:textColor="@android:color/white"
+            android:textSize="24sp"
+            android:textStyle="bold" />
+    </androidx.cardview.widget.CardView>
+
+    <!-- Image CardView in the Middle (Takes Remaining Space) -->
+    <androidx.cardview.widget.CardView
+        android:id="@+id/uploaded_imgCard"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_margin="10dp"
+        android:layout_weight="1"
+        android:elevation="10dp"
+        app:cardCornerRadius="10dp">
+
+        <ImageView
+            android:id="@+id/uploaded_img"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="centerCrop"
+            android:src="@drawable/img5" />
+    </androidx.cardview.widget.CardView>
+
+    <!-- Button CardView at the Bottom -->
+    <androidx.cardview.widget.CardView
+        android:id="@+id/buttonCardView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginBottom="40dp"
+        android:elevation="10dp"
+        app:cardCornerRadius="10dp"
+        app:cardElevation="10dp"
+        app:cardUseCompatPadding="true">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="10dp">
+
+            <!-- Row of Two Buttons -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/upload_img_vid_button"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="10dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/bg_button"
+                    android:text="Upload Image"
+                    app:backgroundTint="@null"
+                    app:rippleColor="@null" />
+
+                <Button
+                    android:id="@+id/open_camera_button"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="10dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/bg_button"
+                    android:text="Open Camera"
+                    app:backgroundTint="@null"
+                    app:rippleColor="@null" />
+            </LinearLayout>
+
+            <!-- Process Button Below -->
+            <Button
+                android:id="@+id/process_img_button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:background="@drawable/bg_button_processing"
+                android:text="Process Image"
+                app:backgroundTint="@null"
+                app:rippleColor="@null" />
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
+
+</LinearLayout>
