@@ -48,9 +48,9 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:scaleType="centerCrop"
-            android:src="@drawable/upload_logo" />
+            android:src="@drawable/upload_image_logo_default" />
     </androidx.cardview.widget.CardView>
-    
+
 
     <!-- Button CardView at the Bottom -->
     <androidx.cardview.widget.CardView
