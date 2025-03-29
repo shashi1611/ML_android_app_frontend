@@ -1,22 +1,32 @@
 package com.example.myapplication;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.provider.MediaStore;
 import android.util.Log;
+import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.FileProvider;
 
 import com.bumptech.glide.Glide;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
 
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
@@ -212,7 +222,7 @@ import retrofit2.Response;
 //                return params;
 //            }
 //        };
-//
+//s
 //        // Set a custom retry policy for long processing times
 //        int tenMinutesInMillis = 600000; // 10 minutes
 //        multipartRequest.setRetryPolicy(new DefaultRetryPolicy(
@@ -269,20 +279,85 @@ import retrofit2.Response;
 public class ProcessingActivity extends AppCompatActivity {
 
     private static final int PICK_IMAGE_REQUEST = 1;
+    private static final int REQUEST_IMAGE_CAPTURE = 1;
+    private static final int REQUEST_PERMISSIONS = 101;
     private ImageView imageView;
     private Uri imageUri;
+    private File imageFile;
     private Button btnUpload, btnProcess, open_cam_btn;
+
+    private void requestPermissions() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (checkSelfPermission(Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED ||
+                    checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+
+                requestPermissions(new String[]{
+                        Manifest.permission.CAMERA,
+                        Manifest.permission.READ_EXTERNAL_STORAGE
+                }, REQUEST_PERMISSIONS);
+            }
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == REQUEST_PERMISSIONS) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                Toast.makeText(this, "Permissions granted!", Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(this, "Permissions denied! Camera and gallery won't work.", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_processing);
+        requestPermissions();
 
         imageView = findViewById(R.id.uploaded_img);
         btnUpload = findViewById(R.id.upload_img_vid_button);
         btnProcess = findViewById(R.id.process_img_button);
         open_cam_btn = findViewById(R.id.open_camera_button);
+
+
+        open_cam_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+
+                Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+
+//                 Create a file for the image
+                imageFile = null;
+                try {
+                    imageFile = createImageFile();
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+                Log.d("hariom mre bhai", "onClick: photofile = " + imageFile);
+                if (imageFile != null) {
+
+                    imageUri = FileProvider.getUriForFile(ProcessingActivity.this, "com.example.myapplication.fileprovider", imageFile);
+                    intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
+                    intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+//                    captureImageLauncher.launch(intent);
+                    startActivityForResult(intent, REQUEST_IMAGE_CAPTURE);
+                }
+
+            }
+
+            private File createImageFile() throws IOException {
+                String timestamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(new Date());
+                String imageFileName = "IMG_" + timestamp + "_";
+                File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+                return File.createTempFile(imageFileName, ".jpg", storageDir);
+            }
+        });
 
         // Select Image
         btnUpload.setOnClickListener(view -> openGallery());
@@ -290,14 +365,64 @@ public class ProcessingActivity extends AppCompatActivity {
         btnProcess.setOnClickListener(view -> {
 
             if (imageUri != null) {
+                Log.d("hariom mre bhai ", "the image uri =  " + imageUri);
                 processImage(imageUri);
             } else {
                 Toast.makeText(this, "Select an image first", Toast.LENGTH_SHORT).show();
             }
 
         });
+
+
     }
 
+
+    //    <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<capture image from camera and pass to the api >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+//    private void openCamera() {
+//
+//        Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+//        Log.d("hariom mre bhai", "openCamera: cameraIntent.resolveActivity(getPackageManager()) = " + cameraIntent.resolveActivity(getPackageManager()));
+//        if (cameraIntent.resolveActivity(getPackageManager()) != null) {
+//            try {
+//                imageFile = createImageFile();
+//                if (imageFile != null) {
+//                    imageUri = FileProvider.getUriForFile(this, "com.example.myapplication.fileprovider", imageFile);
+//                    cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
+//                    startActivityForResult(cameraIntent, REQUEST_IMAGE_CAPTURE);
+//                }
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//                Toast.makeText(this, "Failed to create image file", Toast.LENGTH_SHORT).show();
+//            }
+//        } else {
+//            Toast.makeText(this, "give permission first", Toast.LENGTH_SHORT).show();
+//        }
+//    }
+
+
+//    private File createImageFile() throws IOException {
+//        String timestamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(new Date());
+//        String imageFileName = "IMG_" + timestamp + "_";
+//        File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+//        return File.createTempFile(imageFileName, ".jpg", storageDir);
+//    }
+
+//    @Override
+//    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+//        super.onActivityResult(requestCode, resultCode, data);
+//        if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
+//            if (imageFile != null) {
+//                // Display image in ImageView
+//                ImageView imageView = findViewById(R.id.uploaded_img);
+//                imageView.setImageURI(imageUri);
+//
+//                // Upload image
+//                uploadImage(imageFile);
+//            }
+//        }
+//    }
+
+    //    <<<<<<<<<<<<<<<<<<<<<<<<<<<<<get image from gallery and pass to the api >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
     private void openGallery() {
         Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
         startActivityForResult(intent, PICK_IMAGE_REQUEST);
@@ -309,6 +434,13 @@ public class ProcessingActivity extends AppCompatActivity {
         if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && data != null) {
             imageUri = data.getData();
             imageView.setImageURI(imageUri);
+        } else if (requestCode == REQUEST_IMAGE_CAPTURE) {
+            // 📌 Image captured from camera
+            if (imageFile != null) {
+                imageUri = Uri.fromFile(imageFile);
+                imageView.setImageURI(imageUri);
+//                uploadImage(imageFile);
+            }
         }
     }
 

@@ -50,10 +50,10 @@ public class MainActivity extends AppCompatActivity {
 
         RecyclerView recyclerView = findViewById(R.id.recyclerView_feat_list);
         ArrayList<FeatListModel> list = new ArrayList<>();
-        list.add(new FeatListModel(R.drawable.img1, "feat1"));
-        list.add(new FeatListModel(R.drawable.img2, "feat2"));
-        list.add(new FeatListModel(R.drawable.img3, "feat3"));
-        list.add(new FeatListModel(R.drawable.img4, "feat4"));
+        list.add(new FeatListModel(R.drawable.feat1c, "feat1"));
+        list.add(new FeatListModel(R.drawable.feat2c, "feat2"));
+        list.add(new FeatListModel(R.drawable.feat3c, "feat3"));
+        list.add(new FeatListModel(R.drawable.feat4c, "feat4"));
 
         FeatListModelAdapter featListModelAdapter = new FeatListModelAdapter(list, this);
         recyclerView.setAdapter(featListModelAdapter);
