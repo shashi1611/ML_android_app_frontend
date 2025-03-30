@@ -67,8 +67,8 @@ public class ProcessedActivity extends AppCompatActivity {
 
                 Glide.with(this)
                         .load(imageUrl)
-                        .placeholder(R.drawable.upload_image_logo_default)
-                        .error(R.drawable.img1)
+                        .placeholder(R.drawable.loadingimagepleasewait)
+                        .error(R.drawable.errorloadingimage)
                         .into(imageView);
 
             } catch (JSONException e) {

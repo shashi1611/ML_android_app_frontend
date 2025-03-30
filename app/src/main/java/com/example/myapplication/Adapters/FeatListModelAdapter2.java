@@ -18,17 +18,17 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.myapplication.Models.FeatListModel;
+import com.example.myapplication.Models.FeatListModel2;
 import com.example.myapplication.ProcessingActivity;
 import com.example.myapplication.R;
 
 import java.util.ArrayList;
 
 public class FeatListModelAdapter2 extends RecyclerView.Adapter<FeatListModelAdapter2.viewHolder> {
-    ArrayList<FeatListModel> list;
+    ArrayList<FeatListModel2> list;
     Context context;
 
-    public FeatListModelAdapter2(ArrayList<FeatListModel> list, Context context) {
+    public FeatListModelAdapter2(ArrayList<FeatListModel2> list, Context context) {
         this.list = list;
         this.context = context;
     }
@@ -42,7 +42,7 @@ public class FeatListModelAdapter2 extends RecyclerView.Adapter<FeatListModelAda
 
     @Override
     public void onBindViewHolder(@NonNull viewHolder holder, int position) {
-        FeatListModel model = list.get(position);
+        FeatListModel2 model = list.get(position);
         holder.imageView.setImageResource(model.getImg());
         holder.textView.setText(model.getFeat_name());
 
@@ -60,6 +60,8 @@ public class FeatListModelAdapter2 extends RecyclerView.Adapter<FeatListModelAda
 
         holder.itemView.setOnClickListener((view) -> {
             Intent intent = new Intent(view.getContext(), ProcessingActivity.class);
+            String text = holder.textView.getText().toString();
+            intent.putExtra("text_key", text);
             view.getContext().startActivity(intent);
         });
 

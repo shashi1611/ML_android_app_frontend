@@ -49,11 +49,13 @@ public class FeatListModelAdapter extends RecyclerView.Adapter<FeatListModelAdap
         layoutParams.width = screenWidth / 2; // Set each item to half of screen width
         holder.itemView.setLayoutParams(layoutParams);
 
-        
+
 //        tilll here
 
         holder.itemView.setOnClickListener((view) -> {
             Intent intent = new Intent(view.getContext(), ProcessingActivity.class);
+            String text = holder.textView.getText().toString();
+            intent.putExtra("text_key", text);
             view.getContext().startActivity(intent);
         });
 

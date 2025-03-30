@@ -65,7 +65,7 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@id/recyclerView_feat_list"
                 android:layout_marginTop="10dp"
-                android:text="SeasonChanger"
+                android:text="Season Changer"
                 android:textColor="@color/material_dynamic_primary99"
                 android:textSize="25dp" />
 

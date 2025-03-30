@@ -25,6 +25,25 @@ public interface ApiService {
 
     @Multipart
     @POST("/execute_ukiyoe")
-    Call<ResponseBody> executeProcessing(@Part MultipartBody.Part file);
-//    Call<ResponseBody> executeProcessing();
+    Call<ResponseBody> executeProcessingUkiyoe(@Part MultipartBody.Part file);
+
+    @Multipart
+    @POST("/execute_monet")
+    Call<ResponseBody> executeProcessingMonet(@Part MultipartBody.Part file);
+
+    @Multipart
+    @POST("/execute_van_gogh")
+    Call<ResponseBody> executeProcessingVangogh(@Part MultipartBody.Part file);
+
+    @Multipart
+    @POST("/execute_cezanne")
+    Call<ResponseBody> executeProcessingCezanne(@Part MultipartBody.Part file);
+
+    @Multipart
+    @POST("/execute_summer2winter")
+    Call<ResponseBody> executeProcessingSummer2Winter(@Part MultipartBody.Part file);
+
+    @Multipart
+    @POST("/execute_winter2summer")
+    Call<ResponseBody> executeProcessingWinter2Summer(@Part MultipartBody.Part file);
 }

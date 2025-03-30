@@ -41,19 +41,19 @@ public class MainActivity extends AppCompatActivity {
 //        });
         ImageSlider imageSlider = findViewById(R.id.image_slider);
         ArrayList<SlideModel> slideModels = new ArrayList<>();
-        slideModels.add(new SlideModel(R.drawable.img1, ScaleTypes.FIT));
-        slideModels.add(new SlideModel(R.drawable.img2, ScaleTypes.FIT));
-        slideModels.add(new SlideModel(R.drawable.img3, ScaleTypes.FIT));
-        slideModels.add(new SlideModel(R.drawable.img4, ScaleTypes.FIT));
-        slideModels.add(new SlideModel(R.drawable.img5, ScaleTypes.FIT));
+        slideModels.add(new SlideModel(R.drawable.pexelspixabay161097, ScaleTypes.FIT));
+        slideModels.add(new SlideModel(R.drawable.cor_s2w, ScaleTypes.FIT));
+        slideModels.add(new SlideModel(R.drawable.pexelspixabay459225, ScaleTypes.FIT));
+        slideModels.add(new SlideModel(R.drawable.cor_w2s, ScaleTypes.FIT));
+
         imageSlider.setImageList(slideModels);
 
         RecyclerView recyclerView = findViewById(R.id.recyclerView_feat_list);
         ArrayList<FeatListModel> list = new ArrayList<>();
-        list.add(new FeatListModel(R.drawable.feat1c, "feat1"));
-        list.add(new FeatListModel(R.drawable.feat2c, "feat2"));
-        list.add(new FeatListModel(R.drawable.feat3c, "feat3"));
-        list.add(new FeatListModel(R.drawable.feat4c, "feat4"));
+        list.add(new FeatListModel(R.drawable.feat1c, "Ukiyo-e style"));
+        list.add(new FeatListModel(R.drawable.feat2c, "Monet style"));
+        list.add(new FeatListModel(R.drawable.feat3c, "Van Gogh style"));
+        list.add(new FeatListModel(R.drawable.feat4c, "Cezanne style"));
 
         FeatListModelAdapter featListModelAdapter = new FeatListModelAdapter(list, this);
         recyclerView.setAdapter(featListModelAdapter);
@@ -72,11 +72,10 @@ public class MainActivity extends AppCompatActivity {
 
         RecyclerView recyclerView2 = findViewById(R.id.recyclerView_feat_list2);
         ArrayList<FeatListModel2> list2 = new ArrayList<>();
-        list2.add(new FeatListModel2(R.drawable.img1, "feat1"));
-        list2.add(new FeatListModel2(R.drawable.img2, "feat2"));
-        list2.add(new FeatListModel2(R.drawable.img3, "feat3"));
+        list2.add(new FeatListModel2(R.drawable.s2w, "To winter"));
+        list2.add(new FeatListModel2(R.drawable.w2s, "To Summer"));
 
-        FeatListModelAdapter2 featListModelAdapter2 = new FeatListModelAdapter2(list, this);
+        FeatListModelAdapter2 featListModelAdapter2 = new FeatListModelAdapter2(list2, this);
         recyclerView2.setAdapter(featListModelAdapter2);
 //        LinearLayoutManager layoutManager = new LinearLayoutManager(this);
 //        recyclerView.setLayoutManager(layoutManager);

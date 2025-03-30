@@ -30,6 +30,7 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
+import java.util.Objects;
 
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
@@ -46,6 +47,7 @@ public class ProcessingActivity extends AppCompatActivity {
     private static final int REQUEST_IMAGE_CAPTURE = 1;
     private static final int REQUEST_PERMISSIONS = 101;
     private static final int TOTAL_TIME = 90; // 120 seconds
+    String receivedText;
     private ImageView imageView;
     private Uri imageUri;
     private File imageFile;
@@ -136,7 +138,8 @@ public class ProcessingActivity extends AppCompatActivity {
         btnUpload = findViewById(R.id.upload_img_vid_button);
         btnProcess = findViewById(R.id.process_img_button);
         open_cam_btn = findViewById(R.id.open_camera_button);
-
+        receivedText = getIntent().getStringExtra("text_key");
+//        Toast.makeText(this, "text recieved is = " + receivedText, Toast.LENGTH_SHORT).show();
 
         open_cam_btn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -220,32 +223,190 @@ public class ProcessingActivity extends AppCompatActivity {
 
 
         ApiService apiService = RetrofitClient.getApiService();
-        apiService.executeProcessing(body).enqueue(new Callback<ResponseBody>() {
-            @Override
-            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                if (response.isSuccessful()) {
-                    try {
-                        String presignedUrl = response.body().string();
-                        Intent intent = new Intent(ProcessingActivity.this, ProcessedActivity.class);
-                        intent.putExtra("PRESIGNED_URL", presignedUrl);
-                        startActivity(intent);
+        if (Objects.equals(receivedText, "Ukiyo-e style")) {
+            apiService.executeProcessingUkiyoe(body).enqueue(new Callback<ResponseBody>() {
+                @Override
+                public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                    if (response.isSuccessful()) {
+                        dismissDialog();
+                        try {
+
+                            String presignedUrl = response.body().string();
+                            Intent intent = new Intent(ProcessingActivity.this, ProcessedActivity.class);
+                            intent.putExtra("PRESIGNED_URL", presignedUrl);
+                            startActivity(intent);
 //                        displayImage(presignedUrl);
 //                        Toast.makeText(ProcessingActivity.this, "Processing succesful " + presignedUrl, Toast.LENGTH_SHORT).show();
 //                        Log.d("hariom mre bhai ", "onResponse: " + presignedUrl);
-                    } catch (IOException e) {
-                        e.printStackTrace();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    } else {
+                        Toast.makeText(ProcessingActivity.this, "Processing Failed", Toast.LENGTH_SHORT).show();
                     }
-                } else {
-                    Toast.makeText(ProcessingActivity.this, "Processing Failed", Toast.LENGTH_SHORT).show();
                 }
-            }
 
-            @Override
-            public void onFailure(Call<ResponseBody> call, Throwable t) {
-                Toast.makeText(ProcessingActivity.this, "Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
-                Log.d("hariom mre bhai ", "onError: " + t.getMessage());
-            }
-        });
+                @Override
+                public void onFailure(Call<ResponseBody> call, Throwable t) {
+                    dismissDialog();
+                    Toast.makeText(ProcessingActivity.this, "Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                    Log.d("hariom mre bhai ", "onError: " + t.getMessage());
+                }
+            });
+        } else if (Objects.equals(receivedText, "Monet style")) {
+            apiService.executeProcessingMonet(body).enqueue(new Callback<ResponseBody>() {
+                @Override
+                public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                    if (response.isSuccessful()) {
+                        dismissDialog();
+                        try {
+                            String presignedUrl = response.body().string();
+                            Intent intent = new Intent(ProcessingActivity.this, ProcessedActivity.class);
+                            intent.putExtra("PRESIGNED_URL", presignedUrl);
+                            startActivity(intent);
+//                        displayImage(presignedUrl);
+//                        Toast.makeText(ProcessingActivity.this, "Processing succesful " + presignedUrl, Toast.LENGTH_SHORT).show();
+//                        Log.d("hariom mre bhai ", "onResponse: " + presignedUrl);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    } else {
+                        Toast.makeText(ProcessingActivity.this, "Processing Failed", Toast.LENGTH_SHORT).show();
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<ResponseBody> call, Throwable t) {
+                    dismissDialog();
+                    Toast.makeText(ProcessingActivity.this, "Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                    Log.d("hariom mre bhai ", "onError: " + t.getMessage());
+                }
+            });
+
+        } else if (Objects.equals(receivedText, "Van Gogh style")) {
+            apiService.executeProcessingVangogh(body).enqueue(new Callback<ResponseBody>() {
+                @Override
+                public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                    if (response.isSuccessful()) {
+                        dismissDialog();
+                        try {
+                            String presignedUrl = response.body().string();
+                            Intent intent = new Intent(ProcessingActivity.this, ProcessedActivity.class);
+                            intent.putExtra("PRESIGNED_URL", presignedUrl);
+                            startActivity(intent);
+//                        displayImage(presignedUrl);
+//                        Toast.makeText(ProcessingActivity.this, "Processing succesful " + presignedUrl, Toast.LENGTH_SHORT).show();
+//                        Log.d("hariom mre bhai ", "onResponse: " + presignedUrl);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    } else {
+                        Toast.makeText(ProcessingActivity.this, "Processing Failed", Toast.LENGTH_SHORT).show();
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<ResponseBody> call, Throwable t) {
+                    dismissDialog();
+                    Toast.makeText(ProcessingActivity.this, "Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                    Log.d("hariom mre bhai ", "onError: " + t.getMessage());
+                }
+            });
+
+        } else if (Objects.equals(receivedText, "Cezanne style")) {
+            apiService.executeProcessingCezanne(body).enqueue(new Callback<ResponseBody>() {
+                @Override
+                public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                    if (response.isSuccessful()) {
+                        dismissDialog();
+                        try {
+                            String presignedUrl = response.body().string();
+                            Intent intent = new Intent(ProcessingActivity.this, ProcessedActivity.class);
+                            intent.putExtra("PRESIGNED_URL", presignedUrl);
+                            startActivity(intent);
+//                        displayImage(presignedUrl);
+//                        Toast.makeText(ProcessingActivity.this, "Processing succesful " + presignedUrl, Toast.LENGTH_SHORT).show();
+//                        Log.d("hariom mre bhai ", "onResponse: " + presignedUrl);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    } else {
+                        Toast.makeText(ProcessingActivity.this, "Processing Failed", Toast.LENGTH_SHORT).show();
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<ResponseBody> call, Throwable t) {
+                    dismissDialog();
+                    Toast.makeText(ProcessingActivity.this, "Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                    Log.d("hariom mre bhai ", "onError: " + t.getMessage());
+                }
+            });
+
+        } else if (Objects.equals(receivedText, "To winter")) {
+            apiService.executeProcessingSummer2Winter(body).enqueue(new Callback<ResponseBody>() {
+                @Override
+                public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                    if (response.isSuccessful()) {
+                        dismissDialog();
+                        try {
+                            String presignedUrl = response.body().string();
+                            Intent intent = new Intent(ProcessingActivity.this, ProcessedActivity.class);
+                            intent.putExtra("PRESIGNED_URL", presignedUrl);
+                            startActivity(intent);
+//                        displayImage(presignedUrl);
+//                        Toast.makeText(ProcessingActivity.this, "Processing succesful " + presignedUrl, Toast.LENGTH_SHORT).show();
+//                        Log.d("hariom mre bhai ", "onResponse: " + presignedUrl);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    } else {
+                        Toast.makeText(ProcessingActivity.this, "Processing Failed", Toast.LENGTH_SHORT).show();
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<ResponseBody> call, Throwable t) {
+                    dismissDialog();
+                    Toast.makeText(ProcessingActivity.this, "Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                    Log.d("hariom mre bhai ", "onError: " + t.getMessage());
+                }
+            });
+
+        } else if (Objects.equals(receivedText, "To Summer")) {
+            apiService.executeProcessingWinter2Summer(body).enqueue(new Callback<ResponseBody>() {
+                @Override
+                public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                    dismissDialog();
+                    if (response.isSuccessful()) {
+                        try {
+                            String presignedUrl = response.body().string();
+                            Intent intent = new Intent(ProcessingActivity.this, ProcessedActivity.class);
+                            intent.putExtra("PRESIGNED_URL", presignedUrl);
+                            startActivity(intent);
+//                        displayImage(presignedUrl);
+//                        Toast.makeText(ProcessingActivity.this, "Processing succesful " + presignedUrl, Toast.LENGTH_SHORT).show();
+//                        Log.d("hariom mre bhai ", "onResponse: " + presignedUrl);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    } else {
+                        Toast.makeText(ProcessingActivity.this, "Processing Failed", Toast.LENGTH_SHORT).show();
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<ResponseBody> call, Throwable t) {
+                    dismissDialog();
+                    Toast.makeText(ProcessingActivity.this, "Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                    Log.d("hariom mre bhai ", "onError: " + t.getMessage());
+                }
+            });
+
+        } else {
+            Toast.makeText(this, "something went wrong go back", Toast.LENGTH_SHORT).show();
+        }
+
     }
 
 
