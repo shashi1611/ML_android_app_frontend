@@ -1,4 +1,4 @@
-package com.example.myapplication;
+package com.prasthaan.dusterai;
 
 //public interface ApiService {
 //

@@ -1,14 +1,10 @@
-//package com.example.myapplication.Models;
-//
-//public class FeatListModel2 {
-//}
-package com.example.myapplication.Models;
+package com.prasthaan.dusterai.Models;
 
-public class FeatListModel2 {
+public class FeatListModel {
     int img;
     String feat_name;
 
-    public FeatListModel2(int img, String feat_name) {
+    public FeatListModel(int img, String feat_name) {
         this.img = img;
         this.feat_name = feat_name;
     }

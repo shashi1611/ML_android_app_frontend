@@ -1,4 +1,4 @@
-package com.example.myapplication;
+package com.prasthaan.dusterai;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
@@ -19,10 +19,10 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.denzcoskun.imageslider.ImageSlider;
 import com.denzcoskun.imageslider.constants.ScaleTypes;
 import com.denzcoskun.imageslider.models.SlideModel;
-import com.example.myapplication.Adapters.FeatListModelAdapter;
-import com.example.myapplication.Adapters.FeatListModelAdapter2;
-import com.example.myapplication.Models.FeatListModel;
-import com.example.myapplication.Models.FeatListModel2;
+import com.prasthaan.dusterai.Adapters.FeatListModelAdapter;
+import com.prasthaan.dusterai.Adapters.FeatListModelAdapter2;
+import com.prasthaan.dusterai.Models.FeatListModel;
+import com.prasthaan.dusterai.Models.FeatListModel2;
 
 import java.util.ArrayList;
 import java.util.List;

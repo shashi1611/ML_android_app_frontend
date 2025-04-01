@@ -1,4 +1,4 @@
-package com.example.myapplication;
+package com.prasthaan.dusterai;
 
 //public class RetrofitClient {
 //}

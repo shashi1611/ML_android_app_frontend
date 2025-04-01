@@ -3,11 +3,11 @@ plugins {
 }
 
 android {
-    namespace 'com.example.myapplication'
+    namespace 'com.prasthaan.dusterai'
     compileSdk 34
 
     defaultConfig {
-        applicationId "com.example.myapplication"
+        applicationId "com.prasthaan.dusterai"
         minSdk 24
         targetSdk 34
         versionCode 1
@@ -27,6 +27,7 @@ android {
         targetCompatibility JavaVersion.VERSION_11
     }
 }
+
 
 dependencies {
 
@@ -52,4 +53,7 @@ dependencies {
     implementation 'com.github.bumptech.glide:glide:4.16.0'
     annotationProcessor 'com.github.bumptech.glide:compiler:4.16.0'  // Required for Glide modules
 
+//    dependency for ad
+    implementation 'com.google.android.gms:play-services-ads:24.1.0'
+//    implementation 'com.google.android.gms:play-services-ads:22.6.0
 }

@@ -1,10 +1,4 @@
-//package com.example.myapplication.Adapters;
-//
-//public class FeatListModelAdapter2 {
-//}
-
-
-package com.example.myapplication.Adapters;
+package com.prasthaan.dusterai.Adapters;
 
 import android.content.Context;
 import android.content.Intent;
@@ -18,17 +12,17 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.myapplication.Models.FeatListModel2;
-import com.example.myapplication.ProcessingActivity;
-import com.example.myapplication.R;
+import com.prasthaan.dusterai.Models.FeatListModel;
+import com.prasthaan.dusterai.ProcessingActivity;
+import com.prasthaan.dusterai.R;
 
 import java.util.ArrayList;
 
-public class FeatListModelAdapter2 extends RecyclerView.Adapter<FeatListModelAdapter2.viewHolder> {
-    ArrayList<FeatListModel2> list;
+public class FeatListModelAdapter extends RecyclerView.Adapter<FeatListModelAdapter.viewHolder> {
+    ArrayList<FeatListModel> list;
     Context context;
 
-    public FeatListModelAdapter2(ArrayList<FeatListModel2> list, Context context) {
+    public FeatListModelAdapter(ArrayList<FeatListModel> list, Context context) {
         this.list = list;
         this.context = context;
     }
@@ -42,7 +36,7 @@ public class FeatListModelAdapter2 extends RecyclerView.Adapter<FeatListModelAda
 
     @Override
     public void onBindViewHolder(@NonNull viewHolder holder, int position) {
-        FeatListModel2 model = list.get(position);
+        FeatListModel model = list.get(position);
         holder.imageView.setImageResource(model.getImg());
         holder.textView.setText(model.getFeat_name());
 
@@ -84,4 +78,3 @@ public class FeatListModelAdapter2 extends RecyclerView.Adapter<FeatListModelAda
         }
     }
 }
-

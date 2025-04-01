@@ -1,3 +1,7 @@
 <resources>
-    <string name="app_name">My Application</string>
+    <string name="app_name">Duster AI</string>
+    <string name="app_id">ca-app-pub-4827086355311757~2282783487</string>
+    <string name="banner_ad_id">ca-app-pub-4827086355311757/7587220673</string>
+    <string name="banner_app_id_download_page">ca-app-pub-4827086355311757/9483590421</string>
+    <string name="interstitial_app_id">ca-app-pub-4827086355311757/7458523893</string>
 </resources>

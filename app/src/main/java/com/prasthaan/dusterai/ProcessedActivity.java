@@ -1,4 +1,4 @@
-package com.example.myapplication;
+package com.prasthaan.dusterai;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
@@ -11,8 +11,10 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.Toast;
 
@@ -29,6 +31,10 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import com.bumptech.glide.Glide;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdSize;
+import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.MobileAds;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -40,6 +46,7 @@ import java.util.List;
 public class ProcessedActivity extends AppCompatActivity {
 
     private static final int STORAGE_PERMISSION_CODE = 100;
+    private static final String AD_UNIT_ID_DOWNLOAD_PAGE = "ca-app-pub-4827086355311757/9483590421";
     private final ActivityResultLauncher<String[]> requestPermissionLauncher =
             registerForActivityResult(new ActivityResultContracts.RequestMultiplePermissions(), result -> {
                 boolean allGranted = true;
@@ -60,6 +67,8 @@ public class ProcessedActivity extends AppCompatActivity {
     private String presignedUrl;
     private File imageFile; // Store downloaded image file
     private String downloadedImageName;
+    private AdView adViewDownloadPage;
+    private FrameLayout adContainerViewDownloadPage;
 
     private void requestStoragePermissions() {
         List<String> permissionsNeeded = new ArrayList<>();
@@ -157,7 +166,50 @@ public class ProcessedActivity extends AppCompatActivity {
 
         btnShare.setOnClickListener(v -> shareImage());
 
+//        <<<<<<<<<<<<<<<<<<<<<<<<<<<<ad part>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+        MobileAds.initialize(this, initializationStatus -> {
+        });
+
+        // Find Ad Container
+        adContainerViewDownloadPage = findViewById(R.id.ad_view_container_download_page);
+
+        // Create a new AdView and load an ad
+        loadAdaptiveBannerAd();
+
     }
+
+
+    //    <<<<<<<<<<<<<<<<<<<<<<<<<<<<<ad functions>>>>>>>>>>>>>>>>>>>>>>>>>
+    private void loadAdaptiveBannerAd() {
+        // Create a new AdView dynamically
+        adViewDownloadPage = new AdView(this);
+        adViewDownloadPage.setAdUnitId(AD_UNIT_ID_DOWNLOAD_PAGE);
+
+        // Set adaptive ad size
+        AdSize adSize = getAdSize();
+        adViewDownloadPage.setAdSize(adSize);
+
+        // Add AdView to container
+        adContainerViewDownloadPage.removeAllViews();
+        adContainerViewDownloadPage.addView(adViewDownloadPage);
+
+        // Load the ad
+        AdRequest adRequest = new AdRequest.Builder().build();
+        adViewDownloadPage.loadAd(adRequest);
+    }
+
+    private AdSize getAdSize() {
+        // Get screen width in dp
+        DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
+        float widthPixels = displayMetrics.widthPixels;
+        float density = displayMetrics.density;
+        int adWidth = (int) (widthPixels / density);
+
+        // Get adaptive ad size
+        return AdSize.getCurrentOrientationAnchoredAdaptiveBannerAdSize(this, adWidth);
+    }
+
 
     // Check if storage permission is granted
     private boolean checkPermission() {

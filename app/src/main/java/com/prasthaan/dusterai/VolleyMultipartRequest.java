@@ -1,4 +1,4 @@
-package com.example.myapplication;
+package com.prasthaan.dusterai;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.NetworkResponse;

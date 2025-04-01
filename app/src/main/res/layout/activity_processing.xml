@@ -9,6 +9,7 @@
     android:orientation="vertical"
     tools:context=".ProcessingActivity">
 
+
     <!-- Title CardView at the Top -->
     <androidx.cardview.widget.CardView
         android:id="@+id/app_title_text_Card"
@@ -112,5 +113,11 @@
                 app:rippleColor="@null" />
         </LinearLayout>
     </androidx.cardview.widget.CardView>
+
+    <FrameLayout
+        android:id="@+id/ad_view_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom" />
 
 </LinearLayout>

@@ -1,4 +1,4 @@
-package com.example.myapplication;
+package com.prasthaan.dusterai;
 
 import android.Manifest;
 import android.app.Dialog;
@@ -10,9 +10,11 @@ import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -24,6 +26,10 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.FileProvider;
 
 import com.bumptech.glide.Glide;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdSize;
+import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.MobileAds;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -49,6 +55,7 @@ public class ProcessingActivity extends AppCompatActivity {
     private static final int REQUEST_IMAGE_CAPTURE = 1;
     private static final int REQUEST_PERMISSIONS = 101;
     private static final int TOTAL_TIME = 90; // 120 seconds
+    private static final String AD_UNIT_ID = "ca-app-pub-3940256099942544/6300978111";
     String receivedText;
     private ImageView imageView;
     private Uri imageUri;
@@ -57,6 +64,8 @@ public class ProcessingActivity extends AppCompatActivity {
     private Dialog progressDialog;
     private TextView timerText;
     private CountDownTimer countDownTimer;
+    private AdView adView;
+    private FrameLayout adContainerView;
 
     private void showProcessingDialog() {
         progressDialog = new Dialog(this);
@@ -192,8 +201,48 @@ public class ProcessingActivity extends AppCompatActivity {
         });
 
 
+//        <<<<<<<<<<<<<<<<<<<<<<<<<<<<<ad part >>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+        MobileAds.initialize(this, initializationStatus -> {
+        });
+
+        // Find Ad Container
+        adContainerView = findViewById(R.id.ad_view_container);
+
+        // Create a new AdView and load an ad
+        loadAdaptiveBannerAd();
+
     }
 
+    //    <<<<<<<<<<<<<<<<<<<<<<<<<<<<<ad functions>>>>>>>>>>>>>>>>>>>>>>>>>
+    private void loadAdaptiveBannerAd() {
+        // Create a new AdView dynamically
+        adView = new AdView(this);
+        adView.setAdUnitId(AD_UNIT_ID);
+
+        // Set adaptive ad size
+        AdSize adSize = getAdSize();
+        adView.setAdSize(adSize);
+
+        // Add AdView to container
+        adContainerView.removeAllViews();
+        adContainerView.addView(adView);
+
+        // Load the ad
+        AdRequest adRequest = new AdRequest.Builder().build();
+        adView.loadAd(adRequest);
+    }
+
+    private AdSize getAdSize() {
+        // Get screen width in dp
+        DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
+        float widthPixels = displayMetrics.widthPixels;
+        float density = displayMetrics.density;
+        int adWidth = (int) (widthPixels / density);
+
+        // Get adaptive ad size
+        return AdSize.getCurrentOrientationAnchoredAdaptiveBannerAdSize(this, adWidth);
+    }
 
     //    <<<<<<<<<<<<<<<<<<<<<<<<<<<<<get image from gallery and pass to the api >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
     private void openGallery() {
