@@ -4,6 +4,7 @@ import android.Manifest;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Toast;
@@ -19,6 +20,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.denzcoskun.imageslider.ImageSlider;
 import com.denzcoskun.imageslider.constants.ScaleTypes;
 import com.denzcoskun.imageslider.models.SlideModel;
+import com.google.firebase.messaging.FirebaseMessaging;
 import com.prasthaan.dusterai.Adapters.FeatListModelAdapter;
 import com.prasthaan.dusterai.Adapters.FeatListModelAdapter2;
 import com.prasthaan.dusterai.Models.FeatListModel;
@@ -93,6 +95,20 @@ public class MainActivity extends AppCompatActivity {
 
         recyclerView2.setNestedScrollingEnabled(false);
         recyclerView2.setOverScrollMode(View.OVER_SCROLL_NEVER);
+
+
+//        firebase cloud messaging
+        FirebaseMessaging.getInstance().getToken()
+                .addOnCompleteListener(task -> {
+                    if (!task.isSuccessful()) {
+                        Log.w("FCM_Token", "Fetching FCM registration token failed", task.getException());
+                        return;
+                    }
+
+                    // Get new FCM token
+                    String token = task.getResult();
+                    Log.d("FCM_Token", "FCM Token: " + token);
+                });
 
 
     }
