@@ -26,7 +26,9 @@ import androidx.core.content.FileProvider;
 import com.bumptech.glide.Glide;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
@@ -216,8 +218,33 @@ public class ProcessingActivity extends AppCompatActivity {
     }
 
 
+    private File getFileFromUri(Uri uri) {
+        try {
+            InputStream inputStream = getContentResolver().openInputStream(uri);
+            if (inputStream == null) return null;
+
+            // Create a temporary file in app's cache directory
+            File tempFile = new File(getCacheDir(), "temp_image.jpg");
+            FileOutputStream outputStream = new FileOutputStream(tempFile);
+
+            byte[] buffer = new byte[4096];
+            int bytesRead;
+            while ((bytesRead = inputStream.read(buffer)) != -1) {
+                outputStream.write(buffer, 0, bytesRead);
+            }
+
+            outputStream.close();
+            inputStream.close();
+            return tempFile;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
     private void processImage(Uri fileUri) {
-        File file = new File(FileUtils.getPath(this, fileUri));
+//        File file = new File(FileUtils.getPath(this, fileUri));
+        File file = getFileFromUri(fileUri);
         RequestBody requestFile = RequestBody.create(MediaType.parse("image/*"), file);
         MultipartBody.Part body = MultipartBody.Part.createFormData("file", file.getName(), requestFile);
 

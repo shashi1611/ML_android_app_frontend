@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
@@ -16,6 +17,8 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
@@ -31,15 +34,70 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ProcessedActivity extends AppCompatActivity {
 
     private static final int STORAGE_PERMISSION_CODE = 100;
+    private final ActivityResultLauncher<String[]> requestPermissionLauncher =
+            registerForActivityResult(new ActivityResultContracts.RequestMultiplePermissions(), result -> {
+                boolean allGranted = true;
+                for (boolean granted : result.values()) {
+                    if (!granted) {
+                        allGranted = false;
+                        break;
+                    }
+                }
+                if (allGranted) {
+                    Toast.makeText(this, "Permissions Granted", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(this, "Some permissions were denied!", Toast.LENGTH_SHORT).show();
+                }
+            });
     private ImageView imageView;
     private Button btnDownload, btnShare;
     private String presignedUrl;
     private File imageFile; // Store downloaded image file
     private String downloadedImageName;
+
+    private void requestStoragePermissions() {
+        List<String> permissionsNeeded = new ArrayList<>();
+
+        // WRITE_EXTERNAL_STORAGE is needed only for Android 9 and below (API 28)
+        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.P) {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                permissionsNeeded.add(Manifest.permission.WRITE_EXTERNAL_STORAGE);
+            }
+        }
+
+        // READ_EXTERNAL_STORAGE is needed only for Android 12 and below (API 32)
+        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.S_V2) {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                permissionsNeeded.add(Manifest.permission.READ_EXTERNAL_STORAGE);
+            }
+        }
+
+        // For Android 13+ (API 33+), request new media permissions
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_MEDIA_IMAGES) != PackageManager.PERMISSION_GRANTED) {
+                permissionsNeeded.add(Manifest.permission.READ_MEDIA_IMAGES);
+            }
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_MEDIA_VIDEO) != PackageManager.PERMISSION_GRANTED) {
+                permissionsNeeded.add(Manifest.permission.READ_MEDIA_VIDEO);
+            }
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_MEDIA_AUDIO) != PackageManager.PERMISSION_GRANTED) {
+                permissionsNeeded.add(Manifest.permission.READ_MEDIA_AUDIO);
+            }
+        }
+
+        // Request permissions if they are not already granted
+        if (!permissionsNeeded.isEmpty()) {
+            requestPermissionLauncher.launch(permissionsNeeded.toArray(new String[0]));
+        } else {
+            Toast.makeText(this, "All necessary permissions are already granted!", Toast.LENGTH_SHORT).show();
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,20 +139,20 @@ public class ProcessedActivity extends AppCompatActivity {
         }
 
         btnDownload.setOnClickListener(v -> {
-            if (checkPermission()) {
+//            if (checkPermission()) {
 
-                try {
-                    JSONObject jsonObject = new JSONObject(presignedUrl);
-                    String imageUrl = jsonObject.getString("output"); // Extract URL
-                    downloadImage(imageUrl);
-                    Toast.makeText(this, "Download started see the notification", Toast.LENGTH_SHORT).show();
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                    Toast.makeText(this, "Invalid URL format", Toast.LENGTH_SHORT).show();
-                }
-            } else {
-                requestStoragePermission();
+            try {
+                JSONObject jsonObject = new JSONObject(presignedUrl);
+                String imageUrl = jsonObject.getString("output"); // Extract URL
+                downloadImage(imageUrl);
+                Toast.makeText(this, "Download started see the notification", Toast.LENGTH_SHORT).show();
+            } catch (JSONException e) {
+                e.printStackTrace();
+                Toast.makeText(this, "Invalid URL format", Toast.LENGTH_SHORT).show();
             }
+//            } else {
+//                requestStoragePermission();
+//            }
         });
 
         btnShare.setOnClickListener(v -> shareImage());
@@ -104,6 +162,7 @@ public class ProcessedActivity extends AppCompatActivity {
     // Check if storage permission is granted
     private boolean checkPermission() {
         int write = ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        Log.d("Permission_check", "checkPermission: " + ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE));
         return write == PackageManager.PERMISSION_GRANTED;
     }
 
