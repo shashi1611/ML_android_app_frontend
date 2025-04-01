@@ -101,6 +101,7 @@ public class ProcessingActivity extends AppCompatActivity {
 
     private void dismissDialog() {
         if (progressDialog != null && progressDialog.isShowing()) {
+            countDownTimer.cancel();
             progressDialog.dismiss();
         }
     }
@@ -315,9 +316,11 @@ public class ProcessingActivity extends AppCompatActivity {
 //                        Toast.makeText(ProcessingActivity.this, "Processing succesful " + presignedUrl, Toast.LENGTH_SHORT).show();
 //                        Log.d("hariom mre bhai ", "onResponse: " + presignedUrl);
                         } catch (IOException e) {
+                            dismissDialog();
                             e.printStackTrace();
                         }
                     } else {
+                        dismissDialog();
                         Toast.makeText(ProcessingActivity.this, "Processing Failed", Toast.LENGTH_SHORT).show();
                     }
                 }
@@ -344,9 +347,11 @@ public class ProcessingActivity extends AppCompatActivity {
 //                        Toast.makeText(ProcessingActivity.this, "Processing succesful " + presignedUrl, Toast.LENGTH_SHORT).show();
 //                        Log.d("hariom mre bhai ", "onResponse: " + presignedUrl);
                         } catch (IOException e) {
+                            dismissDialog();
                             e.printStackTrace();
                         }
                     } else {
+                        dismissDialog();
                         Toast.makeText(ProcessingActivity.this, "Processing Failed", Toast.LENGTH_SHORT).show();
                     }
                 }
@@ -374,9 +379,11 @@ public class ProcessingActivity extends AppCompatActivity {
 //                        Toast.makeText(ProcessingActivity.this, "Processing succesful " + presignedUrl, Toast.LENGTH_SHORT).show();
 //                        Log.d("hariom mre bhai ", "onResponse: " + presignedUrl);
                         } catch (IOException e) {
+                            dismissDialog();
                             e.printStackTrace();
                         }
                     } else {
+                        dismissDialog();
                         Toast.makeText(ProcessingActivity.this, "Processing Failed", Toast.LENGTH_SHORT).show();
                     }
                 }
@@ -404,9 +411,11 @@ public class ProcessingActivity extends AppCompatActivity {
 //                        Toast.makeText(ProcessingActivity.this, "Processing succesful " + presignedUrl, Toast.LENGTH_SHORT).show();
 //                        Log.d("hariom mre bhai ", "onResponse: " + presignedUrl);
                         } catch (IOException e) {
+                            dismissDialog();
                             e.printStackTrace();
                         }
                     } else {
+                        dismissDialog();
                         Toast.makeText(ProcessingActivity.this, "Processing Failed", Toast.LENGTH_SHORT).show();
                     }
                 }
@@ -434,9 +443,11 @@ public class ProcessingActivity extends AppCompatActivity {
 //                        Toast.makeText(ProcessingActivity.this, "Processing succesful " + presignedUrl, Toast.LENGTH_SHORT).show();
 //                        Log.d("hariom mre bhai ", "onResponse: " + presignedUrl);
                         } catch (IOException e) {
+                            dismissDialog();
                             e.printStackTrace();
                         }
                     } else {
+                        dismissDialog();
                         Toast.makeText(ProcessingActivity.this, "Processing Failed", Toast.LENGTH_SHORT).show();
                     }
                 }
@@ -464,9 +475,11 @@ public class ProcessingActivity extends AppCompatActivity {
 //                        Toast.makeText(ProcessingActivity.this, "Processing succesful " + presignedUrl, Toast.LENGTH_SHORT).show();
 //                        Log.d("hariom mre bhai ", "onResponse: " + presignedUrl);
                         } catch (IOException e) {
+                            dismissDialog();
                             e.printStackTrace();
                         }
                     } else {
+                        dismissDialog();
                         Toast.makeText(ProcessingActivity.this, "Processing Failed", Toast.LENGTH_SHORT).show();
                     }
                 }
