@@ -29,7 +29,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="15dp"
-            android:text="Processing: 120s remaining"
+            android:text="Generating: 120s remaining"
             android:textColor="@android:color/white"
             android:textSize="16sp" />
     </LinearLayout>

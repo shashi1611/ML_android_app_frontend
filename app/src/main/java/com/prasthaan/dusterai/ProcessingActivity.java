@@ -58,7 +58,6 @@ import retrofit2.Response;
 
 
 public class ProcessingActivity extends AppCompatActivity {
-    static final int PICK_IMAGE_REQUEST = 1;
     private static final int REQUEST_IMAGE_CAPTURE = 1;
     private static final int REQUEST_PERMISSIONS = 101;
     private static final int TOTAL_TIME = 90; // 120 seconds
@@ -67,7 +66,7 @@ public class ProcessingActivity extends AppCompatActivity {
     ActivityResultLauncher<PickVisualMediaRequest> imagePickerLauncher;
     private ImageView imageView;
     private Uri imageUri;
-    private File imageFile;
+    private File imageFileFromCamera = null;
     private File imageFileFromFileUploader;
     private Button btnUpload, btnProcess, open_cam_btn;
     private Dialog progressDialog;
@@ -190,15 +189,17 @@ public class ProcessingActivity extends AppCompatActivity {
 
 
                 Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                imageFile = null;
+                imageFileFromCamera = null;
                 try {
-                    imageFile = createImageFile();
+                    imageFileFromCamera = createImageFile();
+                    Log.d("hello world ", "onClick: image file created = " + imageFileFromCamera);
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
-                if (imageFile != null) {
+                if (imageFileFromCamera != null) {
 
-                    imageUri = FileProvider.getUriForFile(ProcessingActivity.this, "com.prasthaan.dusterai.fileprovider", imageFile);
+                    imageUri = FileProvider.getUriForFile(ProcessingActivity.this, "com.prasthaan.dusterai.fileprovider", imageFileFromCamera);
+                    Log.d("hello world", "onClick:  image uri = " + imageUri);
                     intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
                     intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
                     startActivityForResult(intent, REQUEST_IMAGE_CAPTURE);
@@ -222,6 +223,10 @@ public class ProcessingActivity extends AppCompatActivity {
             if (imageFileFromFileUploader != null) {
                 showProcessingDialog();
                 processImage(imageFileFromFileUploader);
+            } else if (imageFileFromCamera != null) {
+                showProcessingDialog();
+                processImage(imageFileFromCamera);
+
             } else {
                 Toast.makeText(this, "Select an image first", Toast.LENGTH_SHORT).show();
             }
@@ -258,10 +263,14 @@ public class ProcessingActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == REQUEST_IMAGE_CAPTURE) {
-            // 📌 Image captured from camera
-            if (imageFile != null) {
-                imageUri = Uri.fromFile(imageFile);
+            if (imageFileFromCamera != null) {
+                imageUri = Uri.fromFile(imageFileFromCamera);
+                Log.d("hello world", "onActivityResult: image file from onactivity result" + imageUri);
                 imageView.setImageURI(imageUri);
+                imageFileFromCamera = copyUriToFile(imageUri);
+                Log.d("hello world", "onActivityResult: image file from onactivity result" + imageFileFromCamera);
+
+
             }
         }
 
