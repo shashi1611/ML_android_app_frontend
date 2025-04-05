@@ -12,7 +12,6 @@ import android.content.Intent;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Build;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.core.app.NotificationCompat;
@@ -29,7 +28,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         super.onMessageReceived(remoteMessage);
 
         // Log message data
-        Log.d(TAG, "From: " + remoteMessage.getFrom());
+//        Log.d(TAG, "From: " + remoteMessage.getFrom());
 
         if (remoteMessage.getNotification() != null) {
             String title = remoteMessage.getNotification().getTitle();

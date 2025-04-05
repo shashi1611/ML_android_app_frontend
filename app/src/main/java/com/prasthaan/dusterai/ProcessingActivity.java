@@ -2,12 +2,15 @@ package com.prasthaan.dusterai;
 
 import android.Manifest;
 import android.app.Dialog;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.media.ExifInterface;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -15,7 +18,6 @@ import android.os.CountDownTimer;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.FrameLayout;
@@ -94,7 +96,7 @@ public class ProcessingActivity extends AppCompatActivity {
             @Override
             public void onTick(long millisUntilFinished) {
                 int secondsLeft = (int) (millisUntilFinished / 1000);
-                timerText.setText("Processing: " + secondsLeft + "s remaining");
+                timerText.setText("Generating: " + secondsLeft + "s remaining");
             }
 
             @Override
@@ -172,12 +174,24 @@ public class ProcessingActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
+        if (!isConnected()) {
+            startActivity(new Intent(this, NoInternetActivity.class));
+            finish();
+            return;
+        }
         setContentView(R.layout.activity_processing);
         imageView = findViewById(R.id.uploaded_img);
         btnUpload = findViewById(R.id.upload_img_vid_button);
         btnProcess = findViewById(R.id.process_img_button);
         open_cam_btn = findViewById(R.id.open_camera_button);
         receivedText = getIntent().getStringExtra("text_key");
+        TextView textViewFeatname = findViewById(R.id.featureNameTextView);
+
+        if (receivedText.equals("To winter") || receivedText.equals("To Summer")) {
+            textViewFeatname.setText("Image " + receivedText);
+        } else {
+            textViewFeatname.setText("Image to " + receivedText);
+        }
 
         if (!isCameraPermissionGranted()) {
             requestPermissions();
@@ -192,14 +206,12 @@ public class ProcessingActivity extends AppCompatActivity {
                 imageFileFromCamera = null;
                 try {
                     imageFileFromCamera = createImageFile();
-                    Log.d("hello world ", "onClick: image file created = " + imageFileFromCamera);
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
                 if (imageFileFromCamera != null) {
 
                     imageUri = FileProvider.getUriForFile(ProcessingActivity.this, "com.prasthaan.dusterai.fileprovider", imageFileFromCamera);
-                    Log.d("hello world", "onClick:  image uri = " + imageUri);
                     intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
                     intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
                     startActivityForResult(intent, REQUEST_IMAGE_CAPTURE);
@@ -265,10 +277,8 @@ public class ProcessingActivity extends AppCompatActivity {
         if (requestCode == REQUEST_IMAGE_CAPTURE) {
             if (imageFileFromCamera != null) {
                 imageUri = Uri.fromFile(imageFileFromCamera);
-                Log.d("hello world", "onActivityResult: image file from onactivity result" + imageUri);
                 imageView.setImageURI(imageUri);
                 imageFileFromCamera = copyUriToFile(imageUri);
-                Log.d("hello world", "onActivityResult: image file from onactivity result" + imageFileFromCamera);
 
 
             }
@@ -295,7 +305,6 @@ public class ProcessingActivity extends AppCompatActivity {
         long fileSizeInMB = originalFile.length() / (1024 * 1024);
 
         if (fileSizeInMB > 4.8) {
-            Log.d("ImagePicker", "Original file size > 5MB, compressing...");
             return compressImage(originalFile);
         }
 
@@ -331,8 +340,6 @@ public class ProcessingActivity extends AppCompatActivity {
             bitmap.recycle();
             rotatedBitmap.recycle();
 
-            Log.d("ImagePicker", "Compressed file path: " + compressedFile.getAbsolutePath());
-            Log.d("ImagePicker", "Compressed file size: " + compressedFile.length() / (1024 * 1024));
             return compressedFile;
 
         } catch (IOException e) {
@@ -423,7 +430,6 @@ public class ProcessingActivity extends AppCompatActivity {
 
 
                             String presignedUrl = response.body().string();
-                            Log.d("hello world ", "onResponse: " + presignedUrl);
                             Intent intent = new Intent(ProcessingActivity.this, ProcessedActivity.class);
                             intent.putExtra("PRESIGNED_URL", presignedUrl);
                             startActivity(intent);
@@ -588,6 +594,15 @@ public class ProcessingActivity extends AppCompatActivity {
             Toast.makeText(this, "something went wrong go back", Toast.LENGTH_SHORT).show();
         }
 
+    }
+
+    private boolean isConnected() {
+        ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        if (cm != null) {
+            NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+            return activeNetwork != null && activeNetwork.isConnected();
+        }
+        return false;
     }
 
 }

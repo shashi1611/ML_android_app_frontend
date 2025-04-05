@@ -1,7 +1,11 @@
 package com.prasthaan.dusterai;
 
 import android.Manifest;
+import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
@@ -10,7 +14,10 @@ import android.view.WindowManager;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.IntentSenderRequest;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
@@ -20,6 +27,13 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.denzcoskun.imageslider.ImageSlider;
 import com.denzcoskun.imageslider.constants.ScaleTypes;
 import com.denzcoskun.imageslider.models.SlideModel;
+import com.google.android.gms.tasks.Task;
+import com.google.android.play.core.appupdate.AppUpdateInfo;
+import com.google.android.play.core.appupdate.AppUpdateManager;
+import com.google.android.play.core.appupdate.AppUpdateManagerFactory;
+import com.google.android.play.core.appupdate.AppUpdateOptions;
+import com.google.android.play.core.install.model.AppUpdateType;
+import com.google.android.play.core.install.model.UpdateAvailability;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.prasthaan.dusterai.Adapters.FeatListModelAdapter;
 import com.prasthaan.dusterai.Adapters.FeatListModelAdapter2;
@@ -46,14 +60,24 @@ public class MainActivity extends AppCompatActivity {
                 }
             });
 
+
+    ActivityResultLauncher<IntentSenderRequest> activityResultLauncher;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
 
         requestStoragePermissions();
 
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS, WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
+        if (!isConnected()) {
+            startActivity(new Intent(this, NoInternetActivity.class));
+            finish();
+            return;
+        }
+
         setContentView(R.layout.activity_main);
         ImageSlider imageSlider = findViewById(R.id.image_slider);
         ArrayList<SlideModel> slideModels = new ArrayList<>();
@@ -96,7 +120,6 @@ public class MainActivity extends AppCompatActivity {
         recyclerView2.setNestedScrollingEnabled(false);
         recyclerView2.setOverScrollMode(View.OVER_SCROLL_NEVER);
 
-
 //        firebase cloud messaging
         FirebaseMessaging.getInstance().getToken()
                 .addOnCompleteListener(task -> {
@@ -107,11 +130,64 @@ public class MainActivity extends AppCompatActivity {
 
                     // Get new FCM token
                     String token = task.getResult();
-                    Log.d("FCM_Token", "FCM Token: " + token);
+//                    Log.d("FCM_Token", "FCM Token: " + token);
                 });
+
+        activityResultLauncher = registerForActivityResult(
+                new ActivityResultContracts.StartIntentSenderForResult(),
+                new ActivityResultCallback<ActivityResult>() {
+                    @Override
+                    public void onActivityResult(ActivityResult result) {
+                        // handle callback
+                        if (result.getResultCode() != RESULT_OK) {
+//                            log(Double.parseDouble("Update flow failed! Result code: " + result.getResultCode()));
+                            // If the update is canceled or fails,
+                            // you can request to start the update again.
+                        }
+                    }
+                });
+
+        CheckForAppUpdate();
 
 
     }
+
+    private void CheckForAppUpdate() {
+        AppUpdateManager appUpdateManager = AppUpdateManagerFactory.create(this);
+
+// Returns an intent object that you use to check for an update.
+        Task<AppUpdateInfo> appUpdateInfoTask = appUpdateManager.getAppUpdateInfo();
+
+// Checks that the platform will allow the specified type of update.
+        appUpdateInfoTask.addOnSuccessListener(appUpdateInfo -> {
+            if (appUpdateInfo.updateAvailability() == UpdateAvailability.UPDATE_AVAILABLE
+                    // This example applies an immediate update. To apply a flexible update
+                    // instead, pass in AppUpdateType.FLEXIBLE
+                    && appUpdateInfo.isUpdateTypeAllowed(AppUpdateType.IMMEDIATE)) {
+
+
+                appUpdateManager.startUpdateFlowForResult(
+                        // Pass the intent that is returned by 'getAppUpdateInfo()'.
+                        appUpdateInfo,
+                        // an activity result launcher registered via registerForActivityResult
+                        activityResultLauncher,
+                        // Or pass 'AppUpdateType.FLEXIBLE' to newBuilder() for
+                        // flexible updates.
+                        AppUpdateOptions.newBuilder(AppUpdateType.IMMEDIATE).build());
+                // Request the update.
+            }
+        });
+    }
+
+    private boolean isConnected() {
+        ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        if (cm != null) {
+            NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+            return activeNetwork != null && activeNetwork.isConnected();
+        }
+        return false;
+    }
+
 
     private void requestStoragePermissions() {
         List<String> permissionsNeeded = new ArrayList<>();

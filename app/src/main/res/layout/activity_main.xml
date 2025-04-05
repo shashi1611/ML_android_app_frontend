@@ -29,8 +29,8 @@
         android:shadowDy="2"
         android:shadowRadius="4"
         android:text="Duster AI"
-        android:textColor="@android:color/white"
-        android:textSize="24sp"
+        android:textColor="#312323"
+        android:textSize="34sp"
         android:textStyle="bold" />
 
     <!-- Scrollable Content Below -->
@@ -49,6 +49,7 @@
                 android:id="@+id/feature_banner"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginLeft="15dp"
                 android:layout_marginTop="10dp"
                 android:text="Image to painting"
                 android:textColor="@android:color/white"
@@ -66,6 +67,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/recyclerView_feat_list"
+                android:layout_marginLeft="15dp"
                 android:layout_marginTop="10dp"
                 android:text="Season Changer"
                 android:textColor="@color/white"

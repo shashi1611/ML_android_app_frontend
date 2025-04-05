@@ -127,7 +127,7 @@ public class ProcessedActivity extends AppCompatActivity {
         // Get the presigned URL from intent
         presignedUrl = getIntent().getStringExtra("PRESIGNED_URL");
         if (presignedUrl != null) {
-            Log.d("PresignedURL", "Received URL: " + presignedUrl);
+//            Log.d("PresignedURL", "Received URL: " + presignedUrl);
             try {
                 JSONObject jsonObject = new JSONObject(presignedUrl);
                 String imageUrl = jsonObject.getString("output"); // Extract the actual URL
@@ -246,49 +246,6 @@ public class ProcessedActivity extends AppCompatActivity {
         }
     }
 
-//    private void downloadImage(String imageUrl) {
-//        try {
-//            // Create Download Manager Request
-//            DownloadManager.Request request = new DownloadManager.Request(Uri.parse(imageUrl));
-//
-//            // Set Notification details
-//            request.setTitle("Downloading Image");
-//            request.setDescription("Saving image to Downloads folder...");
-//            request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
-//
-//            // Set the download destination (Downloads folder)
-//            request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, "downloaded_image_" + System.currentTimeMillis() + ".jpg");
-//
-//            // Get the system Download Manager
-//            DownloadManager downloadManager = (DownloadManager) getSystemService(Context.DOWNLOAD_SERVICE);
-//
-//            // Enqueue the request (start downloading)
-//            long downloadId = downloadManager.enqueue(request);
-//
-//            // Check Download Status (Optional)
-//            new Thread(() -> {
-//                boolean downloading = true;
-//                while (downloading) {
-//                    DownloadManager.Query query = new DownloadManager.Query();
-//                    query.setFilterById(downloadId);
-//                    Cursor cursor = downloadManager.query(query);
-//                    if (cursor.moveToFirst()) {
-//                        @SuppressLint("Range") int status = cursor.getInt(cursor.getColumnIndex(DownloadManager.COLUMN_STATUS));
-//                        if (status == DownloadManager.STATUS_SUCCESSFUL) {
-//                            downloading = false;
-//                            runOnUiThread(() -> Toast.makeText(this, "Download Complete!", Toast.LENGTH_SHORT).show());
-//                        }
-//                    }
-//                    cursor.close();
-//                }
-//            }).start();
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//            Toast.makeText(this, "Download failed: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-//            Log.d("hariom mre bhai ", "downloadImage failed error: " + e.getMessage());
-//        }
-//    }
-
 
     private void downloadImage(String imageUrl) {
         try {
@@ -338,58 +295,6 @@ public class ProcessedActivity extends AppCompatActivity {
         }
     }
 
-//    private void shareImage() {
-//        if (imageFile == null || !imageFile.exists()) {
-//            Toast.makeText(this, "Image not found. Please download first!", Toast.LENGTH_SHORT).show();
-////            Log.d("hariom mre bhai", "shareImage: ");
-//            return;
-//        }
-//
-//        Uri imageUri = FileProvider.getUriForFile(this, getPackageName() + ".provider", imageFile);
-//
-//        Intent shareIntent = new Intent(Intent.ACTION_SEND);
-//        shareIntent.setType("image/*");
-//        shareIntent.putExtra(Intent.EXTRA_STREAM, imageUri);
-//        shareIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-//
-//        try {
-//            startActivity(Intent.createChooser(shareIntent, "Share Image via"));
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//            Toast.makeText(this, "No app found to share the image", Toast.LENGTH_SHORT).show();
-//        }
-//    }
-
-//    private void shareImage() {
-//        if (downloadedImageName == null) {
-//            Toast.makeText(this, "No image found to share! Please download first.", Toast.LENGTH_SHORT).show();
-//            return;
-//        }
-//
-//        File imageFile = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), downloadedImageName);
-//
-//        if (!imageFile.exists()) {
-//            Toast.makeText(this, "Image not found!", Toast.LENGTH_SHORT).show();
-//            return;
-//        } else {
-//            Toast.makeText(this, "Image found!", Toast.LENGTH_SHORT).show();
-//        }
-//
-////        Uri imageUri = FileProvider.getUriForFile(this, getPackageName() + ".provider", imageFile);
-//        Uri imageUri = FileProvider.getUriForFile(this, getApplicationContext().getPackageName() + ".provider", imageFile);
-////
-////        Intent shareIntent = new Intent(Intent.ACTION_SEND);
-////        shareIntent.setType("image/*");
-////        shareIntent.putExtra(Intent.EXTRA_STREAM, imageUri);
-////        shareIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-////
-////        try {
-////            startActivity(Intent.createChooser(shareIntent, "Share Image via"));
-////        } catch (Exception e) {
-////            e.printStackTrace();
-////            Toast.makeText(this, "No app found to share the image", Toast.LENGTH_SHORT).show();
-////        }
-//    }
 
     private void shareImage() {
         if (downloadedImageName == null) {
@@ -400,12 +305,10 @@ public class ProcessedActivity extends AppCompatActivity {
         File imageFile = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), downloadedImageName);
 
         if (!imageFile.exists()) {
-            Log.e("Share Error", "File not found: " + imageFile.getAbsolutePath());
             Toast.makeText(this, "Image not found!", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        Log.d("Share Success", "File found: " + imageFile.getAbsolutePath());
 
         try {
             Uri imageUri = FileProvider.getUriForFile(this, getPackageName() + ".fileprovider", imageFile);
@@ -419,10 +322,8 @@ public class ProcessedActivity extends AppCompatActivity {
 
             startActivity(Intent.createChooser(shareIntent, "Share Image via"));
         } catch (Exception e) {
-            Log.d("hariom mre bhai", "share image error : " + e.getMessage());
             e.printStackTrace();
             Toast.makeText(this, "Failed to share image: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-//            Log.d("Share Error", "Exception: " + e.getMessage());
         }
     }
 

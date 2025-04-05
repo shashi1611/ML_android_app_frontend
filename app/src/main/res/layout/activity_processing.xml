@@ -22,6 +22,7 @@
         app:cardElevation="6dp">
 
         <TextView
+            android:id="@+id/featureNameTextView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
@@ -29,7 +30,7 @@
             android:shadowColor="@android:color/black"
             android:shadowRadius="4"
             android:text="Duster AI"
-            android:textColor="@android:color/white"
+            android:textColor="#F4F1F1"
             android:textSize="24sp"
             android:textStyle="bold" />
     </androidx.cardview.widget.CardView>
@@ -63,8 +64,7 @@
         android:layout_marginBottom="40dp"
         android:elevation="10dp"
         app:cardCornerRadius="10dp"
-        app:cardElevation="10dp"
-        app:cardUseCompatPadding="true">
+        app:cardElevation="10dp">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -108,7 +108,7 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="10dp"
                 android:background="@drawable/bg_button_processing"
-                android:text="Process Image"
+                android:text="Generate Image"
                 app:backgroundTint="@null"
                 app:rippleColor="@null" />
         </LinearLayout>
