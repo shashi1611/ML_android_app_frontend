@@ -46,7 +46,8 @@
         tools:targetApi="31">
         <activity
             android:name=".ProcessedActivity"
-            android:exported="true">
+            android:exported="true"
+            android:screenOrientation="portrait">
             <!--            <intent-filter>-->
             <!--                <action android:name="android.intent.action.MAIN" />-->
 
@@ -55,7 +56,8 @@
         </activity>
         <activity
             android:name=".ProcessingActivity"
-            android:exported="true">
+            android:exported="true"
+            android:screenOrientation="portrait">
             <!--            <intent-filter>-->
             <!--                <action android:name="android.intent.action.MAIN" />-->
 
@@ -64,7 +66,8 @@
         </activity>
         <activity
             android:name=".MainActivity"
-            android:exported="true">
+            android:exported="true"
+            android:screenOrientation="portrait">
 
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -95,6 +98,11 @@
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service>
+
+        <meta-data
+            android:name="android.content.pm.PHOTO_PICKER_ALLOW_SYSTEM"
+            android:value="true" />
+
     </application>
 
 
@@ -102,3 +110,16 @@
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 
 </manifest>
+
+    <!--    <service-->
+    <!--    android:name="com.google.android.gms.metadata.ModuleDependencies"-->
+    <!--    android:enabled="false"-->
+    <!--    android:exported="false"-->
+    <!--    tools:ignore="MissingClass">-->
+    <!--    <intent-filter>-->
+    <!--        <action android:name="com.google.android.gms.metadata.MODULE_DEPENDENCIES" />-->
+    <!--    </intent-filter>-->
+    <!--    <meta-data-->
+    <!--        android:name="photopicker_activity:0:required"-->
+    <!--        android:value="" />-->
+    <!--    </service>-->

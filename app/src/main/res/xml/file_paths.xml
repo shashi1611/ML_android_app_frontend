@@ -2,7 +2,7 @@
 <paths>
     <external-path
         name="my_images"
-        path="Android/data/com.prasthaan.myapplication/files/Pictures/" />
+        path="Android/data/com.prasthaan.dusterai/files/Pictures/" />
     <external-path
         name="SHASHIMLAPP"
         path="Pictures_shashi/" />

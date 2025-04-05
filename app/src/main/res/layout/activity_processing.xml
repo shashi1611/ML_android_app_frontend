@@ -28,7 +28,7 @@
             android:padding="10dp"
             android:shadowColor="@android:color/black"
             android:shadowRadius="4"
-            android:text="hello jhaatu app"
+            android:text="Duster AI"
             android:textColor="@android:color/white"
             android:textSize="24sp"
             android:textStyle="bold" />
