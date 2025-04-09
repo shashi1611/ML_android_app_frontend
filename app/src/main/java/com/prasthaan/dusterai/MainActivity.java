@@ -65,10 +65,6 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
-
-        requestStoragePermissions();
-
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS, WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
@@ -77,8 +73,9 @@ public class MainActivity extends AppCompatActivity {
             finish();
             return;
         }
-
         setContentView(R.layout.activity_main);
+
+        requestStoragePermissions();
         ImageSlider imageSlider = findViewById(R.id.image_slider);
         ArrayList<SlideModel> slideModels = new ArrayList<>();
         slideModels.add(new SlideModel(R.drawable.pexelspixabay161097, ScaleTypes.FIT));
