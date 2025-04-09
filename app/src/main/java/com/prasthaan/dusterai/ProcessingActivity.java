@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.ImageDecoder;
 import android.graphics.Matrix;
 import android.media.ExifInterface;
 import android.net.ConnectivityManager;
@@ -35,6 +36,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
 
+import com.bumptech.glide.Glide;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdSize;
 import com.google.android.gms.ads.AdView;
@@ -260,7 +262,10 @@ public class ProcessingActivity extends AppCompatActivity {
         imagePickerLauncher =
                 registerForActivityResult(new ActivityResultContracts.PickVisualMedia(), uri -> {
                     if (uri != null) {
-                        imageView.setImageURI(uri);
+                        Glide.with(this)
+                                .load(uri)
+                                .override(1024, 1024) // limit size
+                                .into(imageView);
                         imageFileFromFileUploader = copyUriToFile(uri);
 
                     } else {
@@ -277,7 +282,10 @@ public class ProcessingActivity extends AppCompatActivity {
         if (requestCode == REQUEST_IMAGE_CAPTURE) {
             if (imageFileFromCamera != null) {
                 imageUri = Uri.fromFile(imageFileFromCamera);
-                imageView.setImageURI(imageUri);
+                Glide.with(this)
+                        .load(imageUri)
+                        .override(1024, 1024) // limit size
+                        .into(imageView);
                 imageFileFromCamera = copyUriToFile(imageUri);
 
 
@@ -287,29 +295,51 @@ public class ProcessingActivity extends AppCompatActivity {
     }
 
     private File copyUriToFile(Uri uri) {
-        File originalFile = new File(getCacheDir(), "original_image.jpg");
+        File finalFile = new File(getCacheDir(), "original_image.jpg");
 
-        try (InputStream in = getContentResolver().openInputStream(uri);
-             OutputStream out = new FileOutputStream(originalFile)) {
+        try {
+            Bitmap bitmap;
 
-            byte[] buffer = new byte[1024];
-            int len;
-            while ((len = in.read(buffer)) > 0) {
-                out.write(buffer, 0, len);
+            // Decode HEIC/HEIF using ImageDecoder (for Android 9+)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                ImageDecoder.Source source = ImageDecoder.createSource(getContentResolver(), uri);
+                bitmap = ImageDecoder.decodeBitmap(source);
+            } else {
+                // Fallback for older devices: try using MediaStore
+                bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), uri);
+            }
+
+            // Save bitmap as JPG
+            try (OutputStream out = new FileOutputStream(finalFile)) {
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, out);
             }
 
         } catch (IOException e) {
             e.printStackTrace();
+
+            // fallback: try regular copy if decode fails
+            try (InputStream in = getContentResolver().openInputStream(uri);
+                 OutputStream out = new FileOutputStream(finalFile)) {
+
+                byte[] buffer = new byte[1024];
+                int len;
+                while ((len = in.read(buffer)) > 0) {
+                    out.write(buffer, 0, len);
+                }
+
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
         }
 
-        long fileSizeInMB = originalFile.length() / (1024 * 1024);
-
-        if (fileSizeInMB > 4.8) {
-            return compressImage(originalFile);
+        long fileSizeInMB = finalFile.length() / (1024 * 1024);
+        if (fileSizeInMB > 4) {
+            return compressImage(finalFile);
         }
 
-        return originalFile;
+        return finalFile;
     }
+
 
     private File compressImage(File inputFile) {
         try {
