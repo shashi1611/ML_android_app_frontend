@@ -19,7 +19,9 @@ import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.IntentSenderRequest;
 import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -28,11 +30,14 @@ import com.denzcoskun.imageslider.ImageSlider;
 import com.denzcoskun.imageslider.constants.ScaleTypes;
 import com.denzcoskun.imageslider.models.SlideModel;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.android.play.core.appupdate.AppUpdateInfo;
 import com.google.android.play.core.appupdate.AppUpdateManager;
 import com.google.android.play.core.appupdate.AppUpdateManagerFactory;
 import com.google.android.play.core.appupdate.AppUpdateOptions;
+import com.google.android.play.core.install.InstallStateUpdatedListener;
 import com.google.android.play.core.install.model.AppUpdateType;
+import com.google.android.play.core.install.model.InstallStatus;
 import com.google.android.play.core.install.model.UpdateAvailability;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.prasthaan.dusterai.Adapters.FeatListModelAdapter;
@@ -44,6 +49,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
+    private static final int REQUEST_NOTIFICATION_PERMISSION = 1001;
+    private static final String TAG = "MainActivity";
     private final ActivityResultLauncher<String[]> requestPermissionLauncher =
             registerForActivityResult(new ActivityResultContracts.RequestMultiplePermissions(), result -> {
                 boolean allGranted = true;
@@ -59,9 +66,48 @@ public class MainActivity extends AppCompatActivity {
                     Toast.makeText(this, "Some permissions were denied!", Toast.LENGTH_SHORT).show();
                 }
             });
+    AppUpdateManager appUpdateManager;
+    ActivityResultLauncher<IntentSenderRequest> activityResultLauncherForInAppUpdate;
+    InstallStateUpdatedListener listener = state -> {
+        if (state.installStatus() == InstallStatus.DOWNLOADED) {
+            // After the update is downloaded, show a notification
+            // and request user confirmation to restart the app.
+            popupSnackbarForCompleteUpdate();
+        }
+    };
 
+    // Displays the snackbar notification and call to action.
+    private void popupSnackbarForCompleteUpdate() {
+        Snackbar snackbar =
+                Snackbar.make(
+                        findViewById(R.id.image_slider),
+                        "An update has just been downloaded.",
+                        Snackbar.LENGTH_INDEFINITE);
+        snackbar.setAction("RESTART", view -> appUpdateManager.completeUpdate());
+        snackbar.setActionTextColor(
+                getResources().getColor(android.R.color.holo_blue_dark));
+        snackbar.show();
+    }
 
-    ActivityResultLauncher<IntentSenderRequest> activityResultLauncher;
+    @Override
+    protected void onStop() {
+        super.onStop();
+        appUpdateManager.unregisterListener(listener);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        appUpdateManager
+                .getAppUpdateInfo()
+                .addOnSuccessListener(appUpdateInfo -> {
+                    // If the update is downloaded but not installed,
+                    // notify the user to complete the update.
+                    if (appUpdateInfo.installStatus() == InstallStatus.DOWNLOADED) {
+                        popupSnackbarForCompleteUpdate();
+                    }
+                });
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,6 +122,13 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         requestStoragePermissions();
+        // Request notification permission if Android 13 or above (paste it inside onCreate method)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            requestNotificationPermission();
+        } else {
+            // For earlier versions, directly initialize FCM
+            initializeFCM();
+        }
         ImageSlider imageSlider = findViewById(R.id.image_slider);
         ArrayList<SlideModel> slideModels = new ArrayList<>();
         slideModels.add(new SlideModel(R.drawable.pexelspixabay161097, ScaleTypes.FIT));
@@ -117,20 +170,7 @@ public class MainActivity extends AppCompatActivity {
         recyclerView2.setNestedScrollingEnabled(false);
         recyclerView2.setOverScrollMode(View.OVER_SCROLL_NEVER);
 
-//        firebase cloud messaging
-        FirebaseMessaging.getInstance().getToken()
-                .addOnCompleteListener(task -> {
-                    if (!task.isSuccessful()) {
-                        Log.w("FCM_Token", "Fetching FCM registration token failed", task.getException());
-                        return;
-                    }
-
-                    // Get new FCM token
-                    String token = task.getResult();
-//                    Log.d("FCM_Token", "FCM Token: " + token);
-                });
-
-        activityResultLauncher = registerForActivityResult(
+        activityResultLauncherForInAppUpdate = registerForActivityResult(
                 new ActivityResultContracts.StartIntentSenderForResult(),
                 new ActivityResultCallback<ActivityResult>() {
                     @Override
@@ -144,13 +184,14 @@ public class MainActivity extends AppCompatActivity {
                     }
                 });
 
-        CheckForAppUpdate();
+        CheckForInAppUpdate();
 
 
     }
 
-    private void CheckForAppUpdate() {
-        AppUpdateManager appUpdateManager = AppUpdateManagerFactory.create(this);
+    private void CheckForInAppUpdate() {
+        appUpdateManager = AppUpdateManagerFactory.create(getApplicationContext());
+        appUpdateManager.registerListener(listener);
 
 // Returns an intent object that you use to check for an update.
         Task<AppUpdateInfo> appUpdateInfoTask = appUpdateManager.getAppUpdateInfo();
@@ -160,17 +201,17 @@ public class MainActivity extends AppCompatActivity {
             if (appUpdateInfo.updateAvailability() == UpdateAvailability.UPDATE_AVAILABLE
                     // This example applies an immediate update. To apply a flexible update
                     // instead, pass in AppUpdateType.FLEXIBLE
-                    && appUpdateInfo.isUpdateTypeAllowed(AppUpdateType.IMMEDIATE)) {
+                    && appUpdateInfo.isUpdateTypeAllowed(AppUpdateType.FLEXIBLE)) {
 
 
                 appUpdateManager.startUpdateFlowForResult(
                         // Pass the intent that is returned by 'getAppUpdateInfo()'.
                         appUpdateInfo,
                         // an activity result launcher registered via registerForActivityResult
-                        activityResultLauncher,
+                        activityResultLauncherForInAppUpdate,
                         // Or pass 'AppUpdateType.FLEXIBLE' to newBuilder() for
                         // flexible updates.
-                        AppUpdateOptions.newBuilder(AppUpdateType.IMMEDIATE).build());
+                        AppUpdateOptions.newBuilder(AppUpdateType.FLEXIBLE).build());
                 // Request the update.
             }
         });
@@ -223,4 +264,46 @@ public class MainActivity extends AppCompatActivity {
             Toast.makeText(this, "All necessary permissions are already granted!", Toast.LENGTH_SHORT).show();
         }
     }
+
+
+    //<<<<<<<<<<<<<<<<<<<<<<<<    cloud mesaaging permission and stuffs and FCM >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+    private void requestNotificationPermission() {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.POST_NOTIFICATIONS}, REQUEST_NOTIFICATION_PERMISSION);
+        } else {
+            // Permission already granted
+            initializeFCM();
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        if (requestCode == REQUEST_NOTIFICATION_PERMISSION) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                // Permission granted
+                initializeFCM();
+            } else {
+                // Permission denied
+                Log.e(TAG, "Notification permission denied.");
+            }
+        }
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+    }
+
+
+//for initialization of FCM TOKEN
+
+    private void initializeFCM() {
+        FirebaseMessaging.getInstance().getToken()
+                .addOnCompleteListener(task -> {
+                    if (!task.isSuccessful()) {
+                        Log.w(TAG, "Fetching FCM registration token failed", task.getException());
+                        return;
+                    }
+                    String token = task.getResult();
+                    Log.d(TAG, "FCM Token: " + token);
+                });
+    }
+
+
 }

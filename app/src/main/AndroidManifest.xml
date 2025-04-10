@@ -4,16 +4,11 @@
 
     <uses-feature
         android:name="android.hardware.camera"
-        android:required="false" /> <!-- <uses-permission -->
-    <!-- android:name="android.permission.READ_EXTERNAL_STORAGE" -->
-    <!-- android:maxSdkVersion="32" /> -->
-    <!-- <uses-permission -->
-    <!-- android:name="android.permission.WRITE_EXTERNAL_STORAGE" -->
-    <!-- android:maxSdkVersion="32" -->
-    <!-- tools:ignore="ScopedStorage" /> -->
-    <!-- <uses-permission android:name="android.permission.CAMERA" /> -->
-    <uses-permission android:name="android.permission.CAMERA" /> <!-- <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" /> -->
-    <!-- <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" /> -->
+        android:required="false" />
+
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+
+    <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission
@@ -44,26 +39,12 @@
         <activity
             android:name=".ProcessedActivity"
             android:exported="true"
-            android:screenOrientation="portrait">
-
-            <!-- <intent-filter> -->
-            <!-- <action android:name="android.intent.action.MAIN" /> -->
-
-
-            <!-- <category android:name="android.intent.category.LAUNCHER" /> -->
-            <!-- </intent-filter> -->
-        </activity>
+            android:screenOrientation="portrait"></activity>
         <activity
             android:name=".ProcessingActivity"
             android:exported="true"
             android:screenOrientation="portrait">
 
-            <!-- <intent-filter> -->
-            <!-- <action android:name="android.intent.action.MAIN" /> -->
-
-
-            <!-- <category android:name="android.intent.category.LAUNCHER" /> -->
-            <!-- </intent-filter> -->
         </activity>
         <activity
             android:name=".MainActivity"
@@ -92,7 +73,8 @@
 
         <service
             android:name=".MyFirebaseMessagingService"
-            android:exported="false">
+            android:enabled="true"
+            android:exported="true">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
