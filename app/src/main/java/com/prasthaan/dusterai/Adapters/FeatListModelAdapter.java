@@ -8,8 +8,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
-import android.widget.RatingBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -61,6 +61,13 @@ public class FeatListModelAdapter extends RecyclerView.Adapter<RecyclerView.View
                         public void onNativeAdLoaded(NativeAd nativeAd) {
                             NativeAdView adView = (NativeAdView) LayoutInflater.from(context)
                                     .inflate(R.layout.native_ad_item, null);
+
+                            DisplayMetrics displayMetrics = context.getResources().getDisplayMetrics();
+                            int screenWidth = displayMetrics.widthPixels;
+                            ViewGroup.LayoutParams layoutParams = new ViewGroup.LayoutParams(screenWidth / 2, ViewGroup.LayoutParams.WRAP_CONTENT);
+                            adView.setLayoutParams(layoutParams);
+
+                            
                             populateNativeADView(nativeAd, adView);
 
                             adHolder.adContainer.removeAllViews();
@@ -113,59 +120,6 @@ public class FeatListModelAdapter extends RecyclerView.Adapter<RecyclerView.View
         }
     }
 
-//    @Override
-//    public void onBindViewHolder(@NonNull viewHolder holder, int position) {
-//
-//        if (holder instanceof AdViewHolder) {
-//            AdViewHolder adHolder = (AdViewHolder) holder;
-//
-//            AdLoader.Builder builder = new AdLoader.Builder(context, "ca-app-pub-3940256099942544/2247696110")
-//                    .forNativeAd(new NativeAd.OnNativeAdLoadedListener() {
-//                        @Override
-//                        public void onNativeAdLoaded(NativeAd nativeAd) {
-//                            NativeAdView nativeAdView =
-//                            // Assumes you have a placeholder FrameLayout in your View layout
-//                            // (with ID fl_adplaceholder) where the ad is to be placed.
-////                            FrameLayout frameLayout =
-////                                    findViewById(R.id.ad_view_container);
-//                            // Assumes that your ad layout is in a file call native_ad_layout.xml
-//                            // in the res/layout folder
-////                            NativeAdView adView = (NativeAdView) getLayoutInflater()
-////                                    .inflate(R.layout.native_ad_layout, null);
-//                            // This method sets the assets into the ad view.
-////                            populateNativeAdView(nativeAd, adView);
-////                            frameLayout.removeAllViews();
-////                            frameLayout.addView(adView);
-//                        }
-//                    });
-//        } else {
-//
-//
-//            FeatListModel model = list.get(position);
-//            holder.imageView.setImageResource(model.getImg());
-//            holder.textView.setText(model.getFeat_name());
-//
-////        expriment doing
-//
-//            DisplayMetrics displayMetrics = holder.itemView.getContext().getResources().getDisplayMetrics();
-//            int screenWidth = displayMetrics.widthPixels;
-//
-//            ViewGroup.LayoutParams layoutParams = holder.itemView.getLayoutParams();
-//            layoutParams.width = screenWidth / 2; // Set each item to half of screen width
-//            holder.itemView.setLayoutParams(layoutParams);
-//
-//
-////        tilll here
-//
-//            holder.itemView.setOnClickListener((view) -> {
-//                Intent intent = new Intent(view.getContext(), ProcessingActivity.class);
-//                String text = holder.textView.getText().toString();
-//                intent.putExtra("text_key", text);
-//                view.getContext().startActivity(intent);
-//            });
-//        }
-//
-//    }
 
     @Override
     public int getItemCount() {
@@ -196,9 +150,9 @@ public class FeatListModelAdapter extends RecyclerView.Adapter<RecyclerView.View
         adView.setHeadlineView(adView.findViewById(R.id.ad_headline));
         adView.setBodyView(adView.findViewById(R.id.ad_body));
         adView.setCallToActionView(adView.findViewById(R.id.ad_call_to_action));
-        adView.setIconView(adView.findViewById(R.id.ad_app_icon));
+//        adView.setIconView(adView.findViewById(R.id.ad_app_icon));
         adView.setPriceView(adView.findViewById(R.id.ad_price));
-        adView.setStarRatingView(adView.findViewById(R.id.ad_stars));
+//        adView.setStarRatingView(adView.findViewById(R.id.ad_stars));
         adView.setStoreView(adView.findViewById(R.id.ad_store));
         adView.setAdvertiserView(adView.findViewById(R.id.ad_advertiser));
 
@@ -222,13 +176,13 @@ public class FeatListModelAdapter extends RecyclerView.Adapter<RecyclerView.View
             ((Button) adView.getCallToActionView()).setText(nativeAd.getCallToAction());
         }
 
-        if (nativeAd.getIcon() == null) {
-            adView.getIconView().setVisibility(View.GONE);
-        } else {
-            ((ImageView) adView.getIconView()).setImageDrawable(
-                    nativeAd.getIcon().getDrawable());
-            adView.getIconView().setVisibility(View.VISIBLE);
-        }
+//        if (nativeAd.getIcon() == null) {
+//            adView.getIconView().setVisibility(View.GONE);
+//        } else {
+//            ((ImageView) adView.getIconView()).setImageDrawable(
+//                    nativeAd.getIcon().getDrawable());
+//            adView.getIconView().setVisibility(View.VISIBLE);
+//        }
 
         if (nativeAd.getPrice() == null) {
             adView.getPriceView().setVisibility(View.INVISIBLE);
@@ -244,12 +198,12 @@ public class FeatListModelAdapter extends RecyclerView.Adapter<RecyclerView.View
             ((TextView) adView.getStoreView()).setText(nativeAd.getStore());
         }
 
-        if (nativeAd.getStarRating() == null) {
-            adView.getStarRatingView().setVisibility(View.INVISIBLE);
-        } else {
-            ((RatingBar) adView.getStarRatingView()).setRating(nativeAd.getStarRating().floatValue());
-            adView.getStarRatingView().setVisibility(View.VISIBLE);
-        }
+//        if (nativeAd.getStarRating() == null) {
+//            adView.getStarRatingView().setVisibility(View.INVISIBLE);
+//        } else {
+//            ((RatingBar) adView.getStarRatingView()).setRating(nativeAd.getStarRating().floatValue());
+//            adView.getStarRatingView().setVisibility(View.VISIBLE);
+//        }
 
         if (nativeAd.getAdvertiser() == null) {
             adView.getAdvertiserView().setVisibility(View.INVISIBLE);
@@ -264,11 +218,13 @@ public class FeatListModelAdapter extends RecyclerView.Adapter<RecyclerView.View
     }
 
     public static class AdViewHolder extends RecyclerView.ViewHolder {
-        ViewGroup adContainer;
+        //        ViewGroup adContainer;
+        FrameLayout adContainer;
 
         public AdViewHolder(@NonNull View itemView) {
             super(itemView);
-            adContainer = itemView.findViewById(R.id.native_ad_container);
+//            adContainer = itemView.findViewById(R.id.native_ad_container);
+            adContainer = itemView.findViewById(R.id.adLayout);
         }
     }
 
