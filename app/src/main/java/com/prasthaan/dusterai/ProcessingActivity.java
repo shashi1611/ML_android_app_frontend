@@ -202,21 +202,26 @@ public class ProcessingActivity extends AppCompatActivity {
         open_cam_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if (ContextCompat.checkSelfPermission(ProcessingActivity.this, Manifest.permission.CAMERA)
+                        == PackageManager.PERMISSION_GRANTED) {
 
 
-                Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                imageFileFromCamera = null;
-                try {
-                    imageFileFromCamera = createImageFile();
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
-                if (imageFileFromCamera != null) {
+                    Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                    imageFileFromCamera = null;
+                    try {
+                        imageFileFromCamera = createImageFile();
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                    if (imageFileFromCamera != null) {
 
-                    imageUri = FileProvider.getUriForFile(ProcessingActivity.this, "com.prasthaan.dusterai.fileprovider", imageFileFromCamera);
-                    intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
-                    intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-                    startActivityForResult(intent, REQUEST_IMAGE_CAPTURE);
+                        imageUri = FileProvider.getUriForFile(ProcessingActivity.this, "com.prasthaan.dusterai.fileprovider", imageFileFromCamera);
+                        intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
+                        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                        startActivityForResult(intent, REQUEST_IMAGE_CAPTURE);
+                    }
+                } else {
+                    Toast.makeText(ProcessingActivity.this, "Camera permission is required", Toast.LENGTH_SHORT).show();
                 }
 
             }

@@ -1,14 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <paths>
-    <external-path
+    <!-- Points to /storage/emulated/0/Android/data/<your_package>/files/Pictures/ -->
+    <external-files-path
         name="my_images"
-        path="Pictures_duster/" />
+        path="Pictures/" />
     <external-path
-        name="SHASHIMLAPP"
-        path="Pictures_duster/" />
-    <paths>
-        <external-path
-            name="downloads"
-            path="Download/" />
-    </paths>
+        name="downloads"
+        path="Download/" />
 </paths>
