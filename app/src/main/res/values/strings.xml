@@ -4,4 +4,9 @@
     <string name="banner_ad_id">ca-app-pub-4827086355311757/7587220673</string>
     <string name="banner_app_id_download_page">ca-app-pub-4827086355311757/9483590421</string>
     <string name="interstitial_app_id">ca-app-pub-4827086355311757/7458523893</string>
+    <string name="native_app_id_image_to_painting_feat1">ca-app-pub-4827086355311757/3907474899</string>
+    <string name="native_app_id_season_changer_feat1">ca-app-pub-4827086355311757/6342900699</string>
+    <string name="ad_attribution">Ad</string>
+
+
 </resources>
