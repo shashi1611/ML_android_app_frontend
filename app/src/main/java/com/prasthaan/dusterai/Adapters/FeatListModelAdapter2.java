@@ -37,36 +37,12 @@ public class FeatListModelAdapter2 extends RecyclerView.Adapter<RecyclerView.Vie
     private static final String Native_AD_UNIT_ID_season_changer_feat1 = "ca-app-pub-4827086355311757/6342900699";
     ArrayList<FeatListModel2> list;
     Context context;
-
-    // ✅ Cached Native Ad (Only one for now)
-    private NativeAd cachedNativeAdSeasonChanger;
-
-
+    
     public FeatListModelAdapter2(ArrayList<FeatListModel2> list, Context context) {
         this.list = list;
         this.context = context;
-//        loadNativeAdOnceSeasonChanger();
     }
 
-    // ✅ Load ad only once and store in cachedNativeAd
-    private void loadNativeAdOnceSeasonChanger() {
-        AdLoader adLoader = new AdLoader.Builder(context, Native_AD_UNIT_ID_season_changer_feat1)
-                .forNativeAd(nativeAd -> {
-                    cachedNativeAdSeasonChanger = nativeAd;
-                    // Refresh last item (assuming ad is placed at the end)
-                    notifyItemChanged(getItemCount() - 1);
-                })
-                .withAdListener(new com.google.android.gms.ads.AdListener() {
-                    @Override
-                    public void onAdFailedToLoad(@NonNull LoadAdError adError) {
-                        super.onAdFailedToLoad(adError);
-                        Log.d("NativeAd", "Ad failed to load: " + adError.getMessage());
-                    }
-                })
-                .build();
-
-        adLoader.loadAd(new AdRequest.Builder().build());
-    }
 
     @NonNull
     @Override
@@ -123,29 +99,7 @@ public class FeatListModelAdapter2 extends RecyclerView.Adapter<RecyclerView.Vie
             adLoader.loadAd(new AdRequest.Builder().build());
 
 
-//            if (cachedNativeAdSeasonChanger != null) {
-//                NativeAdView adView = (NativeAdView) LayoutInflater.from(context)
-//                        .inflate(R.layout.native_ad_item_season_changer_1, null);
-//
-//                DisplayMetrics displayMetrics = context.getResources().getDisplayMetrics();
-//                int screenWidth = displayMetrics.widthPixels;
-//                ViewGroup.LayoutParams layoutParams = new ViewGroup.LayoutParams(screenWidth / 2, ViewGroup.LayoutParams.WRAP_CONTENT);
-//                adView.setLayoutParams(layoutParams);
-//
-//                populateNativeADView(cachedNativeAdSeasonChanger, adView);
-//
-//                adHolder.adContainer.removeAllViews();
-//                adHolder.adContainer.addView(adView);
-//            } else {
-//                // Optional: Hide ad if not ready
-//                adHolder.adContainer.setVisibility(View.GONE);
-//            }
-
-
         } else {
-//            int pos = position - Math.round(position / 2);
-
-
             FeatListModel2 model = list.get(position);
             FeatureViewHolder featureHolder = (FeatureViewHolder) holder;
 

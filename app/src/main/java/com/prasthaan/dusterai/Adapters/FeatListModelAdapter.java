@@ -14,7 +14,6 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdLoader;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.LoadAdError;
@@ -32,36 +31,10 @@ public class FeatListModelAdapter extends RecyclerView.Adapter<RecyclerView.View
     private static final String Native_AD_UNIT_ID_image_to_painting_feat1 = "ca-app-pub-4827086355311757/3907474899";
     ArrayList<FeatListModel> list;
     Context context;
-    private NativeAd cachedNativeAdImageToPainting;
-    private boolean adLoadAttempted = false;
-
 
     public FeatListModelAdapter(ArrayList<FeatListModel> list, Context context) {
         this.list = list;
         this.context = context;
-//        loadNativeAdOnceImageToPainting();
-    }
-
-    private void loadNativeAdOnceImageToPainting() {
-        AdLoader adLoader = new AdLoader.Builder(context, Native_AD_UNIT_ID_image_to_painting_feat1)
-                .forNativeAd(nativeAd -> {
-                    cachedNativeAdImageToPainting = nativeAd;
-                    // Refresh last item (assuming ad is placed at the end)
-                    Log.d("Adloaded", "loadNativeAdOnceImageToPainting: the loadede ad  = " + cachedNativeAdImageToPainting);
-                    Log.d("Adloaded", "the getItemCount  = " + getItemCount());
-                    notifyItemChanged(getItemCount() - 1);
-//                    notifyDataSetChanged();
-                })
-                .withAdListener(new AdListener() {
-                    @Override
-                    public void onAdFailedToLoad(@NonNull LoadAdError adError) {
-                        super.onAdFailedToLoad(adError);
-                        Log.d("NativeAd", "Ad failed to load: " + adError.getMessage());
-                    }
-                })
-                .build();
-
-        adLoader.loadAd(new AdRequest.Builder().build());
     }
 
     @NonNull
@@ -105,7 +78,6 @@ public class FeatListModelAdapter extends RecyclerView.Adapter<RecyclerView.View
                         @Override
                         public void onAdFailedToLoad(@NonNull LoadAdError adError) {
                             super.onAdFailedToLoad(adError);
-                            // You can log it or show a fallback
                             Log.d("NativeAd", "Ad failed to load: " + adError.getMessage());
 
                             // Optionally hide or remove ad container
@@ -116,33 +88,7 @@ public class FeatListModelAdapter extends RecyclerView.Adapter<RecyclerView.View
 
             adLoader.loadAd(new AdRequest.Builder().build());
 
-
-//            if (cachedNativeAdImageToPainting != null) {
-//                NativeAdView adView = (NativeAdView) LayoutInflater.from(context)
-//                        .inflate(R.layout.native_ad_item, null);
-//
-//                DisplayMetrics displayMetrics = context.getResources().getDisplayMetrics();
-//                int screenWidth = displayMetrics.widthPixels;
-//                ViewGroup.LayoutParams layoutParams = new ViewGroup.LayoutParams(screenWidth / 2, ViewGroup.LayoutParams.WRAP_CONTENT);
-//                adView.setLayoutParams(layoutParams);
-//
-//                populateNativeADView(cachedNativeAdImageToPainting, adView);
-//
-//                adHolder.adContainer.removeAllViews();
-//                adHolder.adContainer.addView(adView);
-//            } else {
-//                // Optional: Hide ad if not ready
-//                adHolder.adContainer.setVisibility(View.GONE);
-//                if (!adLoadAttempted) {
-//                    adLoadAttempted = true;
-//                    loadNativeAdOnceImageToPainting();
-//                }
-//            }
-
-
         } else {
-//            int pos = position - Math.round(position / 4);
-
 
             FeatListModel model = list.get(position);
             FeatureViewHolder featureHolder = (FeatureViewHolder) holder;
@@ -175,12 +121,6 @@ public class FeatListModelAdapter extends RecyclerView.Adapter<RecyclerView.View
     public int getItemCount() {
 
         return list.size() > 0 ? list.size() + 1 : 0;
-
-//        if (list.size() > 0) {
-//            return list.size() + Math.round(list.size() / 4);
-//        }
-//        return list.size();
-//        return list.size() + 1; // +1 for the ad
     }
 
     @Override
@@ -192,13 +132,7 @@ public class FeatListModelAdapter extends RecyclerView.Adapter<RecyclerView.View
         } else {
             return VIEW_TYPE_FEATURE;
         }
-//
-//        if ((position + 1) % 4 == 0) {
-//            return VIEW_TYPE_AD;
-//        } else {
-//            return VIEW_TYPE_FEATURE;
-//        }
-//        return super.getItemViewType(position);
+
     }
 
     private void populateNativeADView(NativeAd nativeAd, NativeAdView adView) {
