@@ -40,8 +40,10 @@ import com.google.android.play.core.install.model.AppUpdateType;
 import com.google.android.play.core.install.model.InstallStatus;
 import com.google.android.play.core.install.model.UpdateAvailability;
 import com.google.firebase.messaging.FirebaseMessaging;
+import com.prasthaan.dusterai.Adapters.FeatListModalAdapterImageRestoration;
 import com.prasthaan.dusterai.Adapters.FeatListModelAdapter;
 import com.prasthaan.dusterai.Adapters.FeatListModelAdapter2;
+import com.prasthaan.dusterai.Models.FeatListModalImageRestoration;
 import com.prasthaan.dusterai.Models.FeatListModel;
 import com.prasthaan.dusterai.Models.FeatListModel2;
 
@@ -137,6 +139,16 @@ public class MainActivity extends AppCompatActivity {
         slideModels.add(new SlideModel(R.drawable.cor_w2s, ScaleTypes.FIT));
 
         imageSlider.setImageList(slideModels);
+
+        RecyclerView recyclerViewImageRestoration = findViewById(R.id.recyclerView_feat_list_image_restoration);
+        ArrayList<FeatListModalImageRestoration> listImageRestoration = new ArrayList<>();
+        listImageRestoration.add(new FeatListModalImageRestoration(R.drawable.feat1c, "Restore image"));
+        FeatListModalAdapterImageRestoration featListModalAdapterImageRestoration = new FeatListModalAdapterImageRestoration(listImageRestoration, this);
+        recyclerViewImageRestoration.setAdapter(featListModalAdapterImageRestoration);
+        LinearLayoutManager layoutManagerImageRestoratiion = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
+        recyclerViewImageRestoration.setLayoutManager(layoutManagerImageRestoratiion);
+        recyclerViewImageRestoration.setNestedScrollingEnabled(false);
+        recyclerViewImageRestoration.setOverScrollMode(View.OVER_SCROLL_NEVER);
 
         RecyclerView recyclerView = findViewById(R.id.recyclerView_feat_list);
         ArrayList<FeatListModel> list = new ArrayList<>();

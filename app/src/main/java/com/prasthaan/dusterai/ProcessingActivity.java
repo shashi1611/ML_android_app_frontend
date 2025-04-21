@@ -48,6 +48,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
 import java.util.Objects;
@@ -455,7 +456,43 @@ public class ProcessingActivity extends AppCompatActivity {
 
 
         ApiService apiService = RetrofitClient.getApiService();
-        if (Objects.equals(receivedText, "Ukiyo-e style")) {
+        if (Objects.equals(receivedText, "Restore image")) {
+
+            ApiService apiServiceRestoreImage = RetrofitClient.getApiServiceImageRestore();
+            apiServiceRestoreImage.executeProcessingRestoreImage(body).enqueue(new Callback<RestoreImageResponse>() {
+                @Override
+                public void onResponse(Call<RestoreImageResponse> call, Response<RestoreImageResponse> response) {
+                    dismissDialog();
+                    if (response.isSuccessful() && response.body() != null) {
+                        RestoreImageResponse result = response.body();
+
+//                        String restoredFaceUrl = result.getRestoredFaces().get(0);  // If you want the first face
+//                        String restoredImageUrl = result.getRestoredImage();
+                        ArrayList<String> faceUrls = new ArrayList<>(result.getRestoredFaces());
+
+//                        Log.d("Restored Face URL", restoredFaceUrl);
+//                        Log.d("Restored Image URL", restoredImageUrl);
+
+                        // Send to next activity
+                        Intent intent = new Intent(ProcessingActivity.this, ProcessedActivityRestoredImg.class);
+                        // Send the restored image URL
+                        intent.putExtra("RESTORED_IMAGE_URL", result.getRestoredImage());
+                        intent.putStringArrayListExtra("RESTORED_FACE_URLS", faceUrls);
+                        startActivity(intent);
+                    } else {
+                        Toast.makeText(ProcessingActivity.this, "Processing Failed", Toast.LENGTH_SHORT).show();
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<RestoreImageResponse> call, Throwable t) {
+                    dismissDialog();
+                    Toast.makeText(ProcessingActivity.this, "Error: " + t.getMessage(), Toast.LENGTH_LONG).show();
+                }
+            });
+
+
+        } else if (Objects.equals(receivedText, "Ukiyo-e style")) {
             apiService.executeProcessingUkiyoe(body).enqueue(new Callback<ResponseBody>() {
                 @Override
                 public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {

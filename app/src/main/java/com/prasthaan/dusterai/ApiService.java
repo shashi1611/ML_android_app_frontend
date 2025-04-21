@@ -24,6 +24,10 @@ public interface ApiService {
     Call<ResponseBody> uploadImage(@Part MultipartBody.Part file);
 
     @Multipart
+    @POST("/restore_images")
+    Call<RestoreImageResponse> executeProcessingRestoreImage(@Part MultipartBody.Part file);
+
+    @Multipart
     @POST("/execute_ukiyoe")
     Call<ResponseBody> executeProcessingUkiyoe(@Part MultipartBody.Part file);
 
