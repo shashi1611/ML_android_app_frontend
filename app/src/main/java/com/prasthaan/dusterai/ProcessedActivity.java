@@ -46,7 +46,7 @@ import java.util.List;
 public class ProcessedActivity extends AppCompatActivity {
 
     private static final int STORAGE_PERMISSION_CODE = 100;
-    private static final String AD_UNIT_ID_DOWNLOAD_PAGE = "ca-app-pub-4827086355311757/9483590421";
+    private static final String AD_UNIT_ID_DOWNLOAD_PAGE = "ca-app-pub-4827086355311757/7435089111";
     private final ActivityResultLauncher<String[]> requestPermissionLauncher =
             registerForActivityResult(new ActivityResultContracts.RequestMultiplePermissions(), result -> {
                 boolean allGranted = true;
