@@ -65,7 +65,7 @@ import retrofit2.Response;
 public class ProcessingActivity extends AppCompatActivity {
     private static final int REQUEST_IMAGE_CAPTURE = 1;
     private static final int REQUEST_PERMISSIONS = 101;
-    private static final int TOTAL_TIME = 90; // 120 seconds
+    private static final int TOTAL_TIME = 120; // 120 seconds
     private static final String AD_UNIT_ID = "ca-app-pub-4827086355311757/7587220673";
     String receivedText;
     ActivityResultLauncher<PickVisualMediaRequest> imagePickerLauncher;

@@ -9,9 +9,11 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -23,6 +25,7 @@ import com.google.android.gms.ads.LoadAdError;
 import com.google.android.gms.ads.nativead.NativeAd;
 import com.google.android.gms.ads.nativead.NativeAdView;
 import com.prasthaan.dusterai.Models.ModalResultRestoImg;
+import com.prasthaan.dusterai.ProcessedActivityRestoredImg;
 import com.prasthaan.dusterai.R;
 
 import java.util.ArrayList;
@@ -115,11 +118,26 @@ public class AdapterResultRestoImg extends RecyclerView.Adapter<RecyclerView.Vie
 //        tilll here
 
 //            featureHolder.itemView.setOnClickListener((view) -> {
-//                Intent intent = new Intent(view.getContext(), ProcessingActivity.class);
-//                String text = featureHolder.textView.getText().toString();
-//                intent.putExtra("text_key", text);
-//                view.getContext().startActivity(intent);
+////                Intent intent = new Intent(view.getContext(), ProcessingActivity.class);
+////                String text = featureHolder.textView.getText().toString();
+////                intent.putExtra("text_key", text);
+////                view.getContext().startActivity(intent);
 //            });
+            featureHolder.btn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Log.d("DownloadButton", "Clicked at position: " + position);
+                    Toast.makeText(context, "Download started", Toast.LENGTH_SHORT).show();
+
+                    // Safely call downloadImage() from the context if it's an instance of your Activity
+                    if (context instanceof ProcessedActivityRestoredImg) {
+                        ((ProcessedActivityRestoredImg) context).downloadImage(model.getImgUrl());
+                    } else {
+                        Toast.makeText(context, "Unable to start download", Toast.LENGTH_SHORT).show();
+                    }
+                }
+
+            });
         }
     }
 
@@ -217,6 +235,54 @@ public class AdapterResultRestoImg extends RecyclerView.Adapter<RecyclerView.Vie
         adView.setNativeAd(nativeAd);
     }
 
+//    private void downloadImage(String imageUrl) {
+//        try {
+//            // Generate a unique filename
+//            String downloadedImageName = "downloaded_image_" + System.currentTimeMillis() + ".jpg";
+//
+//            // Create Download Manager Request
+//            DownloadManager.Request request = new DownloadManager.Request(Uri.parse(imageUrl));
+//
+//            // Set Notification details
+//            request.setTitle("Downloading Image");
+//            request.setDescription("Saving image to Downloads folder...");
+//            request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
+//
+//            // Set the download destination
+//            request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, downloadedImageName);
+//
+//            // Get the system Download Manager
+//            DownloadManager downloadManager = (DownloadManager) getSystemService(Context.DOWNLOAD_SERVICE);
+//
+//            // Enqueue the request (start downloading)
+//            long downloadId = downloadManager.enqueue(request);
+//
+//            // Show a toast that download started
+//            Toast.makeText(context, "Download started, check notification", Toast.LENGTH_SHORT).show();
+//
+//            // Check Download Status (Optional)
+//            new Thread(() -> {
+//                boolean downloading = true;
+//                while (downloading) {
+//                    DownloadManager.Query query = new DownloadManager.Query();
+//                    query.setFilterById(downloadId);
+//                    Cursor cursor = downloadManager.query(query);
+//                    if (cursor.moveToFirst()) {
+//                        @SuppressLint("Range") int status = cursor.getInt(cursor.getColumnIndex(DownloadManager.COLUMN_STATUS));
+//                        if (status == DownloadManager.STATUS_SUCCESSFUL) {
+//                            downloading = false;
+//                            runOnUiThread(() -> Toast.makeText(context, "Download Complete!", Toast.LENGTH_SHORT).show());
+//                        }
+//                    }
+//                    cursor.close();
+//                }
+//            }).start();
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//            Toast.makeText(context, "Download failed: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+//        }
+//    }
+
     public static class AdViewHolder extends RecyclerView.ViewHolder {
         //        ViewGroup adContainer;
         FrameLayout adContainer;
@@ -230,11 +296,13 @@ public class AdapterResultRestoImg extends RecyclerView.Adapter<RecyclerView.Vie
 
     public static class FeatureViewHolder extends RecyclerView.ViewHolder {
         ImageView imageView;
+        Button btn;
 //        TextView textView;
 
         public FeatureViewHolder(@NonNull View itemView) {
             super(itemView);
             imageView = itemView.findViewById(R.id.result_face_img_resto);
+            btn = itemView.findViewById(R.id.button_download_face_resto_img);
 //            textView = itemView.findViewById(R.id.feat_title);
         }
     }

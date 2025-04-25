@@ -35,7 +35,7 @@ import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-public class FileUtils {
+public class UtilFunctions {
     public static String getPath(Context context, Uri uri) {
         String filePath = null;
 

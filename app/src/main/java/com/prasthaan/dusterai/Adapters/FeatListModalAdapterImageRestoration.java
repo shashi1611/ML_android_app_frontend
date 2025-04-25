@@ -229,10 +229,12 @@ public class FeatListModalAdapterImageRestoration extends RecyclerView.Adapter<R
         ImageView imageView;
         TextView textView;
 
+
         public FeatureViewHolder(@NonNull View itemView) {
             super(itemView);
             imageView = itemView.findViewById(R.id.feat_img);
             textView = itemView.findViewById(R.id.feat_title);
+
         }
     }
 

@@ -74,7 +74,7 @@
                 android:orientation="horizontal">
 
                 <Button
-                    android:id="@+id/share_img_vid_button"
+                    android:id="@+id/share_img_vid_button_resto_img"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_margin="10dp"
@@ -85,7 +85,7 @@
                     app:rippleColor="@null" />
 
                 <Button
-                    android:id="@+id/download_img_vid_button"
+                    android:id="@+id/download_img_vid_button_resto_img"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_margin="10dp"

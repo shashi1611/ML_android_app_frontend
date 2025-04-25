@@ -148,11 +148,11 @@ public class ProcessedActivity extends AppCompatActivity {
         }
 
         btnDownload.setOnClickListener(v -> {
-//            if (checkPermission()) {
 
             try {
                 JSONObject jsonObject = new JSONObject(presignedUrl);
                 String imageUrl = jsonObject.getString("output"); // Extract URL
+                Log.d("restored image url", "onCreate:  image url which is working = " + imageUrl);
                 downloadImage(imageUrl);
                 Toast.makeText(this, "Download started see the notification", Toast.LENGTH_SHORT).show();
             } catch (JSONException e) {

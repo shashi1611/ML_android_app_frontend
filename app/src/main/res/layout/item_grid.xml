@@ -33,6 +33,6 @@
         android:text="hello world"
         android:textAlignment="center"
         android:textColor="@android:color/white"
-        android:textSize="20sp" />
+        android:textSize="18sp" />
 
 </RelativeLayout>

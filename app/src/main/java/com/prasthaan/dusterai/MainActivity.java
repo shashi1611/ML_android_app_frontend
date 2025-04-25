@@ -143,6 +143,8 @@ public class MainActivity extends AppCompatActivity {
         RecyclerView recyclerViewImageRestoration = findViewById(R.id.recyclerView_feat_list_image_restoration);
         ArrayList<FeatListModalImageRestoration> listImageRestoration = new ArrayList<>();
         listImageRestoration.add(new FeatListModalImageRestoration(R.drawable.feat1c, "Restore image"));
+        listImageRestoration.add(new FeatListModalImageRestoration(R.drawable.feat2c, "Enhance resolution 2X"));
+        listImageRestoration.add(new FeatListModalImageRestoration(R.drawable.feat3c, "Enhance resolution 4X"));
         FeatListModalAdapterImageRestoration featListModalAdapterImageRestoration = new FeatListModalAdapterImageRestoration(listImageRestoration, this);
         recyclerViewImageRestoration.setAdapter(featListModalAdapterImageRestoration);
         LinearLayoutManager layoutManagerImageRestoratiion = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);

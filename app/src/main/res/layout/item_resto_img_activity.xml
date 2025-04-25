@@ -22,7 +22,7 @@
     </androidx.cardview.widget.CardView>
 
     <Button
-        android:id="@+id/feat_title"
+        android:id="@+id/button_download_face_resto_img"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/item_card"
@@ -34,7 +34,7 @@
         android:text="Download"
         android:textAlignment="center"
         android:textColor="@android:color/white"
-        android:textSize="20sp"
+        android:textSize="12sp"
         app:backgroundTint="@null"
         app:rippleColor="@null" />
 
