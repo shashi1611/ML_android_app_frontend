@@ -130,7 +130,7 @@ public class ProcessedActivity extends AppCompatActivity {
 //            Log.d("PresignedURL", "Received URL: " + presignedUrl);
             try {
                 JSONObject jsonObject = new JSONObject(presignedUrl);
-                String imageUrl = jsonObject.getString("restored_image"); // Extract the actual URL
+                String imageUrl = jsonObject.getString("output"); // Extract the actual URL
 
                 Glide.with(this)
                         .load(imageUrl)
@@ -151,7 +151,7 @@ public class ProcessedActivity extends AppCompatActivity {
 
             try {
                 JSONObject jsonObject = new JSONObject(presignedUrl);
-                String imageUrl = jsonObject.getString("restored_image"); // Extract URL
+                String imageUrl = jsonObject.getString("output"); // Extract URL
                 Log.d("restored image url", "onCreate:  image url which is working = " + imageUrl);
                 downloadImage(imageUrl);
                 Toast.makeText(this, "Download started see the notification", Toast.LENGTH_SHORT).show();

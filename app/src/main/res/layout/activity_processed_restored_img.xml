@@ -114,7 +114,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="15dp"
-                android:text="Image Restoration"
+                android:gravity="center_horizontal"
+                android:text="Reestored faces"
                 android:textColor="@android:color/white"
                 android:textSize="25dp" />
 

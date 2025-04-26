@@ -32,7 +32,7 @@ import java.util.ArrayList;
 public class FeatListModalAdapterImageRestoration extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private static final int VIEW_TYPE_FEATURE = 0;
     private static final int VIEW_TYPE_AD = 1;
-    private static final String Native_AD_UNIT_ID_image_restoration_feat1 = "ca-app-pub-4827086355311757/8270892168";
+    private static final String Native_AD_UNIT_ID_image_restoration_feat1 = "ca-app-pub-4827086355311757/9541898776";
     ArrayList<FeatListModalImageRestoration> list;
     Context context;
 

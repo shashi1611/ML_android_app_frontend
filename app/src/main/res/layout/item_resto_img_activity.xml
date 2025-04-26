@@ -15,7 +15,7 @@
         <ImageView
             android:id="@+id/result_face_img_resto"
             android:layout_width="match_parent"
-            android:layout_height="160dp"
+            android:layout_height="200dp"
             android:scaleType="centerCrop"></ImageView>
 
 
@@ -27,13 +27,13 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/item_card"
         android:layout_marginTop="10dp"
-        android:background="@drawable/bg_button"
+        android:background="@drawable/bg1"
         android:shadowDx="2"
         android:shadowDy="2"
         android:shadowRadius="4"
         android:text="Download"
         android:textAlignment="center"
-        android:textColor="@android:color/white"
+        android:textColor="@color/white"
         android:textSize="12sp"
         app:backgroundTint="@null"
         app:rippleColor="@null" />
