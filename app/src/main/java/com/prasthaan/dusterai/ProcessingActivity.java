@@ -19,6 +19,7 @@ import android.os.CountDownTimer;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.FrameLayout;
@@ -456,7 +457,73 @@ public class ProcessingActivity extends AppCompatActivity {
 
 
         ApiService apiService = RetrofitClient.getApiService();
-        if (Objects.equals(receivedText, "Restore image")) {
+        if (Objects.equals(receivedText, "Enhance resolution 2X")) {
+            ApiService apiServiceImageEnhancer2x = RetrofitClient.getApiServiceImageEnhance();
+            apiServiceImageEnhancer2x.executeProcessingEnhanceImage2x(body).enqueue(new Callback<ResponseBody>() {
+                @Override
+                public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                    if (response.isSuccessful()) {
+                        dismissDialog();
+                        try {
+
+
+                            String presignedUrl = response.body().string();
+                            Log.d("presigned url ", "onResponse: presigned url enhancer wala" + presignedUrl);
+                            Intent intent = new Intent(ProcessingActivity.this, ProcessedActivity.class);
+                            intent.putExtra("PRESIGNED_URL", presignedUrl);
+                            startActivity(intent);
+                        } catch (IOException e) {
+                            dismissDialog();
+                            e.printStackTrace();
+                        }
+                    } else {
+                        dismissDialog();
+                        Toast.makeText(ProcessingActivity.this, "Processing Failed", Toast.LENGTH_SHORT).show();
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<ResponseBody> call, Throwable t) {
+                    dismissDialog();
+                    Toast.makeText(ProcessingActivity.this, "Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                    ;
+                }
+            });
+
+        } else if (Objects.equals(receivedText, "Enhance resolution 4X")) {
+            ApiService apiServiceImageEnhancer4x = RetrofitClient.getApiServiceImageEnhance();
+            apiServiceImageEnhancer4x.executeProcessingEnhanceImage4x(body).enqueue(new Callback<ResponseBody>() {
+                @Override
+                public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                    if (response.isSuccessful()) {
+                        dismissDialog();
+                        try {
+
+
+                            String presignedUrl = response.body().string();
+                            Log.d("presigned url ", "onResponse: presigned url enhancer wala" + presignedUrl);
+                            Intent intent = new Intent(ProcessingActivity.this, ProcessedActivity.class);
+                            intent.putExtra("PRESIGNED_URL", presignedUrl);
+                            startActivity(intent);
+                        } catch (IOException e) {
+                            dismissDialog();
+                            e.printStackTrace();
+                        }
+                    } else {
+                        dismissDialog();
+                        Toast.makeText(ProcessingActivity.this, "Processing Failed", Toast.LENGTH_SHORT).show();
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<ResponseBody> call, Throwable t) {
+                    dismissDialog();
+                    Toast.makeText(ProcessingActivity.this, "Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                    ;
+                }
+            });
+
+        } else if (Objects.equals(receivedText, "Restore image")) {
 
             ApiService apiServiceRestoreImage = RetrofitClient.getApiServiceImageRestore();
             apiServiceRestoreImage.executeProcessingRestoreImage(body).enqueue(new Callback<RestoreImageResponse>() {
@@ -469,9 +536,6 @@ public class ProcessingActivity extends AppCompatActivity {
 //                        String restoredFaceUrl = result.getRestoredFaces().get(0);  // If you want the first face
 //                        String restoredImageUrl = result.getRestoredImage();
                         ArrayList<String> faceUrls = new ArrayList<>(result.getRestoredFaces());
-
-//                        Log.d("Restored Face URL", restoredFaceUrl);
-//                        Log.d("Restored Image URL", restoredImageUrl);
 
                         // Send to next activity
                         Intent intent = new Intent(ProcessingActivity.this, ProcessedActivityRestoredImg.class);
@@ -502,6 +566,7 @@ public class ProcessingActivity extends AppCompatActivity {
 
 
                             String presignedUrl = response.body().string();
+                            Log.d("presigned url ", "onResponse: presigned url normal wala jo kaam kar rha hai" + presignedUrl);
                             Intent intent = new Intent(ProcessingActivity.this, ProcessedActivity.class);
                             intent.putExtra("PRESIGNED_URL", presignedUrl);
                             startActivity(intent);

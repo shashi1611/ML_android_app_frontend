@@ -24,6 +24,14 @@ public interface ApiService {
     Call<ResponseBody> uploadImage(@Part MultipartBody.Part file);
 
     @Multipart
+    @POST("/scale_image_2x")
+    Call<ResponseBody> executeProcessingEnhanceImage2x(@Part MultipartBody.Part file);
+
+    @Multipart
+    @POST("/scale_image_4x")
+    Call<ResponseBody> executeProcessingEnhanceImage4x(@Part MultipartBody.Part file);
+
+    @Multipart
     @POST("/restore_images")
     Call<RestoreImageResponse> executeProcessingRestoreImage(@Part MultipartBody.Part file);
 
