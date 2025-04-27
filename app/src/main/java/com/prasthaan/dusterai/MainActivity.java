@@ -8,7 +8,9 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Toast;
@@ -24,11 +26,10 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.LinearSnapHelper;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.SnapHelper;
 
-import com.denzcoskun.imageslider.ImageSlider;
-import com.denzcoskun.imageslider.constants.ScaleTypes;
-import com.denzcoskun.imageslider.models.SlideModel;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.play.core.appupdate.AppUpdateInfo;
@@ -44,8 +45,10 @@ import com.prasthaan.dusterai.Adapters.FeatListModalAdapterImageRestoration;
 import com.prasthaan.dusterai.Adapters.FeatListModelAdapter;
 import com.prasthaan.dusterai.Adapters.FeatListModelAdapter2;
 import com.prasthaan.dusterai.Models.FeatListModalImageRestoration;
+import com.prasthaan.dusterai.Adapters.carouselModelAdapter;
 import com.prasthaan.dusterai.Models.FeatListModel;
 import com.prasthaan.dusterai.Models.FeatListModel2;
+import com.prasthaan.dusterai.Models.carouselModel;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -82,7 +85,7 @@ public class MainActivity extends AppCompatActivity {
     private void popupSnackbarForCompleteUpdate() {
         Snackbar snackbar =
                 Snackbar.make(
-                        findViewById(R.id.image_slider),
+                        findViewById(R.id.recyclerView_feat_list),
                         "An update has just been downloaded.",
                         Snackbar.LENGTH_INDEFINITE);
         snackbar.setAction("RESTART", view -> appUpdateManager.completeUpdate());
@@ -131,14 +134,80 @@ public class MainActivity extends AppCompatActivity {
             // For earlier versions, directly initialize FCM
             initializeFCM();
         }
-        ImageSlider imageSlider = findViewById(R.id.image_slider);
-        ArrayList<SlideModel> slideModels = new ArrayList<>();
-        slideModels.add(new SlideModel(R.drawable.pexelspixabay161097, ScaleTypes.FIT));
-        slideModels.add(new SlideModel(R.drawable.cor_s2w, ScaleTypes.FIT));
-        slideModels.add(new SlideModel(R.drawable.pexelspixabay459225, ScaleTypes.FIT));
-        slideModels.add(new SlideModel(R.drawable.cor_w2s, ScaleTypes.FIT));
+//        ImageSlider imageSlider = findViewById(R.id.image_slider);
+//        ArrayList<SlideModel> slideModels = new ArrayList<>();
+//        slideModels.add(new SlideModel(R.drawable.pexelspixabay161097, ScaleTypes.FIT));
+//        slideModels.add(new SlideModel(R.drawable.cor_s2w, ScaleTypes.FIT));
+//        slideModels.add(new SlideModel(R.drawable.pexelspixabay459225, ScaleTypes.FIT));
+//        slideModels.add(new SlideModel(R.drawable.cor_w2s, ScaleTypes.FIT));
+//
+//        imageSlider.setImageList(slideModels);
 
-        imageSlider.setImageList(slideModels);
+        RecyclerView recyclerViewCarousel = findViewById(R.id.recyclerViewCarousel);
+        ArrayList<carouselModel> listCarousel = new ArrayList<carouselModel>();
+        listCarousel.add(new carouselModel(R.drawable.pexelspixabay161097));
+        listCarousel.add(new carouselModel(R.drawable.cor_s2w));
+        listCarousel.add(new carouselModel(R.drawable.pexelspixabay459225));
+        listCarousel.add(new carouselModel(R.drawable.cor_w2s));
+        carouselModelAdapter carouselModelAdapter = new carouselModelAdapter(listCarousel, this);
+        recyclerViewCarousel.setAdapter(carouselModelAdapter);
+        LinearLayoutManager layoutManagerCarousel = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
+        recyclerViewCarousel.setLayoutManager(layoutManagerCarousel);
+        recyclerViewCarousel.setNestedScrollingEnabled(false);
+        recyclerViewCarousel.setOverScrollMode(View.OVER_SCROLL_NEVER);
+
+        final Handler handler = new Handler();
+        final int scrollDelay = 2000; // 2 seconds delay between scrolls
+        final int scrollBy = 1; // scroll 1 item at a time
+
+        final Runnable runnable = new Runnable() {
+            int count = 0;
+
+            @Override
+            public void run() {
+                int itemCount = recyclerViewCarousel.getAdapter().getItemCount();
+
+                if (count < itemCount) {
+                    recyclerViewCarousel.smoothScrollToPosition(count);
+                    count++;
+                } else {
+                    // Reset back to first item
+                    count = 0;
+                    recyclerViewCarousel.scrollToPosition(count);
+                    count++;
+                }
+                handler.postDelayed(this, scrollDelay);
+            }
+        };
+        // Start auto-scrolling
+        handler.postDelayed(runnable, scrollDelay);
+        // Optional: Pause auto-scrolling when user touches RecyclerView
+        recyclerViewCarousel.addOnItemTouchListener(new RecyclerView.OnItemTouchListener() {
+            @Override
+            public boolean onInterceptTouchEvent(@NonNull RecyclerView rv, @NonNull MotionEvent e) {
+                switch (e.getAction()) {
+                    case MotionEvent.ACTION_DOWN:
+                        handler.removeCallbacks(runnable); // Pause
+                        break;
+                    case MotionEvent.ACTION_UP:
+                        handler.postDelayed(runnable, scrollDelay); // Resume
+                        break;
+                }
+                return false;
+            }
+
+            @Override
+            public void onTouchEvent(@NonNull RecyclerView rv, @NonNull MotionEvent e) {
+            }
+
+            @Override
+            public void onRequestDisallowInterceptTouchEvent(boolean disallowIntercept) {
+            }
+        });
+
+        SnapHelper snapHelper = new LinearSnapHelper();
+        snapHelper.attachToRecyclerView(recyclerViewCarousel);
+
 
         RecyclerView recyclerViewImageRestoration = findViewById(R.id.recyclerView_feat_list_image_restoration);
         ArrayList<FeatListModalImageRestoration> listImageRestoration = new ArrayList<>();

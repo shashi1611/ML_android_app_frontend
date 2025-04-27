@@ -3,35 +3,51 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/bg1"
+    android:background="#1C2B46"
     android:fitsSystemWindows="true"
     tools:context=".MainActivity">
 
-    <!-- Full-Screen Image Slider -->
-    <com.denzcoskun.imageslider.ImageSlider
-        android:id="@+id/image_slider"
+    <!-- CardView with FrameLayout inside -->
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cardView"
         android:layout_width="match_parent"
-        android:layout_height="300dp"
-        app:iss_auto_cycle="true"
-        app:iss_delay="1000"
-        app:iss_period="1000" />
-
-    <!-- Text Overlay -->
-    <TextView
-        android:id="@+id/app_name"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="top|start"
-        android:layout_marginLeft="20dp"
+        android:layout_height="250dp"
+        android:layout_marginStart="10dp"
         android:layout_marginTop="40dp"
-        android:shadowColor="@android:color/black"
-        android:shadowDx="2"
-        android:shadowDy="2"
-        android:shadowRadius="4"
-        android:text="Duster AI"
-        android:textColor="#312323"
-        android:textSize="34sp"
-        android:textStyle="bold" />
+        android:layout_marginEnd="10dp"
+        app:cardCornerRadius="16dp"
+        app:cardElevation="4dp">
+
+        <!-- FrameLayout inside CardView -->
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <!-- RecyclerView -->
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recyclerViewCarousel"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+
+            <!-- TextView Overlay -->
+            <TextView
+                android:id="@+id/app_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="top|start"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="20dp"
+                android:shadowColor="@android:color/black"
+                android:shadowDx="2"
+                android:shadowDy="2"
+                android:shadowRadius="4"
+                android:text="Duster AI"
+                android:textColor="#312323"
+                android:textSize="34sp"
+                android:textStyle="bold" />
+        </FrameLayout>
+
+    </androidx.cardview.widget.CardView>
 
     <!-- Scrollable Content Below -->
 

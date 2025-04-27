@@ -5,10 +5,9 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/bg1"
+    android:background="#1C2B46"
     android:orientation="vertical"
     tools:context=".ProcessingActivity">
-
 
     <!-- Title CardView at the Top -->
     <androidx.cardview.widget.CardView
@@ -16,34 +15,34 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginLeft="10dp"
-        android:layout_marginTop="50dp"
+        android:layout_marginTop="40dp"
         android:layout_marginRight="10dp"
-        app:cardCornerRadius="10dp"
-        app:cardElevation="6dp">
+        app:cardBackgroundColor="#1C2B46"
+        app:cardCornerRadius="12dp"
+        app:cardElevation="8dp">
 
         <TextView
             android:id="@+id/featureNameTextView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:padding="10dp"
-            android:shadowColor="@android:color/black"
-            android:shadowRadius="4"
-            android:text="Duster AI"
-            android:textColor="#F4F1F1"
+            android:padding="12dp"
+            android:text="Processing image"
+            android:textColor="#FFFFFF"
             android:textSize="24sp"
             android:textStyle="bold" />
     </androidx.cardview.widget.CardView>
 
-    <!-- Image CardView in the Middle (Takes Remaining Space) -->
+    <!-- Image CardView in the Middle -->
     <androidx.cardview.widget.CardView
         android:id="@+id/uploaded_imgCard"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_margin="10dp"
         android:layout_weight="1"
-        android:elevation="10dp"
-        app:cardCornerRadius="10dp">
+        app:cardBackgroundColor="#22334F"
+        app:cardCornerRadius="12dp"
+        app:cardElevation="8dp">
 
         <ImageView
             android:id="@+id/uploaded_img"
@@ -53,7 +52,6 @@
             android:src="@drawable/upload_image_logo_default" />
     </androidx.cardview.widget.CardView>
 
-
     <!-- Button CardView at the Bottom -->
     <androidx.cardview.widget.CardView
         android:id="@+id/buttonCardView"
@@ -62,58 +60,68 @@
         android:layout_marginLeft="10dp"
         android:layout_marginRight="10dp"
         android:layout_marginBottom="40dp"
-        android:elevation="10dp"
-        app:cardCornerRadius="10dp"
-        app:cardElevation="10dp">
+        app:cardBackgroundColor="#22334F"
+        app:cardCornerRadius="12dp"
+        app:cardElevation="8dp">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="10dp">
+            android:padding="16dp">
 
             <!-- Row of Two Buttons -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
+                android:gravity="center"
                 android:orientation="horizontal">
 
                 <Button
                     android:id="@+id/upload_img_vid_button"
                     android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="10dp"
+                    android:layout_height="50dp"
+                    android:layout_marginEnd="8dp"
                     android:layout_weight="1"
                     android:background="@drawable/bg_button"
                     android:text="Upload Image"
+                    android:textAllCaps="false"
+                    android:textColor="#FFFFFF"
                     app:backgroundTint="@null"
                     app:rippleColor="@null" />
+
 
                 <Button
                     android:id="@+id/open_camera_button"
                     android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="10dp"
+                    android:layout_height="50dp"
+                    android:layout_marginStart="8dp"
                     android:layout_weight="1"
                     android:background="@drawable/bg_button"
                     android:text="Open Camera"
+                    android:textAllCaps="false"
+                    android:textColor="#FFFFFF"
                     app:backgroundTint="@null"
                     app:rippleColor="@null" />
+
             </LinearLayout>
 
             <!-- Process Button Below -->
             <Button
                 android:id="@+id/process_img_button"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="10dp"
-                android:background="@drawable/bg_button_processing"
+                android:layout_height="50dp"
+                android:background="@drawable/bg_button"
                 android:text="Generate Image"
+                android:textAllCaps="false"
+                android:textColor="#FFFFFF"
                 app:backgroundTint="@null"
                 app:rippleColor="@null" />
         </LinearLayout>
     </androidx.cardview.widget.CardView>
 
+    <!-- Ad Container -->
     <FrameLayout
         android:id="@+id/ad_view_container"
         android:layout_width="match_parent"
@@ -121,3 +129,4 @@
         android:layout_gravity="bottom" />
 
 </LinearLayout>
+

@@ -28,7 +28,7 @@ import java.util.ArrayList;
 public class FeatListModelAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private static final int VIEW_TYPE_FEATURE = 0;
     private static final int VIEW_TYPE_AD = 1;
-    private static final String Native_AD_UNIT_ID_image_to_painting_feat1 = "ca-app-pub-4827086355311757/3907474899";
+    private static final String Native_AD_UNIT_ID_image_to_painting_feat1 = "ca-app-pub-4827086355311757/5329760405";
     ArrayList<FeatListModel> list;
     Context context;
 

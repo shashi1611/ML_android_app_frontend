@@ -34,10 +34,10 @@ import java.util.ArrayList;
 public class FeatListModelAdapter2 extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private static final int VIEW_TYPE_FEATURE = 0;
     private static final int VIEW_TYPE_AD = 1;
-    private static final String Native_AD_UNIT_ID_season_changer_feat1 = "ca-app-pub-4827086355311757/6342900699";
+    private static final String Native_AD_UNIT_ID_season_changer_feat1 = "ca-app-pub-4827086355311757/4808925773";
     ArrayList<FeatListModel2> list;
     Context context;
-    
+
     public FeatListModelAdapter2(ArrayList<FeatListModel2> list, Context context) {
         this.list = list;
         this.context = context;
