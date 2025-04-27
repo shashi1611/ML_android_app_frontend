@@ -29,6 +29,7 @@ public class FeatListModelAdapter extends RecyclerView.Adapter<RecyclerView.View
     private static final int VIEW_TYPE_FEATURE = 0;
     private static final int VIEW_TYPE_AD = 1;
     private static final String Native_AD_UNIT_ID_image_to_painting_feat1 = "ca-app-pub-4827086355311757/5329760405";
+    String development_test_ad = "ca-app-pub-3940256099942544/2247696110";
     ArrayList<FeatListModel> list;
     Context context;
 
@@ -55,7 +56,8 @@ public class FeatListModelAdapter extends RecyclerView.Adapter<RecyclerView.View
         if (holder.getItemViewType() == VIEW_TYPE_AD) {
             AdViewHolder adHolder = (AdViewHolder) holder;
 
-            AdLoader adLoader = new AdLoader.Builder(context, Native_AD_UNIT_ID_image_to_painting_feat1)
+//            AdLoader adLoader = new AdLoader.Builder(context, Native_AD_UNIT_ID_image_to_painting_feat1) // prod ad
+            AdLoader adLoader = new AdLoader.Builder(context, development_test_ad) // test ad
                     .forNativeAd(new NativeAd.OnNativeAdLoadedListener() {
                         @Override
                         public void onNativeAdLoaded(NativeAd nativeAd) {

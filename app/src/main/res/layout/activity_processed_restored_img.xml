@@ -5,7 +5,7 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/bg1"
+    android:background="#1C2B46"
     android:orientation="vertical"
     tools:context=".ProcessedActivityRestoredImg">
 
@@ -16,14 +16,15 @@
         android:layout_height="wrap_content"
         android:layout_marginLeft="10dp"
         android:layout_marginRight="10dp"
-        app:cardCornerRadius="10dp"
-        app:cardElevation="6dp">
+        app:cardBackgroundColor="#1C2B46"
+        app:cardCornerRadius="12dp"
+        app:cardElevation="8dp">
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:padding="10dp"
+            android:padding="8dp"
             android:shadowColor="@android:color/black"
             android:shadowRadius="4"
             android:text="Download Image"
@@ -37,7 +38,9 @@
         android:id="@+id/download_imgCard"
         android:layout_width="match_parent"
         android:layout_height="360dp"
-        android:layout_margin="10dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="5dp"
+        android:layout_marginRight="10dp"
         android:elevation="10dp"
         app:cardCornerRadius="10dp">
 
@@ -56,8 +59,10 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginLeft="10dp"
+        android:layout_marginTop="5dp"
         android:layout_marginRight="10dp"
-        android:elevation="10dp"
+        android:layout_marginBottom="5dp"
+        app:cardBackgroundColor="#22334F"
         app:cardCornerRadius="10dp"
         app:cardElevation="10dp">
 
@@ -65,7 +70,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="10dp">
+            android:padding="2dp">
 
             <!-- Row of Two Buttons -->
             <LinearLayout
@@ -115,16 +120,17 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="15dp"
                 android:gravity="center_horizontal"
-                android:text="Reestored faces"
+                android:text="Restored faces"
                 android:textColor="@android:color/white"
-                android:textSize="25dp" />
+                android:textSize="20sp"
+                android:textStyle="bold" />
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/recyclerView_result_list_image_restoration"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/feature_banner_image_restoratiion"
-                android:layout_marginTop="10dp" />
+                android:layout_marginTop="5dp" />
         </RelativeLayout>
     </ScrollView>
 

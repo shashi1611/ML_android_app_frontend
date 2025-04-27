@@ -89,7 +89,7 @@ public class ProcessedActivityRestoredImg extends AppCompatActivity {
 
 
         } else {
-            textView.setText("No faces found");
+            textView.setText("");
         }
 
 

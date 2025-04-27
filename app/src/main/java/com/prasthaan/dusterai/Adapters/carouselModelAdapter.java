@@ -26,6 +26,7 @@ public class carouselModelAdapter extends RecyclerView.Adapter<RecyclerView.View
     private static final int VIEW_TYPE_AD = 1;
     private static final String carousel_native_ad1 = "ca-app-pub-4827086355311757/2601694718";
     private static final String carousel_native_ad2 = "ca-app-pub-4827086355311757/5551517029";
+    String development_test_ad = "ca-app-pub-3940256099942544/22476961101";
     ArrayList<carouselModel> list;
     Context context;
 
@@ -58,7 +59,8 @@ public class carouselModelAdapter extends RecyclerView.Adapter<RecyclerView.View
                 adUnitId = carousel_native_ad2;
             }
 
-            AdLoader adLoader = new AdLoader.Builder(context, adUnitId)
+//            AdLoader adLoader = new AdLoader.Builder(context, adUnitId) //prod ad
+            AdLoader adLoader = new AdLoader.Builder(context, development_test_ad) //test ad
                     .forNativeAd(new NativeAd.OnNativeAdLoadedListener() {
                         @Override
                         public void onNativeAdLoaded(NativeAd nativeAd) {
@@ -86,8 +88,8 @@ public class carouselModelAdapter extends RecyclerView.Adapter<RecyclerView.View
         } else {
 
             int actualPosition = position;
-            if (position > 2) actualPosition--; // After first ad
-            if (position > 5) actualPosition--; // After second ad (future proof)
+//            if (position > 2) actualPosition--; // After first ad
+//            if (position > 5) actualPosition--; // After second ad (future proof)
 
             carouselModel model = list.get(actualPosition);
             FeatureViewHolder featureHolder = (FeatureViewHolder) holder;
@@ -101,8 +103,8 @@ public class carouselModelAdapter extends RecyclerView.Adapter<RecyclerView.View
     public int getItemCount() {
         if (list == null) return 0;
         int count = list.size();
-        if (count >= 2) count++; // 1st ad after 2nd item
-        if (count >= 4) count++; // 2nd ad after 4th item
+//        if (count >= 2) count++; // 1st ad after 2nd item
+//        if (count >= 4) count++; // 2nd ad after 4th item
         return count;
 
 //        return list.size() > 0 ? list.size() + 1 : 0;
@@ -110,6 +112,7 @@ public class carouselModelAdapter extends RecyclerView.Adapter<RecyclerView.View
 
     @Override
     public int getItemViewType(int position) {
+        return VIEW_TYPE_FEATURE;
 
 
 //        if (position == list.size()) {
@@ -118,11 +121,11 @@ public class carouselModelAdapter extends RecyclerView.Adapter<RecyclerView.View
 //            return VIEW_TYPE_FEATURE;
 //        }
 
-        if (position == 2 || position == 5) {
-            return VIEW_TYPE_AD;
-        } else {
-            return VIEW_TYPE_FEATURE;
-        }
+//        if (position == 2 || position == 5) {
+//            return VIEW_TYPE_AD;
+//        } else {
+//            return VIEW_TYPE_FEATURE;
+//        }
 
     }
 

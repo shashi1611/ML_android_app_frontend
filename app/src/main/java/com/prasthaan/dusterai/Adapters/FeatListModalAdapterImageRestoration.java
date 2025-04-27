@@ -1,8 +1,5 @@
 package com.prasthaan.dusterai.Adapters;
 
-//public class FeatListModalAdapterImageRestoration {
-//}
-
 
 import android.content.Context;
 import android.content.Intent;
@@ -14,6 +11,7 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -28,11 +26,13 @@ import com.prasthaan.dusterai.ProcessingActivity;
 import com.prasthaan.dusterai.R;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 public class FeatListModalAdapterImageRestoration extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private static final int VIEW_TYPE_FEATURE = 0;
     private static final int VIEW_TYPE_AD = 1;
     private static final String Native_AD_UNIT_ID_image_restoration_feat1 = "ca-app-pub-4827086355311757/9541898776";
+    String development_test_ad = "ca-app-pub-3940256099942544/2247696110";
     ArrayList<FeatListModalImageRestoration> list;
     Context context;
 
@@ -59,7 +59,8 @@ public class FeatListModalAdapterImageRestoration extends RecyclerView.Adapter<R
         if (holder.getItemViewType() == VIEW_TYPE_AD) {
             AdViewHolder adHolder = (AdViewHolder) holder;
 
-            AdLoader adLoader = new AdLoader.Builder(context, Native_AD_UNIT_ID_image_restoration_feat1)
+//            AdLoader adLoader = new AdLoader.Builder(context, Native_AD_UNIT_ID_image_restoration_feat1) // prod ad
+            AdLoader adLoader = new AdLoader.Builder(context, development_test_ad) // test ad
                     .forNativeAd(new NativeAd.OnNativeAdLoadedListener() {
                         @Override
                         public void onNativeAdLoaded(NativeAd nativeAd) {
@@ -115,7 +116,14 @@ public class FeatListModalAdapterImageRestoration extends RecyclerView.Adapter<R
                 Intent intent = new Intent(view.getContext(), ProcessingActivity.class);
                 String text = featureHolder.textView.getText().toString();
                 intent.putExtra("text_key", text);
-                view.getContext().startActivity(intent);
+                if (Objects.equals(text, "Enhance resolution 4X")) {
+
+                    Toast.makeText(context, "This feature is coming soon stay tuned", Toast.LENGTH_SHORT).show();
+
+                } else {
+                    view.getContext().startActivity(intent);
+                }
+
             });
         }
     }

@@ -34,6 +34,7 @@ public class AdapterResultRestoImg extends RecyclerView.Adapter<RecyclerView.Vie
     private static final int VIEW_TYPE_FEATURE = 0;
     private static final int VIEW_TYPE_AD = 1;
     private static final String Native_AD_UNIT_ID_image_restoration_result_feat1 = "ca-app-pub-4827086355311757/7458435573";
+    String development_test_ad = "ca-app-pub-3940256099942544/2247696110";
     ArrayList<ModalResultRestoImg> list;
     Context context;
 
@@ -60,7 +61,8 @@ public class AdapterResultRestoImg extends RecyclerView.Adapter<RecyclerView.Vie
         if (holder.getItemViewType() == VIEW_TYPE_AD) {
             AdViewHolder adHolder = (AdViewHolder) holder;
 
-            AdLoader adLoader = new AdLoader.Builder(context, Native_AD_UNIT_ID_image_restoration_result_feat1)
+//            AdLoader adLoader = new AdLoader.Builder(context, Native_AD_UNIT_ID_image_restoration_result_feat1) //prod ad
+            AdLoader adLoader = new AdLoader.Builder(context, development_test_ad) //test ad
                     .forNativeAd(new NativeAd.OnNativeAdLoadedListener() {
                         @Override
                         public void onNativeAdLoaded(NativeAd nativeAd) {
@@ -144,19 +146,21 @@ public class AdapterResultRestoImg extends RecyclerView.Adapter<RecyclerView.Vie
 
     @Override
     public int getItemCount() {
+        return list.size();
 
-        return list.size() > 0 ? list.size() + 1 : 0;
+//        return list.size() > 0 ? list.size() + 1 : 0;
     }
 
     @Override
     public int getItemViewType(int position) {
+        return VIEW_TYPE_FEATURE;
 
 
-        if (position == list.size()) {
-            return VIEW_TYPE_AD;
-        } else {
-            return VIEW_TYPE_FEATURE;
-        }
+//        if (position == list.size()) {
+//            return VIEW_TYPE_AD;
+//        } else {
+//            return VIEW_TYPE_FEATURE;
+//        }
 
     }
 

@@ -44,8 +44,8 @@ import com.google.firebase.messaging.FirebaseMessaging;
 import com.prasthaan.dusterai.Adapters.FeatListModalAdapterImageRestoration;
 import com.prasthaan.dusterai.Adapters.FeatListModelAdapter;
 import com.prasthaan.dusterai.Adapters.FeatListModelAdapter2;
-import com.prasthaan.dusterai.Models.FeatListModalImageRestoration;
 import com.prasthaan.dusterai.Adapters.carouselModelAdapter;
+import com.prasthaan.dusterai.Models.FeatListModalImageRestoration;
 import com.prasthaan.dusterai.Models.FeatListModel;
 import com.prasthaan.dusterai.Models.FeatListModel2;
 import com.prasthaan.dusterai.Models.carouselModel;
@@ -211,9 +211,9 @@ public class MainActivity extends AppCompatActivity {
 
         RecyclerView recyclerViewImageRestoration = findViewById(R.id.recyclerView_feat_list_image_restoration);
         ArrayList<FeatListModalImageRestoration> listImageRestoration = new ArrayList<>();
-        listImageRestoration.add(new FeatListModalImageRestoration(R.drawable.feat1c, "Restore image"));
-        listImageRestoration.add(new FeatListModalImageRestoration(R.drawable.feat2c, "Enhance resolution 2X"));
-        listImageRestoration.add(new FeatListModalImageRestoration(R.drawable.feat3c, "Enhance resolution 4X"));
+        listImageRestoration.add(new FeatListModalImageRestoration(R.drawable.restore_image_feat_card, "Restore image"));
+        listImageRestoration.add(new FeatListModalImageRestoration(R.drawable.feat_card_two_x, "Enhance resolution 2X"));
+        listImageRestoration.add(new FeatListModalImageRestoration(R.drawable.feat_card_four_x, "Enhance resolution 4X"));
         FeatListModalAdapterImageRestoration featListModalAdapterImageRestoration = new FeatListModalAdapterImageRestoration(listImageRestoration, this);
         recyclerViewImageRestoration.setAdapter(featListModalAdapterImageRestoration);
         LinearLayoutManager layoutManagerImageRestoratiion = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);

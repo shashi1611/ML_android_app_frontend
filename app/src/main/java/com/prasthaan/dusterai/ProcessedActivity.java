@@ -62,6 +62,7 @@ public class ProcessedActivity extends AppCompatActivity {
                     Toast.makeText(this, "Some permissions were denied!", Toast.LENGTH_SHORT).show();
                 }
             });
+    String development_test_ad = "ca-app-pub-3940256099942544/9214589741";
     private ImageView imageView;
     private Button btnDownload, btnShare;
     private String presignedUrl;
@@ -184,7 +185,8 @@ public class ProcessedActivity extends AppCompatActivity {
     private void loadAdaptiveBannerAd() {
         // Create a new AdView dynamically
         adViewDownloadPage = new AdView(this);
-        adViewDownloadPage.setAdUnitId(AD_UNIT_ID_DOWNLOAD_PAGE);
+//        adViewDownloadPage.setAdUnitId(AD_UNIT_ID_DOWNLOAD_PAGE);  //prod ad
+        adViewDownloadPage.setAdUnitId(development_test_ad);  //test ad
 
         // Set adaptive ad size
         AdSize adSize = getAdSize();

@@ -67,7 +67,11 @@ public class ProcessingActivity extends AppCompatActivity {
     private static final int REQUEST_IMAGE_CAPTURE = 1;
     private static final int REQUEST_PERMISSIONS = 101;
     private static final int TOTAL_TIME = 90; // 120 seconds
+    private static final int TOTAL_TIME_RESTORE_IMAGE = 120; // 120 seconds
+    private static final int TOTAL_TIME_ENHANCE_IMAGE_2X = 120; // 120 seconds
+    private static final int TOTAL_TIME_ENHANCE_IMAGE_4X = 180; // 120 seconds
     private static final String AD_UNIT_ID = "ca-app-pub-4827086355311757/2017201353";
+    String development_test_ad = "ca-app-pub-3940256099942544/9214589741";
     String receivedText;
     ActivityResultLauncher<PickVisualMediaRequest> imagePickerLauncher;
     private ImageView imageView;
@@ -81,7 +85,7 @@ public class ProcessingActivity extends AppCompatActivity {
     private AdView adView;
     private FrameLayout adContainerView;
 
-    private void showProcessingDialog() {
+    private void showProcessingDialog(String process) {
         progressDialog = new Dialog(this);
         progressDialog.show();
         progressDialog.setContentView(R.layout.progress_dialog);
@@ -92,11 +96,21 @@ public class ProcessingActivity extends AppCompatActivity {
 
         // Initialize countdown
         timerText = progressDialog.findViewById(R.id.timer_text);
-        startCountdown();
+        startCountdown(process);
     }
 
-    private void startCountdown() {
-        countDownTimer = new CountDownTimer(TOTAL_TIME * 1000, 1000) {
+    private void startCountdown(String process) {
+        int total_time;
+        if (Objects.equals(process, "Restore image")) {
+            total_time = TOTAL_TIME_RESTORE_IMAGE;
+        } else if (Objects.equals(process, "Enhance resolution 2X")) {
+            total_time = TOTAL_TIME_ENHANCE_IMAGE_2X;
+        } else if (Objects.equals(process, "Enhance resolution 4X")) {
+            total_time = TOTAL_TIME_ENHANCE_IMAGE_4X;
+        } else {
+            total_time = TOTAL_TIME;
+        }
+        countDownTimer = new CountDownTimer(total_time * 1000, 1000) {
             @Override
             public void onTick(long millisUntilFinished) {
                 int secondsLeft = (int) (millisUntilFinished / 1000);
@@ -105,8 +119,8 @@ public class ProcessingActivity extends AppCompatActivity {
 
             @Override
             public void onFinish() {
-                timerText.setText("Processing Complete!");
-                dismissDialog();
+                timerText.setText("Still processing your image is heavy please keep patience!");
+//                dismissDialog();
             }
         }.start();
     }
@@ -183,6 +197,7 @@ public class ProcessingActivity extends AppCompatActivity {
             finish();
             return;
         }
+        Log.d("waapis", "onCreate: waapis aate samay");
         setContentView(R.layout.activity_processing);
         imageView = findViewById(R.id.uploaded_img);
         btnUpload = findViewById(R.id.upload_img_vid_button);
@@ -192,9 +207,9 @@ public class ProcessingActivity extends AppCompatActivity {
         TextView textViewFeatname = findViewById(R.id.featureNameTextView);
 
         if (receivedText.equals("To winter") || receivedText.equals("To Summer")) {
-            textViewFeatname.setText("Image " + receivedText);
+            textViewFeatname.setText(receivedText);
         } else {
-            textViewFeatname.setText("Image to " + receivedText);
+            textViewFeatname.setText(receivedText);
         }
 
         if (!isCameraPermissionGranted()) {
@@ -242,10 +257,10 @@ public class ProcessingActivity extends AppCompatActivity {
         btnProcess.setOnClickListener(view -> {
 
             if (imageFileFromFileUploader != null) {
-                showProcessingDialog();
+                showProcessingDialog(receivedText);
                 processImage(imageFileFromFileUploader);
             } else if (imageFileFromCamera != null) {
-                showProcessingDialog();
+                showProcessingDialog(receivedText);
                 processImage(imageFileFromCamera);
 
             } else {
@@ -415,7 +430,8 @@ public class ProcessingActivity extends AppCompatActivity {
     private void loadAdaptiveBannerAd() {
         // Create a new AdView dynamically
         adView = new AdView(this);
-        adView.setAdUnitId(AD_UNIT_ID);
+//        adView.setAdUnitId(AD_UNIT_ID); //prod ad
+        adView.setAdUnitId(development_test_ad); //test ad
 
         // Set adaptive ad size
         AdSize adSize = getAdSize();
