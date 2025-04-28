@@ -134,14 +134,8 @@ public class MainActivity extends AppCompatActivity {
             // For earlier versions, directly initialize FCM
             initializeFCM();
         }
-//        ImageSlider imageSlider = findViewById(R.id.image_slider);
-//        ArrayList<SlideModel> slideModels = new ArrayList<>();
-//        slideModels.add(new SlideModel(R.drawable.pexelspixabay161097, ScaleTypes.FIT));
-//        slideModels.add(new SlideModel(R.drawable.cor_s2w, ScaleTypes.FIT));
-//        slideModels.add(new SlideModel(R.drawable.pexelspixabay459225, ScaleTypes.FIT));
-//        slideModels.add(new SlideModel(R.drawable.cor_w2s, ScaleTypes.FIT));
-//
-//        imageSlider.setImageList(slideModels);
+
+//        <<<<<<<<<<<<<<<<<<<recyclerview for carousel >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
         RecyclerView recyclerViewCarousel = findViewById(R.id.recyclerViewCarousel);
         ArrayList<carouselModel> listCarousel = new ArrayList<carouselModel>();
@@ -208,7 +202,7 @@ public class MainActivity extends AppCompatActivity {
         SnapHelper snapHelper = new LinearSnapHelper();
         snapHelper.attachToRecyclerView(recyclerViewCarousel);
 
-
+//        <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<recycler view for image upscaling feature>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
         RecyclerView recyclerViewImageRestoration = findViewById(R.id.recyclerView_feat_list_image_restoration);
         ArrayList<FeatListModalImageRestoration> listImageRestoration = new ArrayList<>();
         listImageRestoration.add(new FeatListModalImageRestoration(R.drawable.restore_image_feat_card, "Restore image"));
@@ -221,35 +215,31 @@ public class MainActivity extends AppCompatActivity {
         recyclerViewImageRestoration.setNestedScrollingEnabled(false);
         recyclerViewImageRestoration.setOverScrollMode(View.OVER_SCROLL_NEVER);
 
+
+//        <<<<<<<<<<<<<<<<<<<<<<< recycler view for image to painting>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
         RecyclerView recyclerView = findViewById(R.id.recyclerView_feat_list);
         ArrayList<FeatListModel> list = new ArrayList<>();
         list.add(new FeatListModel(R.drawable.feat1c, "Ukiyo-e style"));
         list.add(new FeatListModel(R.drawable.feat2c, "Monet style"));
         list.add(new FeatListModel(R.drawable.feat3c, "Van Gogh style"));
         list.add(new FeatListModel(R.drawable.feat4c, "Cezanne style"));
-
         FeatListModelAdapter featListModelAdapter = new FeatListModelAdapter(list, this);
         recyclerView.setAdapter(featListModelAdapter);
-
         LinearLayoutManager layoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
         recyclerView.setLayoutManager(layoutManager);
-
-
         recyclerView.setNestedScrollingEnabled(false);
         recyclerView.setOverScrollMode(View.OVER_SCROLL_NEVER);
 
+
+//        <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<recyclerview for season changer>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
         RecyclerView recyclerView2 = findViewById(R.id.recyclerView_feat_list2);
         ArrayList<FeatListModel2> list2 = new ArrayList<>();
         list2.add(new FeatListModel2(R.drawable.s2w, "To winter"));
         list2.add(new FeatListModel2(R.drawable.w2s, "To Summer"));
-
         FeatListModelAdapter2 featListModelAdapter2 = new FeatListModelAdapter2(list2, this);
         recyclerView2.setAdapter(featListModelAdapter2);
-
         LinearLayoutManager layoutManager2 = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
         recyclerView2.setLayoutManager(layoutManager2);
-
-
         recyclerView2.setNestedScrollingEnabled(false);
         recyclerView2.setOverScrollMode(View.OVER_SCROLL_NEVER);
 

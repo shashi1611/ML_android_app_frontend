@@ -128,7 +128,6 @@ public class ProcessedActivity extends AppCompatActivity {
         // Get the presigned URL from intent
         presignedUrl = getIntent().getStringExtra("PRESIGNED_URL");
         if (presignedUrl != null) {
-//            Log.d("PresignedURL", "Received URL: " + presignedUrl);
             try {
                 JSONObject jsonObject = new JSONObject(presignedUrl);
                 String imageUrl = jsonObject.getString("output"); // Extract the actual URL
@@ -153,16 +152,12 @@ public class ProcessedActivity extends AppCompatActivity {
             try {
                 JSONObject jsonObject = new JSONObject(presignedUrl);
                 String imageUrl = jsonObject.getString("output"); // Extract URL
-                Log.d("restored image url", "onCreate:  image url which is working = " + imageUrl);
                 downloadImage(imageUrl);
                 Toast.makeText(this, "Download started see the notification", Toast.LENGTH_SHORT).show();
             } catch (JSONException e) {
                 e.printStackTrace();
                 Toast.makeText(this, "Invalid URL format", Toast.LENGTH_SHORT).show();
             }
-//            } else {
-//                requestStoragePermission();
-//            }
         });
 
         btnShare.setOnClickListener(v -> shareImage());
@@ -216,7 +211,6 @@ public class ProcessedActivity extends AppCompatActivity {
     // Check if storage permission is granted
     private boolean checkPermission() {
         int write = ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE);
-        Log.d("Permission_check", "checkPermission: " + ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE));
         return write == PackageManager.PERMISSION_GRANTED;
     }
 
@@ -240,8 +234,6 @@ public class ProcessedActivity extends AppCompatActivity {
                     e.printStackTrace();
                     Toast.makeText(this, "Invalid URL format", Toast.LENGTH_SHORT).show();
                 }
-//                String imageUrl = presignedUrl; // Make sure presignedUrl is available
-//                downloadImage(imageUrl);
             } else {
                 Toast.makeText(this, "Permission Denied!", Toast.LENGTH_SHORT).show();
             }

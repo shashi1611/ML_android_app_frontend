@@ -19,7 +19,6 @@ import android.os.CountDownTimer;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.FrameLayout;
@@ -74,6 +73,9 @@ public class ProcessingActivity extends AppCompatActivity {
     String development_test_ad = "ca-app-pub-3940256099942544/9214589741";
     String receivedText;
     ActivityResultLauncher<PickVisualMediaRequest> imagePickerLauncher;
+    String presignedUrl = "";
+    boolean flagNewImage = false;
+    ArrayList<String> faceUrls;
     private ImageView imageView;
     private Uri imageUri;
     private File imageFileFromCamera = null;
@@ -197,7 +199,6 @@ public class ProcessingActivity extends AppCompatActivity {
             finish();
             return;
         }
-        Log.d("waapis", "onCreate: waapis aate samay");
         setContentView(R.layout.activity_processing);
         imageView = findViewById(R.id.uploaded_img);
         btnUpload = findViewById(R.id.upload_img_vid_button);
@@ -256,16 +257,33 @@ public class ProcessingActivity extends AppCompatActivity {
 
         btnProcess.setOnClickListener(view -> {
 
-            if (imageFileFromFileUploader != null) {
-                showProcessingDialog(receivedText);
-                processImage(imageFileFromFileUploader);
-            } else if (imageFileFromCamera != null) {
-                showProcessingDialog(receivedText);
-                processImage(imageFileFromCamera);
 
+            if (presignedUrl.isEmpty() || flagNewImage) {
+
+
+                if (imageFileFromFileUploader != null) {
+                    showProcessingDialog(receivedText);
+                    processImage(imageFileFromFileUploader);
+                } else if (imageFileFromCamera != null) {
+                    showProcessingDialog(receivedText);
+                    processImage(imageFileFromCamera);
+
+                } else {
+                    Toast.makeText(this, "Select an image first", Toast.LENGTH_SHORT).show();
+                }
             } else {
-                Toast.makeText(this, "Select an image first", Toast.LENGTH_SHORT).show();
+                if (Objects.equals(receivedText, "Restore image")) {
+                    Intent intent = new Intent(ProcessingActivity.this, ProcessedActivityRestoredImg.class);
+                    intent.putExtra("RESTORED_IMAGE_URL", presignedUrl);
+                    intent.putStringArrayListExtra("RESTORED_FACE_URLS", faceUrls);
+                    startActivity(intent);
+                } else {
+                    Intent intent = new Intent(ProcessingActivity.this, ProcessedActivity.class);
+                    intent.putExtra("PRESIGNED_URL", presignedUrl);
+                    startActivity(intent);
+                }
             }
+
 
         });
 
@@ -289,6 +307,7 @@ public class ProcessingActivity extends AppCompatActivity {
                                 .override(1024, 1024) // limit size
                                 .into(imageView);
                         imageFileFromFileUploader = copyUriToFile(uri);
+                        flagNewImage = true;
 
                     } else {
                         Toast.makeText(this, "No image selected", Toast.LENGTH_SHORT).show();
@@ -309,6 +328,7 @@ public class ProcessingActivity extends AppCompatActivity {
                         .override(1024, 1024) // limit size
                         .into(imageView);
                 imageFileFromCamera = copyUriToFile(imageUri);
+                flagNewImage = true;
 
 
             }
@@ -481,10 +501,8 @@ public class ProcessingActivity extends AppCompatActivity {
                     if (response.isSuccessful()) {
                         dismissDialog();
                         try {
-
-
-                            String presignedUrl = response.body().string();
-                            Log.d("presigned url ", "onResponse: presigned url enhancer wala" + presignedUrl);
+                            presignedUrl = response.body().string();
+                            flagNewImage = false;
                             Intent intent = new Intent(ProcessingActivity.this, ProcessedActivity.class);
                             intent.putExtra("PRESIGNED_URL", presignedUrl);
                             startActivity(intent);
@@ -502,7 +520,6 @@ public class ProcessingActivity extends AppCompatActivity {
                 public void onFailure(Call<ResponseBody> call, Throwable t) {
                     dismissDialog();
                     Toast.makeText(ProcessingActivity.this, "Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
-                    ;
                 }
             });
 
@@ -514,10 +531,8 @@ public class ProcessingActivity extends AppCompatActivity {
                     if (response.isSuccessful()) {
                         dismissDialog();
                         try {
-
-
-                            String presignedUrl = response.body().string();
-                            Log.d("presigned url ", "onResponse: presigned url enhancer wala" + presignedUrl);
+                            presignedUrl = response.body().string();
+                            flagNewImage = false;
                             Intent intent = new Intent(ProcessingActivity.this, ProcessedActivity.class);
                             intent.putExtra("PRESIGNED_URL", presignedUrl);
                             startActivity(intent);
@@ -535,7 +550,6 @@ public class ProcessingActivity extends AppCompatActivity {
                 public void onFailure(Call<ResponseBody> call, Throwable t) {
                     dismissDialog();
                     Toast.makeText(ProcessingActivity.this, "Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
-                    ;
                 }
             });
 
@@ -548,14 +562,10 @@ public class ProcessingActivity extends AppCompatActivity {
                     dismissDialog();
                     if (response.isSuccessful() && response.body() != null) {
                         RestoreImageResponse result = response.body();
-
-//                        String restoredFaceUrl = result.getRestoredFaces().get(0);  // If you want the first face
-//                        String restoredImageUrl = result.getRestoredImage();
-                        ArrayList<String> faceUrls = new ArrayList<>(result.getRestoredFaces());
-
-                        // Send to next activity
+                        faceUrls = new ArrayList<>(result.getRestoredFaces());
+                        presignedUrl = result.getRestoredImage();
+                        flagNewImage = false;
                         Intent intent = new Intent(ProcessingActivity.this, ProcessedActivityRestoredImg.class);
-                        // Send the restored image URL
                         intent.putExtra("RESTORED_IMAGE_URL", result.getRestoredImage());
                         intent.putStringArrayListExtra("RESTORED_FACE_URLS", faceUrls);
                         startActivity(intent);
@@ -581,7 +591,8 @@ public class ProcessingActivity extends AppCompatActivity {
                         try {
 
 
-                            String presignedUrl = response.body().string();
+                            presignedUrl = response.body().string();
+                            flagNewImage = false;
                             Intent intent = new Intent(ProcessingActivity.this, ProcessedActivity.class);
                             intent.putExtra("PRESIGNED_URL", presignedUrl);
                             startActivity(intent);
@@ -599,7 +610,6 @@ public class ProcessingActivity extends AppCompatActivity {
                 public void onFailure(Call<ResponseBody> call, Throwable t) {
                     dismissDialog();
                     Toast.makeText(ProcessingActivity.this, "Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
-                    ;
                 }
             });
         } else if (Objects.equals(receivedText, "Monet style")) {
@@ -609,7 +619,8 @@ public class ProcessingActivity extends AppCompatActivity {
                     if (response.isSuccessful()) {
                         dismissDialog();
                         try {
-                            String presignedUrl = response.body().string();
+                            presignedUrl = response.body().string();
+                            flagNewImage = false;
                             Intent intent = new Intent(ProcessingActivity.this, ProcessedActivity.class);
                             intent.putExtra("PRESIGNED_URL", presignedUrl);
                             startActivity(intent);
@@ -637,7 +648,8 @@ public class ProcessingActivity extends AppCompatActivity {
                     if (response.isSuccessful()) {
                         dismissDialog();
                         try {
-                            String presignedUrl = response.body().string();
+                            presignedUrl = response.body().string();
+                            flagNewImage = false;
                             Intent intent = new Intent(ProcessingActivity.this, ProcessedActivity.class);
                             intent.putExtra("PRESIGNED_URL", presignedUrl);
                             startActivity(intent);
@@ -665,7 +677,8 @@ public class ProcessingActivity extends AppCompatActivity {
                     if (response.isSuccessful()) {
                         dismissDialog();
                         try {
-                            String presignedUrl = response.body().string();
+                            presignedUrl = response.body().string();
+                            flagNewImage = false;
                             Intent intent = new Intent(ProcessingActivity.this, ProcessedActivity.class);
                             intent.putExtra("PRESIGNED_URL", presignedUrl);
                             startActivity(intent);
@@ -693,7 +706,8 @@ public class ProcessingActivity extends AppCompatActivity {
                     if (response.isSuccessful()) {
                         dismissDialog();
                         try {
-                            String presignedUrl = response.body().string();
+                            presignedUrl = response.body().string();
+                            flagNewImage = false;
                             Intent intent = new Intent(ProcessingActivity.this, ProcessedActivity.class);
                             intent.putExtra("PRESIGNED_URL", presignedUrl);
                             startActivity(intent);
@@ -721,7 +735,8 @@ public class ProcessingActivity extends AppCompatActivity {
                     dismissDialog();
                     if (response.isSuccessful()) {
                         try {
-                            String presignedUrl = response.body().string();
+                            presignedUrl = response.body().string();
+                            flagNewImage = false;
                             Intent intent = new Intent(ProcessingActivity.this, ProcessedActivity.class);
                             intent.putExtra("PRESIGNED_URL", presignedUrl);
                             startActivity(intent);

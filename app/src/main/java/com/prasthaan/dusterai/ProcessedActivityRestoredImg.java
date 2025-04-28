@@ -8,7 +8,6 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -61,10 +60,6 @@ public class ProcessedActivityRestoredImg extends AppCompatActivity {
 
         ArrayList<String> faceUrls = intent.getStringArrayListExtra("RESTORED_FACE_URLS");
         if (restoredImageUrl != null) {
-//            Log.d("PresignedURL", "Received URL: " + presignedUrl);
-            //                JSONObject jsonObject = new JSONObject(presignedUrl);
-//                String imageUrl = jsonObject.getString("output"); // Extract the actual URL
-
             Glide.with(this)
                     .load(restoredImageUrl)
                     .placeholder(R.drawable.loadingimagepleasewait)
@@ -92,17 +87,8 @@ public class ProcessedActivityRestoredImg extends AppCompatActivity {
             textView.setText("");
         }
 
-
-// Now you can use Glide or any image loader to show them
-        Log.d("Restored hello Image URL", restoredImageUrl);
-        for (String url : faceUrls) {
-            Log.d("Restored hello Face URL", url);
-        }
-
-
         btnDownload.setOnClickListener(v -> {
             try {
-                Log.d("restored image url", "onClick: restored image url = " + restoredImageUrl);
                 // Directly pass the URL string to downloadImage
                 downloadImage(restoredImageUrl);
                 Toast.makeText(this, "Download started, see the notification", Toast.LENGTH_SHORT).show();
