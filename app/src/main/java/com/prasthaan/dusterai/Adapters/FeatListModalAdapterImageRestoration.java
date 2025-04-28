@@ -4,7 +4,6 @@ package com.prasthaan.dusterai.Adapters;
 import android.content.Context;
 import android.content.Intent;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -59,8 +58,8 @@ public class FeatListModalAdapterImageRestoration extends RecyclerView.Adapter<R
         if (holder.getItemViewType() == VIEW_TYPE_AD) {
             AdViewHolder adHolder = (AdViewHolder) holder;
 
-//            AdLoader adLoader = new AdLoader.Builder(context, Native_AD_UNIT_ID_image_restoration_feat1) // prod ad
-            AdLoader adLoader = new AdLoader.Builder(context, development_test_ad) // test ad
+            AdLoader adLoader = new AdLoader.Builder(context, Native_AD_UNIT_ID_image_restoration_feat1) // prod ad
+//            AdLoader adLoader = new AdLoader.Builder(context, development_test_ad) // test ad
                     .forNativeAd(new NativeAd.OnNativeAdLoadedListener() {
                         @Override
                         public void onNativeAdLoaded(NativeAd nativeAd) {
@@ -83,8 +82,6 @@ public class FeatListModalAdapterImageRestoration extends RecyclerView.Adapter<R
                         @Override
                         public void onAdFailedToLoad(@NonNull LoadAdError adError) {
                             super.onAdFailedToLoad(adError);
-                            Log.d("NativeAd", "Ad failed to load: " + adError.getMessage());
-
                             // Optionally hide or remove ad container
                             adHolder.adContainer.setVisibility(View.GONE);
                         }
@@ -118,7 +115,7 @@ public class FeatListModalAdapterImageRestoration extends RecyclerView.Adapter<R
                 intent.putExtra("text_key", text);
                 if (Objects.equals(text, "Enhance resolution 4X")) {
 
-                    Toast.makeText(context, "This feature is coming soon stay tuned", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(context, "This feature is coming soon stay tuned!", Toast.LENGTH_SHORT).show();
 
                 } else {
                     view.getContext().startActivity(intent);

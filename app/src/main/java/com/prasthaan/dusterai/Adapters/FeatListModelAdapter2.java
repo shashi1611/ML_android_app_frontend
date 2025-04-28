@@ -9,7 +9,6 @@ package com.prasthaan.dusterai.Adapters;
 import android.content.Context;
 import android.content.Intent;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -65,8 +64,8 @@ public class FeatListModelAdapter2 extends RecyclerView.Adapter<RecyclerView.Vie
         if (holder.getItemViewType() == VIEW_TYPE_AD) {
             FeatListModelAdapter2.AdViewHolder adHolder = (FeatListModelAdapter2.AdViewHolder) holder;
 
-//            AdLoader adLoader = new AdLoader.Builder(context, Native_AD_UNIT_ID_season_changer_feat1) // prod ad
-            AdLoader adLoader = new AdLoader.Builder(context, development_test_ad)  // test ad
+            AdLoader adLoader = new AdLoader.Builder(context, Native_AD_UNIT_ID_season_changer_feat1) // prod ad
+//            AdLoader adLoader = new AdLoader.Builder(context, development_test_ad)  // test ad
                     .forNativeAd(new NativeAd.OnNativeAdLoadedListener() {
                         @Override
                         public void onNativeAdLoaded(NativeAd nativeAd) {
@@ -89,8 +88,6 @@ public class FeatListModelAdapter2 extends RecyclerView.Adapter<RecyclerView.Vie
                         @Override
                         public void onAdFailedToLoad(@NonNull LoadAdError adError) {
                             super.onAdFailedToLoad(adError);
-                            // You can log it or show a fallback
-                            Log.d("NativeAd", "Ad failed to load: " + adError.getMessage());
 
                             // Optionally hide or remove ad container
                             adHolder.adContainer.setVisibility(View.GONE);
