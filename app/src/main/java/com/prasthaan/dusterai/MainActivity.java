@@ -41,10 +41,12 @@ import com.google.android.play.core.install.model.AppUpdateType;
 import com.google.android.play.core.install.model.InstallStatus;
 import com.google.android.play.core.install.model.UpdateAvailability;
 import com.google.firebase.messaging.FirebaseMessaging;
+import com.prasthaan.dusterai.Adapters.FeatListModalAdapterFaceSwap;
 import com.prasthaan.dusterai.Adapters.FeatListModalAdapterImageRestoration;
 import com.prasthaan.dusterai.Adapters.FeatListModelAdapter;
 import com.prasthaan.dusterai.Adapters.FeatListModelAdapter2;
 import com.prasthaan.dusterai.Adapters.carouselModelAdapter;
+import com.prasthaan.dusterai.Models.FeatListModalFaceSwap;
 import com.prasthaan.dusterai.Models.FeatListModalImageRestoration;
 import com.prasthaan.dusterai.Models.FeatListModel;
 import com.prasthaan.dusterai.Models.FeatListModel2;
@@ -214,6 +216,19 @@ public class MainActivity extends AppCompatActivity {
         recyclerViewImageRestoration.setLayoutManager(layoutManagerImageRestoratiion);
         recyclerViewImageRestoration.setNestedScrollingEnabled(false);
         recyclerViewImageRestoration.setOverScrollMode(View.OVER_SCROLL_NEVER);
+
+
+//        <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<Recycler view for face swap>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+        RecyclerView recyclerViewImageFaceSwap = findViewById(R.id.recyclerView_feat_list_face_swap);
+        ArrayList<FeatListModalFaceSwap> listFaceSwap = new ArrayList<>();
+        listFaceSwap.add(new FeatListModalFaceSwap(R.drawable.restore_image_feat_card, "Single face"));
+        listFaceSwap.add(new FeatListModalFaceSwap(R.drawable.feat_card_two_x, "Multiple faces"));
+        FeatListModalAdapterFaceSwap featListModalAdapterFaceSwap = new FeatListModalAdapterFaceSwap(listFaceSwap, this);
+        recyclerViewImageFaceSwap.setAdapter(featListModalAdapterFaceSwap);
+        LinearLayoutManager layoutManagerFaceSwap = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
+        recyclerViewImageFaceSwap.setLayoutManager(layoutManagerFaceSwap);
+        recyclerViewImageFaceSwap.setNestedScrollingEnabled(false);
+        recyclerViewImageFaceSwap.setOverScrollMode(View.OVER_SCROLL_NEVER);
 
 
 //        <<<<<<<<<<<<<<<<<<<<<<< recycler view for image to painting>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>

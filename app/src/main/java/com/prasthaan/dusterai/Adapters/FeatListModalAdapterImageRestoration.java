@@ -129,18 +129,20 @@ public class FeatListModalAdapterImageRestoration extends RecyclerView.Adapter<R
     @Override
     public int getItemCount() {
 
-        return list.size() > 0 ? list.size() + 1 : 0;
+//        return list.size() > 0 ? list.size() + 1 : 0;
+        return list.size();
     }
 
     @Override
     public int getItemViewType(int position) {
+        return VIEW_TYPE_FEATURE;
 
 
-        if (position == list.size()) {
-            return VIEW_TYPE_AD;
-        } else {
-            return VIEW_TYPE_FEATURE;
-        }
+//        if (position == list.size()) {
+//            return VIEW_TYPE_AD;
+//        } else {
+//            return VIEW_TYPE_FEATURE;
+//        }
 
     }
 

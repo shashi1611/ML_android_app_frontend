@@ -1,14 +1,11 @@
-//package com.example.myapplication.Adapters;
-//
-//public class FeatListModelAdapter2 {
-//}
-
-
 package com.prasthaan.dusterai.Adapters;
 
+//public class AdapterFaceSwapMulti {
+//}
+
 import android.content.Context;
-import android.content.Intent;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,61 +13,64 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.PickVisualMediaRequest;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.google.android.gms.ads.AdLoader;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.LoadAdError;
 import com.google.android.gms.ads.nativead.NativeAd;
 import com.google.android.gms.ads.nativead.NativeAdView;
-import com.prasthaan.dusterai.Models.FeatListModel2;
-import com.prasthaan.dusterai.ProcessingActivity;
+import com.prasthaan.dusterai.Models.ModalFaceSwapMulti;
 import com.prasthaan.dusterai.R;
 
 import java.util.ArrayList;
 
-public class FeatListModelAdapter2 extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+public class AdapterFaceSwapMulti extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+
     private static final int VIEW_TYPE_FEATURE = 0;
     private static final int VIEW_TYPE_AD = 1;
-    private static final String Native_AD_UNIT_ID_season_changer_feat1 = "ca-app-pub-4827086355311757/4808925773";
+    private static final String Native_AD_UNIT_ID_face_swap_multi_feat1 = "ca-app-pub-4827086355311757/7458435573";
+    private final OnImagePickRequested listener;
+    ActivityResultLauncher<PickVisualMediaRequest> imagePickerLauncherSourceFace;
     String development_test_ad = "ca-app-pub-3940256099942544/2247696110";
-    ArrayList<FeatListModel2> list;
+    ArrayList<ModalFaceSwapMulti> list;
     Context context;
 
-    public FeatListModelAdapter2(ArrayList<FeatListModel2> list, Context context) {
+    public AdapterFaceSwapMulti(ArrayList<ModalFaceSwapMulti> list, Context context, OnImagePickRequested listener) {
+        this.listener = listener;
         this.list = list;
         this.context = context;
     }
-
 
     @NonNull
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         if (viewType == VIEW_TYPE_AD) {
-            View adView = LayoutInflater.from(context).inflate(R.layout.native_ad_layout_season_changer, parent, false);
-            return new FeatListModelAdapter2.AdViewHolder(adView);
+            View adView = LayoutInflater.from(context).inflate(R.layout.native_ad_layout, parent, false);
+            return new AdViewHolder(adView);
         } else {
+            View view = LayoutInflater.from(context).inflate(R.layout.single_item_multi_face_swap, parent, false);
+            return new FeatureViewHolder(view);
 
-
-            View view = LayoutInflater.from(context).inflate(R.layout.item_grid, parent, false);
-            return new FeatListModelAdapter2.FeatureViewHolder(view);
         }
     }
 
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
-
         if (holder.getItemViewType() == VIEW_TYPE_AD) {
-            FeatListModelAdapter2.AdViewHolder adHolder = (FeatListModelAdapter2.AdViewHolder) holder;
+            AdViewHolder adHolder = (AdViewHolder) holder;
 
-            AdLoader adLoader = new AdLoader.Builder(context, Native_AD_UNIT_ID_season_changer_feat1) // prod ad
-//            AdLoader adLoader = new AdLoader.Builder(context, development_test_ad)  // test ad
+//            AdLoader adLoader = new AdLoader.Builder(context, Native_AD_UNIT_ID_image_restoration_result_feat1) //prod ad
+            AdLoader adLoader = new AdLoader.Builder(context, development_test_ad) //test ad
                     .forNativeAd(new NativeAd.OnNativeAdLoadedListener() {
                         @Override
                         public void onNativeAdLoaded(NativeAd nativeAd) {
                             NativeAdView adView = (NativeAdView) LayoutInflater.from(context)
-                                    .inflate(R.layout.native_ad_item_season_changer_1, null);
+                                    .inflate(R.layout.native_ad_item, null);
 
                             DisplayMetrics displayMetrics = context.getResources().getDisplayMetrics();
                             int screenWidth = displayMetrics.widthPixels;
@@ -88,6 +88,7 @@ public class FeatListModelAdapter2 extends RecyclerView.Adapter<RecyclerView.Vie
                         @Override
                         public void onAdFailedToLoad(@NonNull LoadAdError adError) {
                             super.onAdFailedToLoad(adError);
+                            Log.d("NativeAd", "Ad failed to load: " + adError.getMessage());
 
                             // Optionally hide or remove ad container
                             adHolder.adContainer.setVisibility(View.GONE);
@@ -97,44 +98,43 @@ public class FeatListModelAdapter2 extends RecyclerView.Adapter<RecyclerView.Vie
 
             adLoader.loadAd(new AdRequest.Builder().build());
 
-
         } else {
-            FeatListModel2 model = list.get(position);
+
+            ModalFaceSwapMulti model = list.get(position);
             FeatureViewHolder featureHolder = (FeatureViewHolder) holder;
+            Glide.with(context)
+                    .load(model.getImage())  // This should be a String URL
+//                    .placeholder(R.drawable.placeholder)  // optional: show while loading
+//                    .error(R.drawable.error_image)        // optional: show on error
+                    .into(featureHolder.imageView);
+//            featureHolder.imageView.setImageResource(model.getImg());
+//            featureHolder.textView.setText(model.getFeat_name());
+            ((FeatureViewHolder) holder).imageViewSourceFaces.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (listener != null) {
+                        listener.onImagePick(holder.getAdapterPosition());
+                    }
 
-            featureHolder.imageView.setImageResource(model.getImg());
-            featureHolder.textView.setText(model.getFeat_name());
 
-//        expriment doing
-
-            DisplayMetrics displayMetrics = featureHolder.itemView.getContext().getResources().getDisplayMetrics();
-            int screenWidth = displayMetrics.widthPixels;
-
-            ViewGroup.LayoutParams layoutParams = featureHolder.itemView.getLayoutParams();
-            layoutParams.width = screenWidth / 2; // Set each item to half of screen width
-            featureHolder.itemView.setLayoutParams(layoutParams);
-
-
-//        tilll here
-
-            featureHolder.itemView.setOnClickListener((view) -> {
-                Intent intent = new Intent(view.getContext(), ProcessingActivity.class);
-                String text = featureHolder.textView.getText().toString();
-                intent.putExtra("text_key", text);
-                view.getContext().startActivity(intent);
+                }
             });
-        }
 
+            Glide.with(context)
+//                    .load(model.getSelectedImageUri())
+                    .load(model.getSelectedImageUri() != null ? model.getSelectedImageUri() : model.getDefaultImageResId())
+                    .into(featureHolder.imageViewSourceFaces);
+
+
+        }
     }
 
     @Override
     public int getItemCount() {
-
-//        return list.size() > 0 ? list.size() + 1 : 0;
         return list.size();
 
+//        return list.size() > 0 ? list.size() + 1 : 0;
     }
-
 
     @Override
     public int getItemViewType(int position) {
@@ -151,16 +151,16 @@ public class FeatListModelAdapter2 extends RecyclerView.Adapter<RecyclerView.Vie
 
     private void populateNativeADView(NativeAd nativeAd, NativeAdView adView) {
         // Set the media view.
-        adView.setMediaView(adView.findViewById(R.id.ad_media_season_changer_feat1));
+        adView.setMediaView(adView.findViewById(R.id.ad_media));
 
         // Set other ad assets.
-        adView.setHeadlineView(adView.findViewById(R.id.ad_headline_season_changer_feat1));
+        adView.setHeadlineView(adView.findViewById(R.id.ad_headline));
 //        adView.setBodyView(adView.findViewById(R.id.ad_body));
 //        adView.setCallToActionView(adView.findViewById(R.id.ad_call_to_action));
-        adView.setIconView(adView.findViewById(R.id.ad_app_icon_season_changer_feat1));
+        adView.setIconView(adView.findViewById(R.id.ad_app_icon));
 //        adView.setPriceView(adView.findViewById(R.id.ad_price));
 //        adView.setStarRatingView(adView.findViewById(R.id.ad_stars));
-        adView.setStoreView(adView.findViewById(R.id.ad_store_season_changer_feat1));
+        adView.setStoreView(adView.findViewById(R.id.ad_store));
 //        adView.setAdvertiserView(adView.findViewById(R.id.ad_advertiser));
 
         // The headline and mediaContent are guaranteed to be in every UnifiedNativeAd.
@@ -224,26 +224,35 @@ public class FeatListModelAdapter2 extends RecyclerView.Adapter<RecyclerView.Vie
         adView.setNativeAd(nativeAd);
     }
 
-
-    public static class FeatureViewHolder extends RecyclerView.ViewHolder {
-        ImageView imageView;
-        TextView textView;
-
-        public FeatureViewHolder(@NonNull View itemView) {
-            super(itemView);
-            imageView = itemView.findViewById(R.id.feat_img);
-            textView = itemView.findViewById(R.id.feat_title);
-        }
+    public interface OnImagePickRequested {
+        void onImagePick(int adapterPosition);
     }
 
     public static class AdViewHolder extends RecyclerView.ViewHolder {
+        //        ViewGroup adContainer;
         FrameLayout adContainer;
 
         public AdViewHolder(@NonNull View itemView) {
             super(itemView);
 //            adContainer = itemView.findViewById(R.id.native_ad_container);
-            adContainer = itemView.findViewById(R.id.adLayout_season_changer);
+            adContainer = itemView.findViewById(R.id.adLayout);
         }
     }
-}
 
+    public static class FeatureViewHolder extends RecyclerView.ViewHolder {
+        ImageView imageView;
+        //        Button btn;
+//        TextView textView;
+        ImageView imageViewSourceFaces;
+
+        public FeatureViewHolder(@NonNull View itemView) {
+            super(itemView);
+            imageView = itemView.findViewById(R.id.imageViewFaceSwapMulti);
+            imageViewSourceFaces = itemView.findViewById(R.id.buttonAddFaceSwapMulti);
+//            btn = itemView.findViewById(R.id.button_download_face_resto_img);
+//            textView = itemView.findViewById(R.id.feat_title);
+        }
+    }
+
+
+}

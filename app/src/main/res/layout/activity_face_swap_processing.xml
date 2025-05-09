@@ -1,0 +1,217 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#1C2B46"
+    android:orientation="vertical"
+    tools:context=".FaceSwapProcessing">
+
+    <!-- Title CardView at the Top -->
+    <androidx.cardview.widget.CardView
+        android:id="@+id/app_title_text_Card"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginRight="10dp"
+        app:cardBackgroundColor="#1C2B46"
+        app:cardCornerRadius="12dp"
+        app:cardElevation="8dp">
+
+        <TextView
+            android:id="@+id/featureNameTextView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:padding="12dp"
+            android:text="Processing image"
+            android:textColor="#FFFFFF"
+            android:textSize="24sp"
+            android:textStyle="bold" />
+    </androidx.cardview.widget.CardView>
+
+    <RelativeLayout
+        android:id="@+id/imageTemplateContainer"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_weight="1"
+        android:background="@drawable/dashed_border"
+        android:padding="16dp">
+
+        <ImageView
+            android:id="@+id/uploadImageTargetFace"
+            android:layout_width="150dp"
+            android:layout_height="150dp"
+            android:layout_centerInParent="true"
+            android:scaleType="centerCrop"
+            android:src="@drawable/baseline_add_photo_alternate_24"
+            app:tint="@color/white" />
+
+        <TextView
+            android:id="@+id/uploadTextSingleFace"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/uploadImageTargetFace"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="8dp"
+            android:text="Upload template image"
+            android:textColor="#AAAAAA"
+            android:textSize="18sp"
+            android:textStyle="bold" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/uploadFaceBtn"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="20dp"
+        android:background="@drawable/circle_button">
+
+        <ImageView
+            android:id="@+id/uploadImageSourceFace"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:layout_margin="5dp"
+            android:src="@drawable/baseline_file_upload_24"
+            app:tint="@color/white" />
+
+        <TextView
+            android:id="@+id/uploadImageTextSingleFace"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/uploadImageSourceFace"
+            android:layout_centerHorizontal="true"
+            android:text="Upload your face"
+            android:textColor="@android:color/white"
+            android:textSize="14sp" />
+    </RelativeLayout>
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/buttonCardView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginBottom="20dp"
+        app:cardBackgroundColor="#22334F"
+        app:cardCornerRadius="12dp"
+        app:cardElevation="8dp">
+
+        <Button
+            android:id="@+id/swapFaceButton"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:background="@drawable/bg_button"
+            android:enabled="false"
+            android:text="Swap Face"
+            android:textAllCaps="false"
+            android:textColor="#FFFFFF"
+            app:backgroundTint="@null"
+            app:rippleColor="@null" />
+    </androidx.cardview.widget.CardView>
+
+    <!-- Ad Container -->
+    <FrameLayout
+        android:id="@+id/ad_view_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom" />
+
+</LinearLayout>
+
+
+    <!--<?xml version="1.0" encoding="utf-8"?>-->
+    <!--<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"-->
+    <!--    xmlns:app="http://schemas.android.com/apk/res-auto"-->
+    <!--    xmlns:tools="http://schemas.android.com/tools"-->
+    <!--    android:id="@+id/main"-->
+    <!--    android:layout_width="match_parent"-->
+    <!--    android:layout_height="match_parent"-->
+    <!--    android:background="#1C2B46"-->
+    <!--    tools:context=".FaceSwapProcessing">-->
+
+    <!--    &lt;!&ndash; Upload Image Template Box &ndash;&gt;-->
+    <!--    <RelativeLayout-->
+    <!--        android:id="@+id/imageTemplateContainer"-->
+    <!--        android:layout_width="match_parent"-->
+    <!--        android:layout_height="450dp"-->
+    <!--        android:layout_alignParentTop="true"-->
+    <!--        android:layout_centerHorizontal="true"-->
+    <!--        android:layout_marginLeft="10dp"-->
+    <!--        android:layout_marginTop="40dp"-->
+    <!--        android:layout_marginRight="10dp"-->
+    <!--        android:background="@drawable/dashed_border"-->
+    <!--        android:padding="16dp">-->
+
+    <!--        <ImageView-->
+    <!--            android:id="@+id/uploadImageTargetFace"-->
+    <!--            android:layout_width="150dp"-->
+    <!--            android:layout_height="150dp"-->
+    <!--            android:layout_centerInParent="true"-->
+    <!--            android:src="@drawable/baseline_add_photo_alternate_24"-->
+    <!--            app:tint="@color/white" />-->
+
+    <!--        <TextView-->
+    <!--            android:id="@+id/uploadText"-->
+    <!--            android:layout_width="wrap_content"-->
+    <!--            android:layout_height="wrap_content"-->
+    <!--            android:layout_below="@id/uploadImageTargetFace"-->
+    <!--            android:layout_centerHorizontal="true"-->
+    <!--            android:layout_marginTop="8dp"-->
+    <!--            android:text="Upload template image"-->
+    <!--            android:textColor="#AAAAAA"-->
+    <!--            android:textSize="18sp"-->
+    <!--            android:textStyle="bold" />-->
+    <!--    </RelativeLayout>-->
+
+    <!--    &lt;!&ndash; Upload Your Face Button &ndash;&gt;-->
+    <!--    <RelativeLayout-->
+    <!--        android:id="@+id/uploadFaceBtn"-->
+    <!--        android:layout_width="120dp"-->
+    <!--        android:layout_height="120dp"-->
+    <!--        android:layout_below="@id/imageTemplateContainer"-->
+    <!--        android:layout_centerHorizontal="true"-->
+    <!--        android:layout_marginTop="40dp"-->
+    <!--        android:background="@drawable/circle_button">-->
+
+    <!--        &lt;!&ndash;        <TextView&ndash;&gt;-->
+    <!--        &lt;!&ndash;            android:id="@+id/uploadFaceText"&ndash;&gt;-->
+    <!--        &lt;!&ndash;            android:layout_width="wrap_content"&ndash;&gt;-->
+    <!--        &lt;!&ndash;            android:layout_height="wrap_content"&ndash;&gt;-->
+    <!--        &lt;!&ndash;            android:layout_centerInParent="true"&ndash;&gt;-->
+    <!--        &lt;!&ndash;            android:text="Upload Your Face"&ndash;&gt;-->
+    <!--        &lt;!&ndash;            android:textColor="#FFFFFF"&ndash;&gt;-->
+    <!--        &lt;!&ndash;            android:textSize="14sp" />&ndash;&gt;-->
+    <!--        <ImageView-->
+    <!--            android:id="@+id/uploadImageSourceFace"-->
+    <!--            android:layout_width="match_parent"-->
+    <!--            android:layout_height="match_parent"-->
+    <!--            android:src="@drawable/baseline_add_24" />-->
+    <!--    </RelativeLayout>-->
+
+    <!--    &lt;!&ndash; Swap Face Button &ndash;&gt;-->
+    <!--    <Button-->
+    <!--        android:id="@+id/swapFaceButton"-->
+    <!--        android:layout_width="match_parent"-->
+    <!--        android:layout_height="60dp"-->
+    <!--        android:layout_alignParentBottom="true"-->
+    <!--        android:layout_margin="16dp"-->
+    <!--        android:background="@drawable/disabled_button_bg"-->
+    <!--        android:enabled="true"-->
+    <!--        android:text="Swap Face"-->
+    <!--        android:textColor="#AAAAAA" />-->
+
+    <!--</RelativeLayout>-->
+
+
+
