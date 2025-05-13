@@ -2,6 +2,9 @@ package com.prasthaan.dusterai;
 
 import android.Manifest;
 import android.app.Dialog;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -33,6 +36,9 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
 
@@ -66,8 +72,8 @@ public class ProcessingActivity extends AppCompatActivity {
     private static final int REQUEST_IMAGE_CAPTURE = 1;
     private static final int REQUEST_PERMISSIONS = 101;
     private static final int TOTAL_TIME = 90; // 120 seconds
-    private static final int TOTAL_TIME_RESTORE_IMAGE = 120; // 120 seconds
-    private static final int TOTAL_TIME_ENHANCE_IMAGE_2X = 120; // 120 seconds
+    private static final int TOTAL_TIME_RESTORE_IMAGE = 90; // 120 seconds
+    private static final int TOTAL_TIME_ENHANCE_IMAGE_2X = 90; // 120 seconds
     private static final int TOTAL_TIME_ENHANCE_IMAGE_4X = 180; // 120 seconds
     private static final String AD_UNIT_ID = "ca-app-pub-4827086355311757/2017201353";
     String development_test_ad = "ca-app-pub-3940256099942544/9214589741";
@@ -76,6 +82,7 @@ public class ProcessingActivity extends AppCompatActivity {
     String presignedUrl = "";
     boolean flagNewImage = false;
     ArrayList<String> faceUrls;
+    TextView minimizeAppTextView;
     private ImageView imageView;
     private Uri imageUri;
     private File imageFileFromCamera = null;
@@ -86,6 +93,32 @@ public class ProcessingActivity extends AppCompatActivity {
     private CountDownTimer countDownTimer;
     private AdView adView;
     private FrameLayout adContainerView;
+    private boolean isAppInForeground = true;
+    private String pendingPresignedUrl = null;
+    private String pendingRestoredImageUrl = null;
+    private ArrayList<String> pendingRestoredFaceUrls = null;
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        isAppInForeground = true;
+
+        if (pendingPresignedUrl != null) {
+            goToProcessedActivity(pendingPresignedUrl);
+            pendingPresignedUrl = null;
+        }
+        if (pendingRestoredImageUrl != null && pendingRestoredFaceUrls != null) {
+            goToProcessedActivityRestored(pendingRestoredImageUrl, pendingRestoredFaceUrls);
+            pendingRestoredImageUrl = null;
+            pendingRestoredFaceUrls = null;
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        isAppInForeground = false;
+    }
 
     private void showProcessingDialog(String process) {
         progressDialog = new Dialog(this);
@@ -98,7 +131,11 @@ public class ProcessingActivity extends AppCompatActivity {
 
         // Initialize countdown
         timerText = progressDialog.findViewById(R.id.timer_text);
+        minimizeAppTextView = progressDialog.findViewById(R.id.minimize_app_textview);
         startCountdown(process);
+        if (Objects.equals(process, "Restore image") || Objects.equals(process, "Enhance resolution 2X")) {
+            minimizeAppTextView.setVisibility(View.VISIBLE);
+        }
     }
 
     private void startCountdown(String process) {
@@ -206,6 +243,8 @@ public class ProcessingActivity extends AppCompatActivity {
         open_cam_btn = findViewById(R.id.open_camera_button);
         receivedText = getIntent().getStringExtra("text_key");
         TextView textViewFeatname = findViewById(R.id.featureNameTextView);
+
+        createNotificationChannel();
 
         if (receivedText.equals("To winter") || receivedText.equals("To Summer")) {
             textViewFeatname.setText(receivedText);
@@ -503,9 +542,16 @@ public class ProcessingActivity extends AppCompatActivity {
                         try {
                             presignedUrl = response.body().string();
                             flagNewImage = false;
-                            Intent intent = new Intent(ProcessingActivity.this, ProcessedActivity.class);
-                            intent.putExtra("PRESIGNED_URL", presignedUrl);
-                            startActivity(intent);
+                            if (isAppInForeground) {
+                                goToProcessedActivity(presignedUrl);
+                            } else {
+                                pendingPresignedUrl = presignedUrl;
+                                sendProcessingCompletedNotification();
+                            }
+                            flagNewImage = false;
+//                            Intent intent = new Intent(ProcessingActivity.this, ProcessedActivity.class);
+//                            intent.putExtra("PRESIGNED_URL", presignedUrl);
+//                            startActivity(intent);
                         } catch (IOException e) {
                             dismissDialog();
                             e.printStackTrace();
@@ -533,9 +579,17 @@ public class ProcessingActivity extends AppCompatActivity {
                         try {
                             presignedUrl = response.body().string();
                             flagNewImage = false;
-                            Intent intent = new Intent(ProcessingActivity.this, ProcessedActivity.class);
-                            intent.putExtra("PRESIGNED_URL", presignedUrl);
-                            startActivity(intent);
+                            if (isAppInForeground) {
+                                goToProcessedActivity(presignedUrl);
+                            } else {
+                                pendingPresignedUrl = presignedUrl;
+                                sendProcessingCompletedNotification();
+                            }
+//                            presignedUrl = response.body().string();
+                            flagNewImage = false;
+//                            Intent intent = new Intent(ProcessingActivity.this, ProcessedActivity.class);
+//                            intent.putExtra("PRESIGNED_URL", presignedUrl);
+//                            startActivity(intent);
                         } catch (IOException e) {
                             dismissDialog();
                             e.printStackTrace();
@@ -561,14 +615,28 @@ public class ProcessingActivity extends AppCompatActivity {
                 public void onResponse(Call<RestoreImageResponse> call, Response<RestoreImageResponse> response) {
                     dismissDialog();
                     if (response.isSuccessful() && response.body() != null) {
+
                         RestoreImageResponse result = response.body();
                         faceUrls = new ArrayList<>(result.getRestoredFaces());
                         presignedUrl = result.getRestoredImage();
                         flagNewImage = false;
-                        Intent intent = new Intent(ProcessingActivity.this, ProcessedActivityRestoredImg.class);
-                        intent.putExtra("RESTORED_IMAGE_URL", result.getRestoredImage());
-                        intent.putStringArrayListExtra("RESTORED_FACE_URLS", faceUrls);
-                        startActivity(intent);
+
+                        if (isAppInForeground) {
+                            goToProcessedActivityRestored(presignedUrl, faceUrls);
+                        } else {
+                            pendingRestoredImageUrl = presignedUrl;
+                            pendingRestoredFaceUrls = faceUrls;
+                            sendRestoreCompletedNotification();
+                        }
+
+//                        RestoreImageResponse result = response.body();
+//                        faceUrls = new ArrayList<>(result.getRestoredFaces());
+//                        presignedUrl = result.getRestoredImage();
+//                        flagNewImage = false;
+//                        Intent intent = new Intent(ProcessingActivity.this, ProcessedActivityRestoredImg.class);
+//                        intent.putExtra("RESTORED_IMAGE_URL", result.getRestoredImage());
+//                        intent.putStringArrayListExtra("RESTORED_FACE_URLS", faceUrls);
+//                        startActivity(intent);
                     } else {
                         Toast.makeText(ProcessingActivity.this, "Processing Failed", Toast.LENGTH_SHORT).show();
                     }
@@ -772,5 +840,100 @@ public class ProcessingActivity extends AppCompatActivity {
         return false;
     }
 
+
+    private void createNotificationChannel() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            CharSequence name = "ProcessingChannel";
+            String description = "Channel for Processing Completion Notifications";
+            int importance = NotificationManager.IMPORTANCE_DEFAULT;
+            NotificationChannel channel = new NotificationChannel("processing_channel", name, importance);
+            channel.setDescription(description);
+
+            NotificationManager notificationManager = getSystemService(NotificationManager.class);
+            notificationManager.createNotificationChannel(channel);
+        }
+    }
+
+    private void sendProcessingCompletedNotification() {
+        Intent intent = new Intent(this, ProcessedActivity.class);
+        intent.putExtra("PRESIGNED_URL", pendingPresignedUrl);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
+
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, "processing_channel")
+                .setSmallIcon(R.drawable.app_logo__icon) // <-- Use your app's icon here
+                .setContentTitle("Processing Completed")
+                .setContentText("Tap to view your enhanced image")
+                .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+                .setContentIntent(pendingIntent)
+                .setAutoCancel(true);
+
+        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            Toast.makeText(this, "Notification permission is required", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        notificationManager.notify(1001, builder.build());
+    }
+
+    private void goToProcessedActivity(String presignedUrl) {
+        Intent intent = new Intent(ProcessingActivity.this, ProcessedActivity.class);
+        intent.putExtra("PRESIGNED_URL", presignedUrl);
+        startActivity(intent);
+    }
+
+    private void goToProcessedActivityRestored(String imageUrl, ArrayList<String> faceUrls) {
+        Intent intent = new Intent(ProcessingActivity.this, ProcessedActivityRestoredImg.class);
+        intent.putExtra("RESTORED_IMAGE_URL", imageUrl);
+        intent.putStringArrayListExtra("RESTORED_FACE_URLS", faceUrls);
+        startActivity(intent);
+    }
+
+    private void sendRestoreCompletedNotification() {
+        Intent intent = new Intent(this, ProcessedActivityRestoredImg.class);
+        intent.putExtra("RESTORED_IMAGE_URL", pendingRestoredImageUrl);
+        intent.putStringArrayListExtra("RESTORED_FACE_URLS", pendingRestoredFaceUrls);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+
+        PendingIntent pendingIntent = PendingIntent.getActivity(
+                this, 1, intent,
+                PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE
+        );
+
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, "processing_channel")
+                .setSmallIcon(R.drawable.app_logo__icon) // Your icon
+                .setContentTitle("Restoration Complete")
+                .setContentText("Tap to view the restored image")
+                .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+                .setContentIntent(pendingIntent)
+                .setAutoCancel(true);
+
+        NotificationManagerCompat manager = NotificationManagerCompat.from(this);
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            Toast.makeText(this, "Permission is required", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        manager.notify(1002, builder.build());
+    }
+
+
 }
+
+
+
+
 

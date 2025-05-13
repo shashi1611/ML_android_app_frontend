@@ -5,6 +5,8 @@ package com.prasthaan.dusterai;
 //
 //}
 
+import java.util.List;
+
 import okhttp3.MultipartBody;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
@@ -24,8 +26,28 @@ public interface ApiService {
     Call<ResponseBody> uploadImage(@Part MultipartBody.Part file);
 
     @Multipart
+    @POST("/detect_faces")
+    Call<ResponseBody> executeProcessingDetectFace(@Part MultipartBody.Part file);
+
+    @Multipart
+    @POST("/single_face")
+    Call<ResponseBody> executeProcessingFaceSwap(
+            @Part MultipartBody.Part image1,
+            @Part MultipartBody.Part image2
+    );
+
+    @Multipart
+    @POST("/multi_face")
+    Call<ResponseBody> executeProcessingMultiFaceSwap(
+            @Part MultipartBody.Part target_image,
+            @Part List<MultipartBody.Part> src_image_list,
+            @Part List<MultipartBody.Part> dst_image_list
+    );
+
+    @Multipart
     @POST("/scale_image_2x")
     Call<ResponseBody> executeProcessingEnhanceImage2x(@Part MultipartBody.Part file);
+
 
     @Multipart
     @POST("/scale_image_4x")

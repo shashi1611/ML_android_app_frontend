@@ -180,8 +180,8 @@ public class ProcessedActivity extends AppCompatActivity {
     private void loadAdaptiveBannerAd() {
         // Create a new AdView dynamically
         adViewDownloadPage = new AdView(this);
-        adViewDownloadPage.setAdUnitId(AD_UNIT_ID_DOWNLOAD_PAGE);  //prod ad
-//        adViewDownloadPage.setAdUnitId(development_test_ad);  //test ad
+//        adViewDownloadPage.setAdUnitId(AD_UNIT_ID_DOWNLOAD_PAGE);  //prod ad
+        adViewDownloadPage.setAdUnitId(development_test_ad);  //test ad
 
         // Set adaptive ad size
         AdSize adSize = getAdSize();
