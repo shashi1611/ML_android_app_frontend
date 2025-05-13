@@ -28,15 +28,21 @@
         android:src="@drawable/baseline_arrow_upward_24"
         app:tint="@color/white" />
 
-
-    <!--         Circular + button -->
-    <ImageView
-        android:id="@+id/buttonAddFaceSwapMulti"
+    <FrameLayout
         android:layout_width="48dp"
         android:layout_height="48dp"
-        android:layout_marginTop="4dp"
+        android:layout_marginTop="3dp"
         android:background="@drawable/circle_button"
-        android:scaleType="centerCrop" />
+        android:padding="4dp">
+
+        <ImageView
+            android:id="@+id/buttonAddFaceSwapMulti"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_margin="1dp"
+            android:clipToOutline="true"
+            android:scaleType="centerCrop" />
+    </FrameLayout>
 
 </LinearLayout>
 

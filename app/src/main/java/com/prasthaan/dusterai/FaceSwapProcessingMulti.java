@@ -14,7 +14,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.provider.MediaStore;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -65,11 +64,10 @@ import retrofit2.Response;
 
 public class FaceSwapProcessingMulti extends AppCompatActivity {
 
-    private static final int TOTAL_TIME = 45; // 120 seconds
+    private static final int TOTAL_TIME = 45;
     RecyclerView recyclerView;
     ArrayList<ModalFaceSwapMulti> listFaceSwapMulti = new ArrayList<>();
     AdapterFaceSwapMulti adapterFaceSwapMulti;
-    //    List<File> dst_faces = new ArrayList<>();
     Map<Integer, File> dst_faces = new HashMap<>();
     List<File> fsrc_faces = new ArrayList<>();
     List<File> src_faces = new ArrayList<>();
@@ -81,7 +79,6 @@ public class FaceSwapProcessingMulti extends AppCompatActivity {
     boolean flagNewSrcImage = false;
     String presignedUrl = "";
     private CountDownTimer countDownTimer;
-    //    List<Bitmap> faceBitmaps;
     private ActivityResultLauncher<PickVisualMediaRequest> imagePickerLauncherSourceImages;
     private ActivityResultLauncher<PickVisualMediaRequest> imagePickerLauncherTargetFaceMulti;
     private int currentPickPosition = -1;
@@ -122,7 +119,6 @@ public class FaceSwapProcessingMulti extends AppCompatActivity {
         String receivedText = getIntent().getStringExtra("text_key");
 
 
-//        ArrayList<ModalFaceSwapMulti> listFaceSwapMulti = new ArrayList<>();
         adapterFaceSwapMulti = new AdapterFaceSwapMulti(
                 listFaceSwapMulti,
                 this, // <-- this is the context
@@ -130,12 +126,12 @@ public class FaceSwapProcessingMulti extends AppCompatActivity {
                     @Override
                     public void onImagePick(int adapterPosition) {
                         currentPickPosition = adapterPosition;
-                        Log.d("current position = ", "onImagePick: the current position =  " + currentPickPosition);
+//                        Log.d("current position = ", "onImagePick: the current position =  " + currentPickPosition);
 //                        dst_position.add(currentPickPosition);
                         if (!dst_position.contains(currentPickPosition)) {
                             dst_position.add(currentPickPosition);
                         }
-                        Log.d("current position = ", "onImagePick: the current length of dst_position =  " + dst_position.size());
+//                        Log.d("current position = ", "onImagePick: the current length of dst_position =  " + dst_position.size());
 
                         imagePickerLauncherSourceImages.launch(new PickVisualMediaRequest.Builder()
                                 .setMediaType(ActivityResultContracts.PickVisualMedia.ImageOnly.INSTANCE)
@@ -152,16 +148,9 @@ public class FaceSwapProcessingMulti extends AppCompatActivity {
                         flagNewTargetImage = true;
                         listFaceSwapMulti.get(currentPickPosition).setSelectedImageUri(uri);
                         adapterFaceSwapMulti.notifyItemChanged(currentPickPosition);
-
-//                        Glide.with(this)
-//                                .load(uri)
-//                                .override(1024, 1024) // limit size
-//                                .into(imageViewTargetFace);
                         File dst_imageFile = copyUriToFile(uri);
-//                        dst_faces.add(dst_imageFile);
                         dst_faces.put(currentPickPosition, dst_imageFile);
                         currentPickPosition = -1;
-//                        flagNewImage = true;
                         checkEnableButton();
 
                     } else {
@@ -226,11 +215,10 @@ public class FaceSwapProcessingMulti extends AppCompatActivity {
                             .map(Map.Entry::getValue)           // Extract the file (value)
                             .collect(Collectors.toList());
                     Collections.sort(dst_position);
+                    fsrc_faces.clear();
                     for (int i = 0; i < dst_position.size(); i++) {
                         fsrc_faces.add(src_faces.get(dst_position.get(i)));
-                        Log.d("current position", "onCreate: the position of = dst" + dst_position.get(i));
                     }
-                    Log.d("current position", "onCreate: src face and target face length =" + fsrc_faces.size() + dstFilesForApi.size());
                     if (fsrc_faces.size() == dstFilesForApi.size()) {
                         processImage(imageFileTargetImage, fsrc_faces, dstFilesForApi);
                     }
@@ -284,29 +272,27 @@ public class FaceSwapProcessingMulti extends AppCompatActivity {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                 if (response.isSuccessful()) {
-                    dismissDialog();
+                    dismissDialog("multi");
                     try {
-                        String presignedUrl = response.body().string();
-                        Log.d("current position", "onResponse: the response from face swap is" + presignedUrl);
-//                        flagNewImage = false;
+                        presignedUrl = response.body().string();
                         flagNewSrcImage = false;
                         flagNewTargetImage = false;
                         Intent intent = new Intent(FaceSwapProcessingMulti.this, ProcessedActivity.class);
                         intent.putExtra("PRESIGNED_URL", presignedUrl);
                         startActivity(intent);
                     } catch (IOException e) {
-                        dismissDialog();
+                        dismissDialog("multi");
                         e.printStackTrace();
                     }
                 } else {
-                    dismissDialog();
+                    dismissDialog("multi");
                     Toast.makeText(FaceSwapProcessingMulti.this, "Processing Failed", Toast.LENGTH_SHORT).show();
                 }
             }
 
             @Override
             public void onFailure(Call<ResponseBody> call, Throwable t) {
-//                dismissDialog();
+                dismissDialog("multi");
                 Toast.makeText(FaceSwapProcessingMulti.this, "Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
@@ -321,7 +307,7 @@ public class FaceSwapProcessingMulti extends AppCompatActivity {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                 if (response.isSuccessful()) {
-                    dismissDialog();
+                    dismissDialog("detect");
                     try {
                         File zipFile = new File(FaceSwapProcessingMulti.this.getCacheDir(), "faces.zip");
                         FileOutputStream fos = new FileOutputStream(zipFile);
@@ -340,46 +326,25 @@ public class FaceSwapProcessingMulti extends AppCompatActivity {
                             out.close();
                             src_faces.add(faceFile);
 
-                            // 2. Get Uri
-//                            Uri faceUri = FileProvider.getUriForFile(
-//                                    FaceSwapProcessingMulti.this, // context
-//                                    "com.prasthaan.dusterai.fileprovider", // same as in your AndroidManifest
-//                                    faceFile
-//                            );
                             Uri imageUri = FileProvider.getUriForFile(FaceSwapProcessingMulti.this, "com.prasthaan.dusterai.fileprovider", faceFile);
-
-                            // 3. Add to adapter list
 
 
                             listFaceSwapMulti.add(new ModalFaceSwapMulti(imageUri, R.drawable.baseline_add_24));
-
-
-//                            .notifyDataSetChanged();
-                            // Use the face bitmap here
-                            // For example: display it, process it, etc.
                         }
                         adapterFaceSwapMulti.notifyDataSetChanged();
-
-
-//                        recyclerView.setAdapter(adapterFaceSwapMulti);
-//                        LinearLayoutManager layoutManagerFaceSwapMulti = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
-//                        recyclerView.setLayoutManager(layoutManagerFaceSwapMulti);
-//                        recyclerView.setNestedScrollingEnabled(false);
-//                        recyclerView.setOverScrollMode(View.OVER_SCROLL_NEVER);
-//                        Log.d("the bitmap ", "onResponse: the bitmap = " + faceBitmaps.size());
                     } catch (IOException e) {
-                        dismissDialog();
+                        dismissDialog("detect");
                         e.printStackTrace();
                     }
                 } else {
-                    dismissDialog();
+                    dismissDialog("detect");
                     Toast.makeText(FaceSwapProcessingMulti.this, "Processing Failed", Toast.LENGTH_SHORT).show();
                 }
             }
 
             @Override
             public void onFailure(Call<ResponseBody> call, Throwable t) {
-//                dismissDialog();
+                dismissDialog("detect");
                 Toast.makeText(FaceSwapProcessingMulti.this, "Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
@@ -579,10 +544,16 @@ public class FaceSwapProcessingMulti extends AppCompatActivity {
         }
     }
 
-    private void dismissDialog() {
-        if (progressDialog != null && progressDialog.isShowing()) {
-//            countDownTimer.cancel();
-            progressDialog.dismiss();
+    private void dismissDialog(String process) {
+        if (Objects.equals(process, "multi")) {
+            if (progressDialog != null && progressDialog.isShowing()) {
+                countDownTimer.cancel();
+                progressDialog.dismiss();
+            }
+        } else {
+            if (progressDialog != null && progressDialog.isShowing()) {
+                progressDialog.dismiss();
+            }
         }
     }
 }

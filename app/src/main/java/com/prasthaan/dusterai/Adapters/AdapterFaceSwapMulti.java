@@ -120,6 +120,7 @@ public class AdapterFaceSwapMulti extends RecyclerView.Adapter<RecyclerView.View
                 }
             });
 
+
             Glide.with(context)
 //                    .load(model.getSelectedImageUri())
                     .load(model.getSelectedImageUri() != null ? model.getSelectedImageUri() : model.getDefaultImageResId())

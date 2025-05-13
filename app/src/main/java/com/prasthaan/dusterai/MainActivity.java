@@ -221,8 +221,10 @@ public class MainActivity extends AppCompatActivity {
 //        <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<Recycler view for face swap>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
         RecyclerView recyclerViewImageFaceSwap = findViewById(R.id.recyclerView_feat_list_face_swap);
         ArrayList<FeatListModalFaceSwap> listFaceSwap = new ArrayList<>();
-        listFaceSwap.add(new FeatListModalFaceSwap(R.drawable.restore_image_feat_card, "Single face"));
-        listFaceSwap.add(new FeatListModalFaceSwap(R.drawable.feat_card_two_x, "Multiple faces"));
+//        listFaceSwap.add(new FeatListModalFaceSwap(R.drawable.restore_image_feat_card, "Single face"));
+        listFaceSwap.add(new FeatListModalFaceSwap(R.drawable.single_card_f, "Single face"));
+
+        listFaceSwap.add(new FeatListModalFaceSwap(R.drawable.multi_card_fi, "Multiple faces"));
         FeatListModalAdapterFaceSwap featListModalAdapterFaceSwap = new FeatListModalAdapterFaceSwap(listFaceSwap, this);
         recyclerViewImageFaceSwap.setAdapter(featListModalAdapterFaceSwap);
         LinearLayoutManager layoutManagerFaceSwap = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);

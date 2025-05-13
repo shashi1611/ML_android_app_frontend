@@ -14,7 +14,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.provider.MediaStore;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -130,7 +129,6 @@ public class FaceSwapProcessing extends AppCompatActivity {
                 registerForActivityResult(new ActivityResultContracts.PickVisualMedia(), uri -> {
                     if (uri != null) {
                         flagNewTargetImage = true;
-//                        relativeLayoutImageTemplate.setBackground(null);
 
                         RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(
                                 RelativeLayout.LayoutParams.MATCH_PARENT,
@@ -147,7 +145,6 @@ public class FaceSwapProcessing extends AppCompatActivity {
                                 .into(imageViewTargetFace);
                         imageFileFromTargetFace = copyUriToFile(uri);
                         checkEnableButton();
-//                        flagNewImage = true;
 
                     } else {
                         Toast.makeText(this, "No image selected", Toast.LENGTH_SHORT).show();
@@ -173,7 +170,6 @@ public class FaceSwapProcessing extends AppCompatActivity {
                                 .into(imageViewSourceFace);
                         imageFileFromSourceFace = copyUriToFile(uri);
                         checkEnableButton();
-//                        flagNewImage = true;
 
                     } else {
                         Toast.makeText(this, "No image selected", Toast.LENGTH_SHORT).show();
@@ -193,17 +189,10 @@ public class FaceSwapProcessing extends AppCompatActivity {
     }
 
     private void processImage(File file1, File file2) {
-        Log.d("uploading image", "processImage: file1" + file1);
-        Log.d("uploading image", "processImage:  file2" + file2);
         RequestBody requestFile1 = RequestBody.create(MediaType.parse("image/*"), file1);
         RequestBody requestFile2 = RequestBody.create(MediaType.parse("image/*"), file2);
-        Log.d("uploading image", "processImage: requestfile1 " + requestFile1);
-        Log.d("uploading image", "processImage:  requestfile2 " + requestFile2);
         MultipartBody.Part image1 = MultipartBody.Part.createFormData("image1", file1.getName(), requestFile1);
         MultipartBody.Part image2 = MultipartBody.Part.createFormData("image2", file2.getName(), requestFile2);
-        Log.d("uploading image", "processImage: uploading image1" + image1);
-        Log.d("uploading image", "processImage: uploading image2" + image2);
-
         ApiService apiService = RetrofitClient.getApiServiceFaceSwap();
         apiService.executeProcessingFaceSwap(image1, image2).enqueue(new Callback<ResponseBody>() {
             @Override
@@ -214,8 +203,6 @@ public class FaceSwapProcessing extends AppCompatActivity {
                         presignedUrl = response.body().string();
                         flagNewSrcImage = false;
                         flagNewTargetImage = false;
-                        Log.d("Face swap response", "onResponse: the response from face swap is" + presignedUrl);
-//                        flagNewImage = false;
                         Intent intent = new Intent(FaceSwapProcessing.this, ProcessedActivity.class);
                         intent.putExtra("PRESIGNED_URL", presignedUrl);
                         startActivity(intent);
@@ -231,7 +218,7 @@ public class FaceSwapProcessing extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<ResponseBody> call, Throwable t) {
-//                dismissDialog();
+                dismissDialog();
                 Toast.makeText(FaceSwapProcessing.this, "Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
@@ -390,15 +377,7 @@ public class FaceSwapProcessing extends AppCompatActivity {
 
     private void startCountdown(String process) {
         int total_time;
-//        if (Objects.equals(process, "Restore image")) {
-//            total_time = TOTAL_TIME_RESTORE_IMAGE;
-//        } else if (Objects.equals(process, "Enhance resolution 2X")) {
-//            total_time = TOTAL_TIME_ENHANCE_IMAGE_2X;
-//        } else if (Objects.equals(process, "Enhance resolution 4X")) {
-//            total_time = TOTAL_TIME_ENHANCE_IMAGE_4X;
-//        } else {
         total_time = TOTAL_TIME;
-//        }
         countDownTimer = new CountDownTimer(total_time * 1000, 1000) {
             @Override
             public void onTick(long millisUntilFinished) {
@@ -408,8 +387,7 @@ public class FaceSwapProcessing extends AppCompatActivity {
 
             @Override
             public void onFinish() {
-                timerText.setText("Still processing please keep patience!");
-//                dismissDialog();
+                timerText.setText("Still processing please wait!");
             }
         }.start();
     }

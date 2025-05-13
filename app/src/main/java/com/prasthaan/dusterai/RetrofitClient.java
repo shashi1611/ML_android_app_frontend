@@ -12,8 +12,8 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class RetrofitClient {
     private static final String BASE_URL = "https://ognjrl54krqatgsns5butrbksa0kqfhu.lambda-url.ap-south-1.on.aws/";
-    private static final String BASE_URL_IMAGE_RESTORE = "https://u3dvih2namg3i5sukskixp2dza0afuep.lambda-url.ap-south-1.on.aws/";
-    private static final String BASE_URL_IMAGE_ENHANCE = "https://orshv44xnu3ebwzwtt3khdhl6y0mggye.lambda-url.ap-south-1.on.aws/";
+    private static final String BASE_URL_IMAGE_RESTORE = "https://k7ettmg47hq7tx43wfbkw5m7f40wsvut.lambda-url.ap-south-1.on.aws/";
+    private static final String BASE_URL_IMAGE_ENHANCE = "https://k7ettmg47hq7tx43wfbkw5m7f40wsvut.lambda-url.ap-south-1.on.aws/";
     private static final String BASE_URL_FACE_SWAP = "https://pusyqcspflfddakepsb435c2fy0qwuzb.lambda-url.ap-south-1.on.aws/";
     private static final String BASE_URL_FACE_DETECTION = "https://ludgv6k2plzwj3vlm3vilaycia0kvspr.lambda-url.ap-south-1.on.aws/";
 

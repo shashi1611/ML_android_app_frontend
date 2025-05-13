@@ -94,6 +94,15 @@ public class FeatListModalAdapterFaceSwap extends RecyclerView.Adapter<RecyclerV
             FeatListModalFaceSwap model = list.get(position);
             FeatureViewHolder featureHolder = (FeatureViewHolder) holder;
             featureHolder.imageView.setImageResource(model.getImg());
+//            Glide.with(featureHolder.itemView.getContext())
+//                    .asGif()
+//                    .load(model.getImg())  // this is your drawable resource (GIF)
+//                    .into(featureHolder.imageView);
+//            Glide.with(holder.itemView.getContext())
+//                    .asGif()
+//                    .load("https://media.giphy.com/media/ICOgUNjpvO0PC/giphy.gif")  // a known working GIF
+//                    .into(featureHolder.imageView);
+
             featureHolder.textView.setText(model.getFeat_name());
 
 //        expriment doing
