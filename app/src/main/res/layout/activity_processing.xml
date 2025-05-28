@@ -44,12 +44,45 @@
         app:cardCornerRadius="12dp"
         app:cardElevation="8dp">
 
-        <ImageView
-            android:id="@+id/uploaded_img"
+        <!--        <ImageView-->
+        <!--            android:id="@+id/uploaded_img"-->
+        <!--            android:layout_width="match_parent"-->
+        <!--            android:layout_height="match_parent"-->
+        <!--            android:scaleType="centerCrop"-->
+        <!--            android:src="@drawable/upload_image_logo_default" />-->
+
+        <RelativeLayout
+            android:id="@+id/imageTemplateContainer"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:scaleType="centerCrop"
-            android:src="@drawable/upload_image_logo_default" />
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_weight="1"
+            android:background="@drawable/dashed_border"
+            android:padding="16dp">
+
+            <ImageView
+                android:id="@+id/uploaded_img"
+                android:layout_width="150dp"
+                android:layout_height="150dp"
+                android:layout_centerInParent="true"
+                android:scaleType="fitCenter"
+                android:src="@drawable/baseline_add_photo_alternate_24"
+                app:tint="@color/white" />
+
+            <TextView
+                android:id="@+id/uploadTextSingleFace"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/uploaded_img"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="8dp"
+                android:text="Upload image from below button"
+                android:textColor="#AAAAAA"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+        </RelativeLayout>
     </androidx.cardview.widget.CardView>
 
     <!-- Button CardView at the Bottom -->

@@ -4,10 +4,22 @@
     android:layout_height="wrap_content"
     android:layout_margin="0dp">
 
-    <ImageView
-        android:id="@+id/carousel_single_item_image"
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="280dp"
-        android:scaleType="centerCrop" />
+        android:layout_height="match_parent">
+
+        <ImageView
+            android:id="@+id/carousel_single_item_image"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="centerCrop" />
+
+        <View
+            android:id="@+id/shadow_overlay"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:layout_gravity="bottom"
+            android:background="@drawable/bottom_shadow_gradient" />
+    </FrameLayout>
 
 </RelativeLayout>

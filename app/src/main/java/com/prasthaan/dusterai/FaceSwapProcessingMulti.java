@@ -2,6 +2,7 @@ package com.prasthaan.dusterai;
 
 import android.Manifest;
 import android.app.Dialog;
+import android.app.PendingIntent;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -26,6 +27,9 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.PickVisualMediaRequest;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
 import androidx.core.content.FileProvider;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
@@ -85,6 +89,27 @@ public class FaceSwapProcessingMulti extends AppCompatActivity {
     private File imageFileTargetImage;
     private Dialog progressDialog;
     private TextView timerText;
+
+    private boolean isAppInForeground = true;
+    private String pendingPresignedUrl = null;
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        isAppInForeground = true;
+
+        if (pendingPresignedUrl != null) {
+            goToProcessedActivity(pendingPresignedUrl);
+            pendingPresignedUrl = null;
+        }
+
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        isAppInForeground = false;
+    }
 
     private void requestPermissionIfNeeded() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
@@ -280,6 +305,12 @@ public class FaceSwapProcessingMulti extends AppCompatActivity {
                         Intent intent = new Intent(FaceSwapProcessingMulti.this, ProcessedActivity.class);
                         intent.putExtra("PRESIGNED_URL", presignedUrl);
                         startActivity(intent);
+                        if (isAppInForeground) {
+                            goToProcessedActivity(presignedUrl);
+                        } else {
+                            pendingPresignedUrl = presignedUrl;
+                            sendProcessingCompletedNotification();
+                        }
                     } catch (IOException e) {
                         dismissDialog("multi");
                         e.printStackTrace();
@@ -555,5 +586,40 @@ public class FaceSwapProcessingMulti extends AppCompatActivity {
                 progressDialog.dismiss();
             }
         }
+    }
+
+    private void goToProcessedActivity(String presignedUrl) {
+        Intent intent = new Intent(FaceSwapProcessingMulti.this, ProcessedActivity.class);
+        intent.putExtra("PRESIGNED_URL", presignedUrl);
+        startActivity(intent);
+    }
+
+    private void sendProcessingCompletedNotification() {
+        Intent intent = new Intent(this, ProcessedActivity.class);
+        intent.putExtra("PRESIGNED_URL", pendingPresignedUrl);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
+
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, "processing_channel")
+                .setSmallIcon(R.drawable.app_logo__icon) // <-- Use your app's icon here
+                .setContentTitle("Processing Completed")
+                .setContentText("Tap to view your image")
+                .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+                .setContentIntent(pendingIntent)
+                .setAutoCancel(true);
+
+        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            Toast.makeText(this, "Notification permission is required", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        notificationManager.notify(1001, builder.build());
     }
 }

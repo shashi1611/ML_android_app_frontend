@@ -105,17 +105,6 @@ public class FeatListModelAdapter2 extends RecyclerView.Adapter<RecyclerView.Vie
             featureHolder.imageView.setImageResource(model.getImg());
             featureHolder.textView.setText(model.getFeat_name());
 
-//        expriment doing
-
-            DisplayMetrics displayMetrics = featureHolder.itemView.getContext().getResources().getDisplayMetrics();
-            int screenWidth = displayMetrics.widthPixels;
-
-            ViewGroup.LayoutParams layoutParams = featureHolder.itemView.getLayoutParams();
-            layoutParams.width = screenWidth / 2; // Set each item to half of screen width
-            featureHolder.itemView.setLayoutParams(layoutParams);
-
-
-//        tilll here
 
             featureHolder.itemView.setOnClickListener((view) -> {
                 Intent intent = new Intent(view.getContext(), ProcessingActivity.class);

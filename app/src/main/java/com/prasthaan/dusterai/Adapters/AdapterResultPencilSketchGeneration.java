@@ -1,7 +1,6 @@
 package com.prasthaan.dusterai.Adapters;
 
 import android.content.Context;
-import android.content.Intent;
 import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,32 +8,33 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.google.android.gms.ads.AdLoader;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.LoadAdError;
 import com.google.android.gms.ads.nativead.NativeAd;
 import com.google.android.gms.ads.nativead.NativeAdView;
-import com.prasthaan.dusterai.FaceSwapProcessing;
-import com.prasthaan.dusterai.FaceSwapProcessingMulti;
-import com.prasthaan.dusterai.Models.FeatListModalFaceSwap;
+import com.prasthaan.dusterai.Models.ModelResultPencilSketchGeneration;
+import com.prasthaan.dusterai.ProcessedActivityPencilSketchGeneration;
 import com.prasthaan.dusterai.R;
 
 import java.util.ArrayList;
-import java.util.Objects;
 
-public class FeatListModalAdapterFaceSwap extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+public class AdapterResultPencilSketchGeneration extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+
     private static final int VIEW_TYPE_FEATURE = 0;
     private static final int VIEW_TYPE_AD = 1;
-    private static final String Native_AD_UNIT_ID_face_swap_feat1 = "ca-app-pub-4827086355311757/9541898776";
+    private static final String Native_AD_UNIT_ID_image_restoration_feat1 = "ca-app-pub-4827086355311757/9541898776";
     String development_test_ad = "ca-app-pub-3940256099942544/2247696110";
-    ArrayList<FeatListModalFaceSwap> list;
+    ArrayList<ModelResultPencilSketchGeneration> list;
     Context context;
 
-    public FeatListModalAdapterFaceSwap(ArrayList<FeatListModalFaceSwap> list, Context context) {
+    public AdapterResultPencilSketchGeneration(ArrayList<ModelResultPencilSketchGeneration> list, Context context) {
         this.list = list;
         this.context = context;
     }
@@ -44,10 +44,10 @@ public class FeatListModalAdapterFaceSwap extends RecyclerView.Adapter<RecyclerV
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         if (viewType == VIEW_TYPE_AD) {
             View adView = LayoutInflater.from(context).inflate(R.layout.native_ad_layout, parent, false);
-            return new AdViewHolder(adView);
+            return new AdapterResultPencilSketchGeneration.AdViewHolder(adView);
         } else {
-            View view = LayoutInflater.from(context).inflate(R.layout.item_grid, parent, false);
-            return new FeatureViewHolder(view);
+            View view = LayoutInflater.from(context).inflate(R.layout.single_item_result_pencil_sketch_generation, parent, false);
+            return new AdapterResultPencilSketchGeneration.FeatureViewHolder(view);
 
         }
     }
@@ -55,9 +55,9 @@ public class FeatListModalAdapterFaceSwap extends RecyclerView.Adapter<RecyclerV
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
         if (holder.getItemViewType() == VIEW_TYPE_AD) {
-            AdViewHolder adHolder = (AdViewHolder) holder;
+            AdapterResultPencilSketchGeneration.AdViewHolder adHolder = (AdapterResultPencilSketchGeneration.AdViewHolder) holder;
 
-            AdLoader adLoader = new AdLoader.Builder(context, development_test_ad) // prod ad
+            AdLoader adLoader = new AdLoader.Builder(context, Native_AD_UNIT_ID_image_restoration_feat1) // prod ad
 //            AdLoader adLoader = new AdLoader.Builder(context, development_test_ad) // test ad
                     .forNativeAd(new NativeAd.OnNativeAdLoadedListener() {
                         @Override
@@ -91,36 +91,69 @@ public class FeatListModalAdapterFaceSwap extends RecyclerView.Adapter<RecyclerV
 
         } else {
 
-            FeatListModalFaceSwap model = list.get(position);
-            FeatureViewHolder featureHolder = (FeatureViewHolder) holder;
-            featureHolder.imageView.setImageResource(model.getImg());
-//            Glide.with(featureHolder.itemView.getContext())
-//                    .asGif()
-//                    .load(model.getImg())  // this is your drawable resource (GIF)
-//                    .into(featureHolder.imageView);
-//            Glide.with(holder.itemView.getContext())
-//                    .asGif()
-//                    .load("https://media.giphy.com/media/ICOgUNjpvO0PC/giphy.gif")  // a known working GIF
-//                    .into(featureHolder.imageView);
+            ModelResultPencilSketchGeneration model = list.get(position);
+            AdapterResultPencilSketchGeneration.FeatureViewHolder featureHolder = (AdapterResultPencilSketchGeneration.FeatureViewHolder) holder;
+            Glide.with(context)
+                    .load(model.getResultImg())  // This should be a String URL
+                    .placeholder(R.drawable.loadingimagepleasewait)  // optional: show while loading
+                    .error(R.drawable.errorloadingimage)        // optional: show on error
+                    .into(featureHolder.imageView);
 
-            featureHolder.textView.setText(model.getFeat_name());
-            
-            featureHolder.itemView.setOnClickListener((view) -> {
-//                Intent intent = new Intent(view.getContext(), ProcessingActivity.class);
-                String text = featureHolder.textView.getText().toString();
-//                intent.putExtra("text_key", text);
-                if (Objects.equals(text, "Single face")) {
-                    Intent intent = new Intent(view.getContext(), FaceSwapProcessing.class);
-                    intent.putExtra("text_key", text);
-                    view.getContext().startActivity(intent);
 
-                } else {
-                    Intent intent = new Intent(view.getContext(), FaceSwapProcessingMulti.class);
-                    intent.putExtra("text_key", text);
-                    view.getContext().startActivity(intent);
+            featureHolder.downloadBtn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    v.animate()
+                            .scaleX(0.85f)
+                            .scaleY(0.85f)
+                            .alpha(0.6f)
+                            .setDuration(100)
+                            .withEndAction(() -> {
+                                v.animate()
+                                        .scaleX(1f)
+                                        .scaleY(1f)
+                                        .alpha(1f)
+                                        .setDuration(100)
+                                        .start();
+                                if (context instanceof ProcessedActivityPencilSketchGeneration) {
+                                    ((ProcessedActivityPencilSketchGeneration) context).downloadImage(model.getResultImg());
+                                } else {
+                                    Toast.makeText(context, "Unable to start download", Toast.LENGTH_SHORT).show();
+                                }
+                            })
+                            .start();
+
                 }
-
             });
+
+            featureHolder.shareBtn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+
+                    v.animate()
+                            .scaleX(0.85f)
+                            .scaleY(0.85f)
+                            .alpha(0.6f)
+                            .setDuration(100)
+                            .withEndAction(() -> {
+                                v.animate()
+                                        .scaleX(1f)
+                                        .scaleY(1f)
+                                        .alpha(1f)
+                                        .setDuration(100)
+                                        .start();
+                                if (context instanceof ProcessedActivityPencilSketchGeneration) {
+                                    ((ProcessedActivityPencilSketchGeneration) context).shareImageFromPresignedUrl(model.getResultImg());
+                                } else {
+                                    Toast.makeText(context, "Unable to start download", Toast.LENGTH_SHORT).show();
+                                }
+
+                            })
+                            .start();
+
+                }
+            });
+
         }
     }
 
@@ -233,16 +266,16 @@ public class FeatListModalAdapterFaceSwap extends RecyclerView.Adapter<RecyclerV
 
     public static class FeatureViewHolder extends RecyclerView.ViewHolder {
         ImageView imageView;
-        TextView textView;
+        ImageView shareBtn, downloadBtn;
 
 
         public FeatureViewHolder(@NonNull View itemView) {
             super(itemView);
-            imageView = itemView.findViewById(R.id.feat_img);
-            textView = itemView.findViewById(R.id.feat_title);
+            imageView = itemView.findViewById(R.id.result_edge_pencil_sketch_generation);
+            shareBtn = itemView.findViewById(R.id.result_share_btn_pencil_sketch_generation);
+            downloadBtn = itemView.findViewById(R.id.result_download_btn_pencil_sketch_generation);
+
 
         }
     }
-
-
 }

@@ -16,6 +16,20 @@ public class RetrofitClient {
     private static final String BASE_URL_IMAGE_ENHANCE = "https://k7ettmg47hq7tx43wfbkw5m7f40wsvut.lambda-url.ap-south-1.on.aws/";
     private static final String BASE_URL_FACE_SWAP = "https://pusyqcspflfddakepsb435c2fy0qwuzb.lambda-url.ap-south-1.on.aws/";
     private static final String BASE_URL_FACE_DETECTION = "https://ludgv6k2plzwj3vlm3vilaycia0kvspr.lambda-url.ap-south-1.on.aws/";
+    private static final String BASE_URL_PENCIL_SKETCH_GENERATION = "https://srd5c4cen4ttgnzgjyiikfqmeq0ofznd.lambda-url.ap-south-1.on.aws/";
+
+    private static final OkHttpClient okHttpClientPencilSketchGeneration = new OkHttpClient.Builder()
+            .connectTimeout(15, TimeUnit.MINUTES) // Increase connect timeout
+            .readTimeout(15, TimeUnit.MINUTES) // Increase read timeout
+            .writeTimeout(15, TimeUnit.MINUTES) // Increase write timeout
+            .build();
+
+
+    private static final Retrofit retrofitPencilSketchGeneration = new Retrofit.Builder()
+            .baseUrl(BASE_URL_PENCIL_SKETCH_GENERATION)
+            .client(okHttpClientPencilSketchGeneration) // Use the custom OkHttpClient
+            .addConverterFactory(GsonConverterFactory.create())
+            .build();
 
 
     private static final OkHttpClient okHttpClientFaceDetection = new OkHttpClient.Builder()
@@ -76,6 +90,10 @@ public class RetrofitClient {
             .addConverterFactory(GsonConverterFactory.create())
             .build();
 
+
+    public static ApiService getApiServicePencilSketchGeneration() {
+        return retrofitPencilSketchGeneration.create(ApiService.class);
+    }
 
     public static ApiService getApiServiceFaceDetection() {
         return retrofitFaceDetection.create(ApiService.class);

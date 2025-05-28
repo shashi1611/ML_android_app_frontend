@@ -97,23 +97,12 @@ public class FeatListModalAdapterImageRestoration extends RecyclerView.Adapter<R
             featureHolder.imageView.setImageResource(model.getImg());
             featureHolder.textView.setText(model.getFeat_name());
 
-//        expriment doing
-
-            DisplayMetrics displayMetrics = featureHolder.itemView.getContext().getResources().getDisplayMetrics();
-            int screenWidth = displayMetrics.widthPixels;
-
-            ViewGroup.LayoutParams layoutParams = featureHolder.itemView.getLayoutParams();
-            layoutParams.width = screenWidth / 2; // Set each item to half of screen width
-            featureHolder.itemView.setLayoutParams(layoutParams);
-
-
-//        tilll here
 
             featureHolder.itemView.setOnClickListener((view) -> {
                 Intent intent = new Intent(view.getContext(), ProcessingActivity.class);
                 String text = featureHolder.textView.getText().toString();
                 intent.putExtra("text_key", text);
-                if (Objects.equals(text, "Enhance resolution 4X")) {
+                if (Objects.equals(text, "Enhance 4X")) {
 
                     Toast.makeText(context, "This feature is coming soon stay tuned!", Toast.LENGTH_SHORT).show();
 

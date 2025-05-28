@@ -26,6 +26,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -72,10 +73,11 @@ public class ProcessingActivity extends AppCompatActivity {
     private static final int REQUEST_IMAGE_CAPTURE = 1;
     private static final int REQUEST_PERMISSIONS = 101;
     private static final int TOTAL_TIME = 90; // 120 seconds
+    private static final int TOTAL_TIME_SMALL_PENCIL = 120; // 120 seconds
     private static final int TOTAL_TIME_RESTORE_IMAGE = 90; // 120 seconds
     private static final int TOTAL_TIME_ENHANCE_IMAGE_2X = 90; // 120 seconds
     private static final int TOTAL_TIME_ENHANCE_IMAGE_4X = 180; // 120 seconds
-    private static final String AD_UNIT_ID = "ca-app-pub-4827086355311757/2017201353";
+    private static final String AD_UNIT_ID = "ca-app-pub-4827086355311757/2017201353111458692";
     String development_test_ad = "ca-app-pub-3940256099942544/9214589741";
     String receivedText;
     ActivityResultLauncher<PickVisualMediaRequest> imagePickerLauncher;
@@ -83,6 +85,9 @@ public class ProcessingActivity extends AppCompatActivity {
     boolean flagNewImage = false;
     ArrayList<String> faceUrls;
     TextView minimizeAppTextView;
+    TextView textView1;
+    ArrayList<String> resultUrl = null;
+    String videoUrl = "";
     private ImageView imageView;
     private Uri imageUri;
     private File imageFileFromCamera = null;
@@ -97,6 +102,8 @@ public class ProcessingActivity extends AppCompatActivity {
     private String pendingPresignedUrl = null;
     private String pendingRestoredImageUrl = null;
     private ArrayList<String> pendingRestoredFaceUrls = null;
+    private ArrayList<String> pendingSketchResultUrl = null;
+    private String pendingSketchVideoUrls = null;
 
     @Override
     protected void onResume() {
@@ -142,10 +149,12 @@ public class ProcessingActivity extends AppCompatActivity {
         int total_time;
         if (Objects.equals(process, "Restore image")) {
             total_time = TOTAL_TIME_RESTORE_IMAGE;
-        } else if (Objects.equals(process, "Enhance resolution 2X")) {
+        } else if (Objects.equals(process, "Enhance 2X")) {
             total_time = TOTAL_TIME_ENHANCE_IMAGE_2X;
-        } else if (Objects.equals(process, "Enhance resolution 4X")) {
+        } else if (Objects.equals(process, "Enhance 4X")) {
             total_time = TOTAL_TIME_ENHANCE_IMAGE_4X;
+        } else if (Objects.equals(process, "✨ Soft Sketch")) {
+            total_time = TOTAL_TIME_SMALL_PENCIL;
         } else {
             total_time = TOTAL_TIME;
         }
@@ -226,7 +235,6 @@ public class ProcessingActivity extends AppCompatActivity {
         }
     }
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -241,6 +249,10 @@ public class ProcessingActivity extends AppCompatActivity {
         btnUpload = findViewById(R.id.upload_img_vid_button);
         btnProcess = findViewById(R.id.process_img_button);
         open_cam_btn = findViewById(R.id.open_camera_button);
+
+        textView1 = findViewById(R.id.uploadTextSingleFace);
+
+
         receivedText = getIntent().getStringExtra("text_key");
         TextView textViewFeatname = findViewById(R.id.featureNameTextView);
 
@@ -295,9 +307,26 @@ public class ProcessingActivity extends AppCompatActivity {
         btnUpload.setOnClickListener(view -> openGallery());
 
         btnProcess.setOnClickListener(view -> {
+            if (Objects.equals(receivedText, "✨ Soft Sketch") || Objects.equals(receivedText, "✏\uFE0F Classic Sketch") || Objects.equals(receivedText, "\uD83D\uDD8C\uFE0F Bold Sketch")) {
+                if (videoUrl.isEmpty() || flagNewImage) {
+                    if (imageFileFromFileUploader != null) {
+                        showProcessingDialog(receivedText);
+                        processImage(imageFileFromFileUploader);
+                    } else if (imageFileFromCamera != null) {
+                        showProcessingDialog(receivedText);
+                        processImage(imageFileFromCamera);
 
+                    } else {
+                        Toast.makeText(this, "Select an image first", Toast.LENGTH_SHORT).show();
+                    }
+                } else {
+                    Intent intent = new Intent(ProcessingActivity.this, ProcessedActivityPencilSketchGeneration.class);
+                    intent.putStringArrayListExtra("resultUrls", resultUrl);
+                    intent.putExtra("videoUrl", videoUrl);
+                    startActivity(intent);
+                }
 
-            if (presignedUrl.isEmpty() || flagNewImage) {
+            } else if (presignedUrl.isEmpty() || flagNewImage) {
 
 
                 if (imageFileFromFileUploader != null) {
@@ -341,6 +370,15 @@ public class ProcessingActivity extends AppCompatActivity {
         imagePickerLauncher =
                 registerForActivityResult(new ActivityResultContracts.PickVisualMedia(), uri -> {
                     if (uri != null) {
+                        RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(
+                                RelativeLayout.LayoutParams.MATCH_PARENT,
+                                RelativeLayout.LayoutParams.MATCH_PARENT
+                        );
+                        params.addRule(RelativeLayout.CENTER_IN_PARENT, RelativeLayout.TRUE);
+                        imageView.setLayoutParams(params);
+                        imageView.setImageTintList(null);
+                        imageView.setScaleType(ImageView.ScaleType.FIT_CENTER);
+                        textView1.setVisibility(View.GONE);
                         Glide.with(this)
                                 .load(uri)
                                 .override(1024, 1024) // limit size
@@ -361,6 +399,15 @@ public class ProcessingActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == REQUEST_IMAGE_CAPTURE) {
             if (imageFileFromCamera != null) {
+                RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(
+                        RelativeLayout.LayoutParams.MATCH_PARENT,
+                        RelativeLayout.LayoutParams.MATCH_PARENT
+                );
+                params.addRule(RelativeLayout.CENTER_IN_PARENT, RelativeLayout.TRUE);
+                imageView.setLayoutParams(params);
+                imageView.setImageTintList(null);
+                imageView.setScaleType(ImageView.ScaleType.FIT_CENTER);
+                textView1.setVisibility(View.GONE);
                 imageUri = Uri.fromFile(imageFileFromCamera);
                 Glide.with(this)
                         .load(imageUri)
@@ -532,7 +579,7 @@ public class ProcessingActivity extends AppCompatActivity {
 
 
         ApiService apiService = RetrofitClient.getApiService();
-        if (Objects.equals(receivedText, "Enhance resolution 2X")) {
+        if (Objects.equals(receivedText, "Enhance 2X")) {
             ApiService apiServiceImageEnhancer2x = RetrofitClient.getApiServiceImageEnhance();
             apiServiceImageEnhancer2x.executeProcessingEnhanceImage2x(body).enqueue(new Callback<ResponseBody>() {
                 @Override
@@ -569,7 +616,7 @@ public class ProcessingActivity extends AppCompatActivity {
                 }
             });
 
-        } else if (Objects.equals(receivedText, "Enhance resolution 4X")) {
+        } else if (Objects.equals(receivedText, "Enhance 4X")) {
             ApiService apiServiceImageEnhancer4x = RetrofitClient.getApiServiceImageEnhance();
             apiServiceImageEnhancer4x.executeProcessingEnhanceImage4x(body).enqueue(new Callback<ResponseBody>() {
                 @Override
@@ -585,11 +632,7 @@ public class ProcessingActivity extends AppCompatActivity {
                                 pendingPresignedUrl = presignedUrl;
                                 sendProcessingCompletedNotification();
                             }
-//                            presignedUrl = response.body().string();
                             flagNewImage = false;
-//                            Intent intent = new Intent(ProcessingActivity.this, ProcessedActivity.class);
-//                            intent.putExtra("PRESIGNED_URL", presignedUrl);
-//                            startActivity(intent);
                         } catch (IOException e) {
                             dismissDialog();
                             e.printStackTrace();
@@ -629,14 +672,6 @@ public class ProcessingActivity extends AppCompatActivity {
                             sendRestoreCompletedNotification();
                         }
 
-//                        RestoreImageResponse result = response.body();
-//                        faceUrls = new ArrayList<>(result.getRestoredFaces());
-//                        presignedUrl = result.getRestoredImage();
-//                        flagNewImage = false;
-//                        Intent intent = new Intent(ProcessingActivity.this, ProcessedActivityRestoredImg.class);
-//                        intent.putExtra("RESTORED_IMAGE_URL", result.getRestoredImage());
-//                        intent.putStringArrayListExtra("RESTORED_FACE_URLS", faceUrls);
-//                        startActivity(intent);
                     } else {
                         Toast.makeText(ProcessingActivity.this, "Processing Failed", Toast.LENGTH_SHORT).show();
                     }
@@ -649,6 +684,116 @@ public class ProcessingActivity extends AppCompatActivity {
                 }
             });
 
+
+        } else if (Objects.equals(receivedText, "✨ Soft Sketch")) {
+            ApiService apiServicePencilSketchGeneration = RetrofitClient.getApiServicePencilSketchGeneration();
+            apiServicePencilSketchGeneration.executeProcessingGenerateSketchSmallPencil(body).enqueue(new Callback<PencilSketchGenerationResponse>() {
+                @Override
+                public void onResponse(Call<PencilSketchGenerationResponse> call, Response<PencilSketchGenerationResponse> response) {
+                    dismissDialog();
+                    if (response.isSuccessful() && response.body() != null) {
+
+                        PencilSketchGenerationResponse result = response.body();
+                        resultUrl = new ArrayList<>(result.getResultsImage());
+                        videoUrl = result.getResultsVideo();
+                        Intent intent = new Intent(ProcessingActivity.this, ProcessedActivityPencilSketchGeneration.class);
+                        intent.putStringArrayListExtra("resultUrls", resultUrl);
+                        intent.putExtra("videoUrl", videoUrl);
+                        startActivity(intent);
+
+                        flagNewImage = false;
+
+                        if (isAppInForeground) {
+                            goToProcessedActivityPencilSketchGeneration(videoUrl, resultUrl);
+                        } else {
+                            pendingSketchResultUrl = resultUrl;
+                            pendingSketchVideoUrls = videoUrl;
+                            sendPencilSketchGenerationNotification();
+                        }
+
+                    } else {
+                        Toast.makeText(ProcessingActivity.this, "Processing Failed", Toast.LENGTH_SHORT).show();
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<PencilSketchGenerationResponse> call, Throwable t) {
+                    dismissDialog();
+                    Toast.makeText(ProcessingActivity.this, "Error: " + t.getMessage(), Toast.LENGTH_LONG).show();
+                }
+            });
+
+        } else if (Objects.equals(receivedText, "✏\uFE0F Classic Sketch")) {
+
+            ApiService apiServicePencilSketchGeneration = RetrofitClient.getApiServicePencilSketchGeneration();
+            apiServicePencilSketchGeneration.executeProcessingGenerateSketchMediumPencil(body).enqueue(new Callback<PencilSketchGenerationResponse>() {
+                @Override
+                public void onResponse(Call<PencilSketchGenerationResponse> call, Response<PencilSketchGenerationResponse> response) {
+                    dismissDialog();
+                    if (response.isSuccessful() && response.body() != null) {
+                        PencilSketchGenerationResponse result = response.body();
+                        resultUrl = new ArrayList<>(result.getResultsImage());
+                        videoUrl = result.getResultsVideo();
+                        Intent intent = new Intent(ProcessingActivity.this, ProcessedActivityPencilSketchGeneration.class);
+                        intent.putStringArrayListExtra("resultUrls", resultUrl);
+                        intent.putExtra("videoUrl", videoUrl);
+                        startActivity(intent);
+
+                        flagNewImage = false;
+                        if (isAppInForeground) {
+                            goToProcessedActivityPencilSketchGeneration(videoUrl, resultUrl);
+                        } else {
+                            pendingSketchResultUrl = resultUrl;
+                            pendingSketchVideoUrls = videoUrl;
+                            sendPencilSketchGenerationNotification();
+                        }
+                    } else {
+                        Toast.makeText(ProcessingActivity.this, "Processing Failed", Toast.LENGTH_SHORT).show();
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<PencilSketchGenerationResponse> call, Throwable t) {
+                    dismissDialog();
+                    Toast.makeText(ProcessingActivity.this, "Error: " + t.getMessage(), Toast.LENGTH_LONG).show();
+                }
+            });
+
+        } else if (Objects.equals(receivedText, "\uD83D\uDD8C\uFE0F Bold Sketch")) {
+
+            ApiService apiServicePencilSketchGeneration = RetrofitClient.getApiServicePencilSketchGeneration();
+            apiServicePencilSketchGeneration.executeProcessingGenerateSketchLargePencil(body).enqueue(new Callback<PencilSketchGenerationResponse>() {
+                @Override
+                public void onResponse(Call<PencilSketchGenerationResponse> call, Response<PencilSketchGenerationResponse> response) {
+                    dismissDialog();
+                    if (response.isSuccessful() && response.body() != null) {
+                        PencilSketchGenerationResponse result = response.body();
+                        resultUrl = new ArrayList<>(result.getResultsImage());
+                        videoUrl = result.getResultsVideo();
+                        Intent intent = new Intent(ProcessingActivity.this, ProcessedActivityPencilSketchGeneration.class);
+                        intent.putStringArrayListExtra("resultUrls", resultUrl);
+                        intent.putExtra("videoUrl", videoUrl);
+                        startActivity(intent);
+
+                        flagNewImage = false;
+                        if (isAppInForeground) {
+                            goToProcessedActivityPencilSketchGeneration(videoUrl, resultUrl);
+                        } else {
+                            pendingSketchResultUrl = resultUrl;
+                            pendingSketchVideoUrls = videoUrl;
+                            sendPencilSketchGenerationNotification();
+                        }
+                    } else {
+                        Toast.makeText(ProcessingActivity.this, "Processing Failed", Toast.LENGTH_SHORT).show();
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<PencilSketchGenerationResponse> call, Throwable t) {
+                    dismissDialog();
+                    Toast.makeText(ProcessingActivity.this, "Error: " + t.getMessage(), Toast.LENGTH_LONG).show();
+                }
+            });
 
         } else if (Objects.equals(receivedText, "Ukiyo-e style")) {
             apiService.executeProcessingUkiyoe(body).enqueue(new Callback<ResponseBody>() {
@@ -664,6 +809,12 @@ public class ProcessingActivity extends AppCompatActivity {
                             Intent intent = new Intent(ProcessingActivity.this, ProcessedActivity.class);
                             intent.putExtra("PRESIGNED_URL", presignedUrl);
                             startActivity(intent);
+                            if (isAppInForeground) {
+                                goToProcessedActivity(presignedUrl);
+                            } else {
+                                pendingPresignedUrl = presignedUrl;
+                                sendProcessingCompletedNotification();
+                            }
                         } catch (IOException e) {
                             dismissDialog();
                             e.printStackTrace();
@@ -692,6 +843,12 @@ public class ProcessingActivity extends AppCompatActivity {
                             Intent intent = new Intent(ProcessingActivity.this, ProcessedActivity.class);
                             intent.putExtra("PRESIGNED_URL", presignedUrl);
                             startActivity(intent);
+                            if (isAppInForeground) {
+                                goToProcessedActivity(presignedUrl);
+                            } else {
+                                pendingPresignedUrl = presignedUrl;
+                                sendProcessingCompletedNotification();
+                            }
                         } catch (IOException e) {
                             dismissDialog();
                             e.printStackTrace();
@@ -721,6 +878,12 @@ public class ProcessingActivity extends AppCompatActivity {
                             Intent intent = new Intent(ProcessingActivity.this, ProcessedActivity.class);
                             intent.putExtra("PRESIGNED_URL", presignedUrl);
                             startActivity(intent);
+                            if (isAppInForeground) {
+                                goToProcessedActivity(presignedUrl);
+                            } else {
+                                pendingPresignedUrl = presignedUrl;
+                                sendProcessingCompletedNotification();
+                            }
                         } catch (IOException e) {
                             dismissDialog();
                             e.printStackTrace();
@@ -750,6 +913,12 @@ public class ProcessingActivity extends AppCompatActivity {
                             Intent intent = new Intent(ProcessingActivity.this, ProcessedActivity.class);
                             intent.putExtra("PRESIGNED_URL", presignedUrl);
                             startActivity(intent);
+                            if (isAppInForeground) {
+                                goToProcessedActivity(presignedUrl);
+                            } else {
+                                pendingPresignedUrl = presignedUrl;
+                                sendProcessingCompletedNotification();
+                            }
                         } catch (IOException e) {
                             dismissDialog();
                             e.printStackTrace();
@@ -779,6 +948,12 @@ public class ProcessingActivity extends AppCompatActivity {
                             Intent intent = new Intent(ProcessingActivity.this, ProcessedActivity.class);
                             intent.putExtra("PRESIGNED_URL", presignedUrl);
                             startActivity(intent);
+                            if (isAppInForeground) {
+                                goToProcessedActivity(presignedUrl);
+                            } else {
+                                pendingPresignedUrl = presignedUrl;
+                                sendProcessingCompletedNotification();
+                            }
                         } catch (IOException e) {
                             dismissDialog();
                             e.printStackTrace();
@@ -808,6 +983,12 @@ public class ProcessingActivity extends AppCompatActivity {
                             Intent intent = new Intent(ProcessingActivity.this, ProcessedActivity.class);
                             intent.putExtra("PRESIGNED_URL", presignedUrl);
                             startActivity(intent);
+                            if (isAppInForeground) {
+                                goToProcessedActivity(presignedUrl);
+                            } else {
+                                pendingPresignedUrl = presignedUrl;
+                                sendProcessingCompletedNotification();
+                            }
                         } catch (IOException e) {
                             dismissDialog();
                             e.printStackTrace();
@@ -854,6 +1035,7 @@ public class ProcessingActivity extends AppCompatActivity {
         }
     }
 
+    //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<background process for normal one >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
     private void sendProcessingCompletedNotification() {
         Intent intent = new Intent(this, ProcessedActivity.class);
         intent.putExtra("PRESIGNED_URL", pendingPresignedUrl);
@@ -863,7 +1045,7 @@ public class ProcessingActivity extends AppCompatActivity {
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this, "processing_channel")
                 .setSmallIcon(R.drawable.app_logo__icon) // <-- Use your app's icon here
                 .setContentTitle("Processing Completed")
-                .setContentText("Tap to view your enhanced image")
+                .setContentText("Tap to view your image")
                 .setPriority(NotificationCompat.PRIORITY_DEFAULT)
                 .setContentIntent(pendingIntent)
                 .setAutoCancel(true);
@@ -889,6 +1071,8 @@ public class ProcessingActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
+
+    //    <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<background process for restore image>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
     private void goToProcessedActivityRestored(String imageUrl, ArrayList<String> faceUrls) {
         Intent intent = new Intent(ProcessingActivity.this, ProcessedActivityRestoredImg.class);
         intent.putExtra("RESTORED_IMAGE_URL", imageUrl);
@@ -911,6 +1095,49 @@ public class ProcessingActivity extends AppCompatActivity {
                 .setSmallIcon(R.drawable.app_logo__icon) // Your icon
                 .setContentTitle("Restoration Complete")
                 .setContentText("Tap to view the restored image")
+                .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+                .setContentIntent(pendingIntent)
+                .setAutoCancel(true);
+
+        NotificationManagerCompat manager = NotificationManagerCompat.from(this);
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            Toast.makeText(this, "Permission is required", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        manager.notify(1002, builder.build());
+    }
+
+
+    //    <<<<<<<<<<<<<<<<<<<<<<<<<<<<<background processing for sketch generation>>>>>>>>>>>>>>>>>>>>>>
+    private void goToProcessedActivityPencilSketchGeneration(String videoUrl, ArrayList<String> resultUrl) {
+        Intent intent = new Intent(ProcessingActivity.this, ProcessedActivityPencilSketchGeneration.class);
+        intent.putExtra("videoUrl", videoUrl);
+        intent.putStringArrayListExtra("resultUrls", resultUrl);
+        startActivity(intent);
+    }
+
+    private void sendPencilSketchGenerationNotification() {
+        Intent intent = new Intent(this, ProcessedActivityPencilSketchGeneration.class);
+        intent.putExtra("videoUrl", pendingSketchVideoUrls);
+        intent.putStringArrayListExtra("resultUrls", pendingSketchResultUrl);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+
+        PendingIntent pendingIntent = PendingIntent.getActivity(
+                this, 1, intent,
+                PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE
+        );
+
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, "processing_channel")
+                .setSmallIcon(R.drawable.app_logo__icon) // Your icon
+                .setContentTitle("Your sketch is ready")
+                .setContentText("Tap to view the sketch")
                 .setPriority(NotificationCompat.PRIORITY_DEFAULT)
                 .setContentIntent(pendingIntent)
                 .setAutoCancel(true);

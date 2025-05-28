@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -18,23 +19,22 @@ import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.LoadAdError;
 import com.google.android.gms.ads.nativead.NativeAd;
 import com.google.android.gms.ads.nativead.NativeAdView;
-import com.prasthaan.dusterai.FaceSwapProcessing;
-import com.prasthaan.dusterai.FaceSwapProcessingMulti;
-import com.prasthaan.dusterai.Models.FeatListModalFaceSwap;
+import com.prasthaan.dusterai.Models.FeatListModelPencilSketchGeneration;
+import com.prasthaan.dusterai.ProcessingActivity;
 import com.prasthaan.dusterai.R;
 
 import java.util.ArrayList;
 import java.util.Objects;
 
-public class FeatListModalAdapterFaceSwap extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+public class FeatListModalAdapterPencilSketchGeneration extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private static final int VIEW_TYPE_FEATURE = 0;
     private static final int VIEW_TYPE_AD = 1;
-    private static final String Native_AD_UNIT_ID_face_swap_feat1 = "ca-app-pub-4827086355311757/9541898776";
+    private static final String Native_AD_UNIT_ID_image_restoration_feat1 = "ca-app-pub-4827086355311757/9541898776";
     String development_test_ad = "ca-app-pub-3940256099942544/2247696110";
-    ArrayList<FeatListModalFaceSwap> list;
+    ArrayList<FeatListModelPencilSketchGeneration> list;
     Context context;
 
-    public FeatListModalAdapterFaceSwap(ArrayList<FeatListModalFaceSwap> list, Context context) {
+    public FeatListModalAdapterPencilSketchGeneration(ArrayList<FeatListModelPencilSketchGeneration> list, Context context) {
         this.list = list;
         this.context = context;
     }
@@ -44,10 +44,10 @@ public class FeatListModalAdapterFaceSwap extends RecyclerView.Adapter<RecyclerV
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         if (viewType == VIEW_TYPE_AD) {
             View adView = LayoutInflater.from(context).inflate(R.layout.native_ad_layout, parent, false);
-            return new AdViewHolder(adView);
+            return new FeatListModalAdapterPencilSketchGeneration.AdViewHolder(adView);
         } else {
             View view = LayoutInflater.from(context).inflate(R.layout.item_grid, parent, false);
-            return new FeatureViewHolder(view);
+            return new FeatListModalAdapterPencilSketchGeneration.FeatureViewHolder(view);
 
         }
     }
@@ -55,9 +55,9 @@ public class FeatListModalAdapterFaceSwap extends RecyclerView.Adapter<RecyclerV
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
         if (holder.getItemViewType() == VIEW_TYPE_AD) {
-            AdViewHolder adHolder = (AdViewHolder) holder;
+            FeatListModalAdapterPencilSketchGeneration.AdViewHolder adHolder = (FeatListModalAdapterPencilSketchGeneration.AdViewHolder) holder;
 
-            AdLoader adLoader = new AdLoader.Builder(context, development_test_ad) // prod ad
+            AdLoader adLoader = new AdLoader.Builder(context, Native_AD_UNIT_ID_image_restoration_feat1) // prod ad
 //            AdLoader adLoader = new AdLoader.Builder(context, development_test_ad) // test ad
                     .forNativeAd(new NativeAd.OnNativeAdLoadedListener() {
                         @Override
@@ -91,32 +91,20 @@ public class FeatListModalAdapterFaceSwap extends RecyclerView.Adapter<RecyclerV
 
         } else {
 
-            FeatListModalFaceSwap model = list.get(position);
-            FeatureViewHolder featureHolder = (FeatureViewHolder) holder;
+            FeatListModelPencilSketchGeneration model = list.get(position);
+            FeatListModalAdapterPencilSketchGeneration.FeatureViewHolder featureHolder = (FeatListModalAdapterPencilSketchGeneration.FeatureViewHolder) holder;
             featureHolder.imageView.setImageResource(model.getImg());
-//            Glide.with(featureHolder.itemView.getContext())
-//                    .asGif()
-//                    .load(model.getImg())  // this is your drawable resource (GIF)
-//                    .into(featureHolder.imageView);
-//            Glide.with(holder.itemView.getContext())
-//                    .asGif()
-//                    .load("https://media.giphy.com/media/ICOgUNjpvO0PC/giphy.gif")  // a known working GIF
-//                    .into(featureHolder.imageView);
-
             featureHolder.textView.setText(model.getFeat_name());
-            
+
             featureHolder.itemView.setOnClickListener((view) -> {
-//                Intent intent = new Intent(view.getContext(), ProcessingActivity.class);
+                Intent intent = new Intent(view.getContext(), ProcessingActivity.class);
                 String text = featureHolder.textView.getText().toString();
-//                intent.putExtra("text_key", text);
-                if (Objects.equals(text, "Single face")) {
-                    Intent intent = new Intent(view.getContext(), FaceSwapProcessing.class);
-                    intent.putExtra("text_key", text);
-                    view.getContext().startActivity(intent);
+                intent.putExtra("text_key", text);
+                if (Objects.equals(text, "Enhance 4X")) {
+
+                    Toast.makeText(context, "This feature is coming soon stay tuned!", Toast.LENGTH_SHORT).show();
 
                 } else {
-                    Intent intent = new Intent(view.getContext(), FaceSwapProcessingMulti.class);
-                    intent.putExtra("text_key", text);
                     view.getContext().startActivity(intent);
                 }
 
@@ -243,6 +231,4 @@ public class FeatListModalAdapterFaceSwap extends RecyclerView.Adapter<RecyclerV
 
         }
     }
-
-
 }

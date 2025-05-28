@@ -1,5 +1,4 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -11,12 +10,7 @@
     <androidx.cardview.widget.CardView
         android:id="@+id/cardView"
         android:layout_width="match_parent"
-        android:layout_height="250dp"
-        android:layout_marginStart="10dp"
-        android:layout_marginTop="40dp"
-        android:layout_marginEnd="10dp"
-        app:cardCornerRadius="16dp"
-        app:cardElevation="4dp">
+        android:layout_height="300dp">
 
         <!-- FrameLayout inside CardView -->
         <FrameLayout
@@ -27,7 +21,9 @@
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/recyclerViewCarousel"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent" />
+                android:layout_height="match_parent"
+                android:overScrollMode="never"
+                android:scrollbars="none" />
 
             <!-- TextView Overlay -->
             <TextView
@@ -45,7 +41,17 @@
                 android:textColor="#312323"
                 android:textSize="34sp"
                 android:textStyle="bold" />
+            <!-- Dot Indicator Layout -->
+            <LinearLayout
+                android:id="@+id/dot_container"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom|center_horizontal"
+                android:layout_marginBottom="12dp"
+                android:gravity="center"
+                android:orientation="horizontal" />
         </FrameLayout>
+
 
     </androidx.cardview.widget.CardView>
 
@@ -61,15 +67,32 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-            <TextView
+            <LinearLayout
                 android:id="@+id/feature_banner_image_restoratiion"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="15dp"
-                android:layout_marginTop="10dp"
-                android:text="Image upscaling"
-                android:textColor="@android:color/white"
-                android:textSize="25dp" />
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:padding="10dp">
+
+                <TextView
+                    android:id="@+id/feature_banner_image_restoratiion1"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Image upscaling"
+                    android:textColor="@android:color/white"
+                    android:textSize="20sp" />
+
+                <ImageView
+                    android:id="@+id/swipeRightArrowImageUpscaling"
+                    android:layout_width="19dp"
+                    android:layout_height="19dp"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginStart="8dp"
+                    android:src="@drawable/baseline_arrow_forward_ios_24"
+                    android:tint="@color/white" />
+            </LinearLayout>
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/recyclerView_feat_list_image_restoration"
@@ -78,16 +101,71 @@
                 android:layout_below="@id/feature_banner_image_restoratiion"
                 android:layout_marginTop="10dp" />
 
-            <TextView
-                android:id="@+id/feature_banner_face_swap"
+
+            <LinearLayout
+                android:id="@+id/feature_banner_pencil_Sketch_generation"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/recyclerView_feat_list_image_restoration"
-                android:layout_marginLeft="15dp"
-                android:layout_marginTop="10dp"
-                android:text="Face swap"
-                android:textColor="@android:color/white"
-                android:textSize="25dp" />
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:padding="10dp">
+
+                <TextView
+                    android:id="@+id/feature_banner_pencil_sketch_generation"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Artistic Pencil Sketch"
+                    android:textColor="@android:color/white"
+                    android:textSize="20sp" />
+
+                <ImageView
+                    android:id="@+id/swipeRightArrowPencilSketchGeneration"
+                    android:layout_width="19dp"
+                    android:layout_height="19dp"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginStart="8dp"
+                    android:src="@drawable/baseline_arrow_forward_ios_24"
+                    android:tint="@color/white" />
+            </LinearLayout>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recyclerView_feat_list_pencil_sketch_generation"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/feature_banner_pencil_Sketch_generation"
+                android:layout_marginTop="10dp" />
+
+
+            <LinearLayout
+                android:id="@+id/feature_banner_face_swap"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/recyclerView_feat_list_pencil_sketch_generation"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:padding="10dp">
+
+                <TextView
+                    android:id="@+id/feature_banner_face_swap_title"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Face swap"
+                    android:textColor="@android:color/white"
+                    android:textSize="20sp" />
+
+                <ImageView
+                    android:id="@+id/swipeRightArrowFaceSwap"
+                    android:layout_width="19dp"
+                    android:layout_height="19dp"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginStart="8dp"
+                    android:src="@drawable/baseline_arrow_forward_ios_24"
+                    android:tint="@color/white" />
+            </LinearLayout>
+
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/recyclerView_feat_list_face_swap"
@@ -96,16 +174,36 @@
                 android:layout_below="@id/feature_banner_face_swap"
                 android:layout_marginTop="10dp" />
 
-            <TextView
+            <LinearLayout
                 android:id="@+id/feature_banner"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/recyclerView_feat_list_face_swap"
-                android:layout_marginLeft="15dp"
-                android:layout_marginTop="10dp"
-                android:text="Image to painting"
-                android:textColor="@android:color/white"
-                android:textSize="25dp" />
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:padding="10dp">
+
+                <TextView
+                    android:id="@+id/feature_banner1"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Image to painting"
+                    android:textColor="@android:color/white"
+                    android:textSize="20sp"
+
+
+                    />
+
+                <ImageView
+                    android:id="@+id/swipeRightArrowImageToPainting"
+                    android:layout_width="19dp"
+                    android:layout_height="19dp"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginStart="8dp"
+                    android:src="@drawable/baseline_arrow_forward_ios_24"
+                    android:tint="@color/white" />
+            </LinearLayout>
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/recyclerView_feat_list"
@@ -114,16 +212,34 @@
                 android:layout_below="@id/feature_banner"
                 android:layout_marginTop="10dp" />
 
-            <TextView
+            <LinearLayout
                 android:id="@+id/second_feature_banner"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/recyclerView_feat_list"
-                android:layout_marginLeft="15dp"
-                android:layout_marginTop="10dp"
-                android:text="Season Changer"
-                android:textColor="@color/white"
-                android:textSize="25dp" />
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:padding="10dp">
+
+                <TextView
+                    android:id="@+id/second_feature_banner_title"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Season Changer"
+                    android:textColor="@android:color/white"
+                    android:textSize="20sp" />
+
+                <ImageView
+                    android:id="@+id/swipeRightArrowSeasonChanger"
+                    android:layout_width="19dp"
+                    android:layout_height="19dp"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginStart="8dp"
+                    android:src="@drawable/baseline_arrow_forward_ios_24"
+                    android:tint="@color/white" />
+            </LinearLayout>
+
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/recyclerView_feat_list2"

@@ -26,6 +26,18 @@ public interface ApiService {
     Call<ResponseBody> uploadImage(@Part MultipartBody.Part file);
 
     @Multipart
+    @POST("/generate_sketch_small_pencil")
+    Call<PencilSketchGenerationResponse> executeProcessingGenerateSketchSmallPencil(@Part MultipartBody.Part file);
+
+    @Multipart
+    @POST("/generate_sketch_medium_pencil")
+    Call<PencilSketchGenerationResponse> executeProcessingGenerateSketchMediumPencil(@Part MultipartBody.Part file);
+
+    @Multipart
+    @POST("/generate_sketch_large_pencil")
+    Call<PencilSketchGenerationResponse> executeProcessingGenerateSketchLargePencil(@Part MultipartBody.Part file);
+
+    @Multipart
     @POST("/detect_faces")
     Call<ResponseBody> executeProcessingDetectFace(@Part MultipartBody.Part file);
 

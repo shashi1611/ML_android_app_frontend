@@ -2,6 +2,7 @@ package com.prasthaan.dusterai;
 
 import android.Manifest;
 import android.app.Dialog;
+import android.app.PendingIntent;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -27,6 +28,9 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.PickVisualMediaRequest;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
@@ -63,6 +67,8 @@ public class FaceSwapProcessing extends AppCompatActivity {
     private Dialog progressDialog;
     private TextView timerText;
     private CountDownTimer countDownTimer;
+    private boolean isAppInForeground = true;
+    private String pendingPresignedUrl = null;
 
     @Override
     protected void onDestroy() {
@@ -85,6 +91,24 @@ public class FaceSwapProcessing extends AppCompatActivity {
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+        isAppInForeground = true;
+
+        if (pendingPresignedUrl != null) {
+            goToProcessedActivity(pendingPresignedUrl);
+            pendingPresignedUrl = null;
+        }
+
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        isAppInForeground = false;
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
@@ -98,6 +122,7 @@ public class FaceSwapProcessing extends AppCompatActivity {
         RelativeLayout relativeLayoutUploadFace = findViewById(R.id.uploadFaceBtn);
         textView1 = findViewById(R.id.uploadTextSingleFace);
         textView2 = findViewById(R.id.uploadImageTextSingleFace);
+        TextView textViewTitle = findViewById(R.id.featureNameTextView);
 
 
         ImageView imageViewTargetFace = findViewById(R.id.uploadImageTargetFace);
@@ -123,6 +148,7 @@ public class FaceSwapProcessing extends AppCompatActivity {
         });
 
         String receivedText = getIntent().getStringExtra("text_key");
+        textViewTitle.setText(receivedText);
 
 
         imagePickerLauncherTargetFace =
@@ -206,6 +232,13 @@ public class FaceSwapProcessing extends AppCompatActivity {
                         Intent intent = new Intent(FaceSwapProcessing.this, ProcessedActivity.class);
                         intent.putExtra("PRESIGNED_URL", presignedUrl);
                         startActivity(intent);
+                        if (isAppInForeground) {
+                            goToProcessedActivity(presignedUrl);
+                        } else {
+                            pendingPresignedUrl = presignedUrl;
+                            sendProcessingCompletedNotification();
+                        }
+
                     } catch (IOException e) {
                         dismissDialog();
                         e.printStackTrace();
@@ -390,6 +423,41 @@ public class FaceSwapProcessing extends AppCompatActivity {
                 timerText.setText("Still processing please wait!");
             }
         }.start();
+    }
+
+    private void goToProcessedActivity(String presignedUrl) {
+        Intent intent = new Intent(FaceSwapProcessing.this, ProcessedActivity.class);
+        intent.putExtra("PRESIGNED_URL", presignedUrl);
+        startActivity(intent);
+    }
+
+    private void sendProcessingCompletedNotification() {
+        Intent intent = new Intent(this, ProcessedActivity.class);
+        intent.putExtra("PRESIGNED_URL", pendingPresignedUrl);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
+
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, "processing_channel")
+                .setSmallIcon(R.drawable.app_logo__icon) // <-- Use your app's icon here
+                .setContentTitle("Processing Completed")
+                .setContentText("Tap to view your image")
+                .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+                .setContentIntent(pendingIntent)
+                .setAutoCancel(true);
+
+        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            Toast.makeText(this, "Notification permission is required", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        notificationManager.notify(1001, builder.build());
     }
 
 }

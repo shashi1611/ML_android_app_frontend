@@ -8,11 +8,11 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
 import android.util.Log;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
@@ -26,7 +26,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.LinearSnapHelper;
+import androidx.recyclerview.widget.PagerSnapHelper;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.SnapHelper;
 
@@ -43,6 +43,7 @@ import com.google.android.play.core.install.model.UpdateAvailability;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.prasthaan.dusterai.Adapters.FeatListModalAdapterFaceSwap;
 import com.prasthaan.dusterai.Adapters.FeatListModalAdapterImageRestoration;
+import com.prasthaan.dusterai.Adapters.FeatListModalAdapterPencilSketchGeneration;
 import com.prasthaan.dusterai.Adapters.FeatListModelAdapter;
 import com.prasthaan.dusterai.Adapters.FeatListModelAdapter2;
 import com.prasthaan.dusterai.Adapters.carouselModelAdapter;
@@ -50,6 +51,7 @@ import com.prasthaan.dusterai.Models.FeatListModalFaceSwap;
 import com.prasthaan.dusterai.Models.FeatListModalImageRestoration;
 import com.prasthaan.dusterai.Models.FeatListModel;
 import com.prasthaan.dusterai.Models.FeatListModel2;
+import com.prasthaan.dusterai.Models.FeatListModelPencilSketchGeneration;
 import com.prasthaan.dusterai.Models.carouselModel;
 
 import java.util.ArrayList;
@@ -82,6 +84,56 @@ public class MainActivity extends AppCompatActivity {
             popupSnackbarForCompleteUpdate();
         }
     };
+    private LinearLayout dotContainer;
+    private int totalItems;
+
+//    private void setupDots(int total, int selectedPosition) {
+//        dotContainer.removeAllViews();
+//
+//        for (int i = 0; i < total; i++) {
+//            ImageView dot = new ImageView(this);
+//            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+//                    ViewGroup.LayoutParams.WRAP_CONTENT,
+//                    ViewGroup.LayoutParams.WRAP_CONTENT);
+//            params.setMargins(8, 0, 8, 0);
+//            dot.setLayoutParams(params);
+//
+//            if (i == selectedPosition) {
+//                dot.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.dot_active));
+//            } else {
+//                dot.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.dot_inactive));
+//            }
+//
+//            dotContainer.addView(dot);
+//        }
+//    }
+
+    private void setupDots(int totalItems, int activePosition) {
+        dotContainer.removeAllViews();
+
+        for (int i = 0; i < totalItems; i++) {
+            View dot = new View(this);
+            int size = 25;
+            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(size, size);
+            params.setMargins(8, 0, 8, 0);
+            dot.setLayoutParams(params);
+            dot.setBackgroundResource(R.drawable.dot_selector); // selector with active/inactive states
+
+            // Initial scale for animation
+            dot.setScaleX(i == activePosition ? 1.4f : 1f);
+            dot.setScaleY(i == activePosition ? 1.4f : 1f);
+
+            dotContainer.addView(dot);
+
+            // Animate dot scale
+            dot.animate()
+                    .scaleX(i == activePosition ? 1.4f : 1f)
+                    .scaleY(i == activePosition ? 1.4f : 1f)
+                    .setDuration(250)
+                    .start();
+        }
+    }
+
 
     // Displays the snackbar notification and call to action.
     private void popupSnackbarForCompleteUpdate() {
@@ -137,6 +189,13 @@ public class MainActivity extends AppCompatActivity {
             initializeFCM();
         }
 
+//        <<<<<<<<<<<<<<<<<<<<<<<<<<all the elements and their IDs >>>>>>>>>>>>>>>>>>>>>>>>>>>
+        ImageView arrowIconImageUpscaling = findViewById(R.id.swipeRightArrowImageUpscaling);
+        ImageView arrowIconPencilSketchGeneration = findViewById(R.id.swipeRightArrowPencilSketchGeneration);
+        ImageView arrowIconFaceSwap = findViewById(R.id.swipeRightArrowFaceSwap);
+        ImageView arrowIconImageToPainting = findViewById(R.id.swipeRightArrowImageToPainting);
+        ImageView arrowIconSeasonChanger = findViewById(R.id.swipeRightArrowSeasonChanger);
+
 //        <<<<<<<<<<<<<<<<<<<recyclerview for carousel >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
         RecyclerView recyclerViewCarousel = findViewById(R.id.recyclerViewCarousel);
@@ -151,71 +210,143 @@ public class MainActivity extends AppCompatActivity {
         recyclerViewCarousel.setLayoutManager(layoutManagerCarousel);
         recyclerViewCarousel.setNestedScrollingEnabled(false);
         recyclerViewCarousel.setOverScrollMode(View.OVER_SCROLL_NEVER);
+        SnapHelper snapHelper = new PagerSnapHelper();
+        snapHelper.attachToRecyclerView(recyclerViewCarousel);
 
-        final Handler handler = new Handler();
-        final int scrollDelay = 2000; // 2 seconds delay between scrolls
-        final int scrollBy = 1; // scroll 1 item at a time
+        dotContainer = findViewById(R.id.dot_container);
 
-        final Runnable runnable = new Runnable() {
-            int count = 0;
+        totalItems = carouselModelAdapter.getItemCount();
 
+        recyclerViewCarousel.post(() -> {
+            int initialPosition = ((LinearLayoutManager) recyclerViewCarousel.getLayoutManager()).findFirstCompletelyVisibleItemPosition();
+            if (initialPosition == RecyclerView.NO_POSITION) {
+                initialPosition = 0;
+            }
+            setupDots(totalItems, initialPosition);
+        });
+        recyclerViewCarousel.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
-            public void run() {
-                int itemCount = recyclerViewCarousel.getAdapter().getItemCount();
+            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
 
-                if (count < itemCount) {
-                    recyclerViewCarousel.smoothScrollToPosition(count);
-                    count++;
-                } else {
-                    // Reset back to first item
-                    count = 0;
-                    recyclerViewCarousel.scrollToPosition(count);
-                    count++;
+                View snapView = snapHelper.findSnapView(recyclerView.getLayoutManager());
+                if (snapView != null) {
+                    int position = recyclerView.getLayoutManager().getPosition(snapView);
+                    setupDots(totalItems, position);
                 }
-                handler.postDelayed(this, scrollDelay);
-            }
-        };
-        // Start auto-scrolling
-        handler.postDelayed(runnable, scrollDelay);
-        // Optional: Pause auto-scrolling when user touches RecyclerView
-        recyclerViewCarousel.addOnItemTouchListener(new RecyclerView.OnItemTouchListener() {
-            @Override
-            public boolean onInterceptTouchEvent(@NonNull RecyclerView rv, @NonNull MotionEvent e) {
-                switch (e.getAction()) {
-                    case MotionEvent.ACTION_DOWN:
-                        handler.removeCallbacks(runnable); // Pause
-                        break;
-                    case MotionEvent.ACTION_UP:
-                        handler.postDelayed(runnable, scrollDelay); // Resume
-                        break;
-                }
-                return false;
-            }
-
-            @Override
-            public void onTouchEvent(@NonNull RecyclerView rv, @NonNull MotionEvent e) {
-            }
-
-            @Override
-            public void onRequestDisallowInterceptTouchEvent(boolean disallowIntercept) {
             }
         });
+//<<<<<<<<<<<<<<<<<<<<<<<this code for auto scroll dont remove it >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+//        final Handler handler = new Handler();
+//        final int scrollDelay = 2000; // 2 seconds delay between scrolls
+//        final int scrollBy = 1; // scroll 1 item at a time
+//
+//        final Runnable runnable = new Runnable() {
+//            int count = 0;
+//
+//            @Override
+//            public void run() {
+//                int itemCount = recyclerViewCarousel.getAdapter().getItemCount();
+//
+//                if (count < itemCount) {
+//                    recyclerViewCarousel.smoothScrollToPosition(count);
+//                    count++;
+//                } else {
+//                    // Reset back to first item
+//                    count = 0;
+//                    recyclerViewCarousel.scrollToPosition(count);
+//                    count++;
+//                }
+//                handler.postDelayed(this, scrollDelay);
+//            }
+//        };
+//        // Start auto-scrolling
+//        handler.postDelayed(runnable, scrollDelay);
+//        // Optional: Pause auto-scrolling when user touches RecyclerView
+//        recyclerViewCarousel.addOnItemTouchListener(new RecyclerView.OnItemTouchListener() {
+//            @Override
+//            public boolean onInterceptTouchEvent(@NonNull RecyclerView rv, @NonNull MotionEvent e) {
+//                switch (e.getAction()) {
+//                    case MotionEvent.ACTION_DOWN:
+//                        handler.removeCallbacks(runnable); // Pause
+//                        break;
+//                    case MotionEvent.ACTION_UP:
+//                        handler.postDelayed(runnable, scrollDelay); // Resume
+//                        break;
+//                }
+//                return false;
+//            }
+//
+//            @Override
+//            public void onTouchEvent(@NonNull RecyclerView rv, @NonNull MotionEvent e) {
+//            }
+//
+//            @Override
+//            public void onRequestDisallowInterceptTouchEvent(boolean disallowIntercept) {
+//            }
+//        });
+//
+//        SnapHelper snapHelper = new LinearSnapHelper();
+//        snapHelper.attachToRecyclerView(recyclerViewCarousel);
 
-        SnapHelper snapHelper = new LinearSnapHelper();
-        snapHelper.attachToRecyclerView(recyclerViewCarousel);
 
 //        <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<recycler view for image upscaling feature>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
         RecyclerView recyclerViewImageRestoration = findViewById(R.id.recyclerView_feat_list_image_restoration);
         ArrayList<FeatListModalImageRestoration> listImageRestoration = new ArrayList<>();
         listImageRestoration.add(new FeatListModalImageRestoration(R.drawable.restore_image_feat_card, "Restore image"));
-        listImageRestoration.add(new FeatListModalImageRestoration(R.drawable.feat_card_two_x, "Enhance resolution 2X"));
-        listImageRestoration.add(new FeatListModalImageRestoration(R.drawable.feat_card_four_x, "Enhance resolution 4X"));
+        listImageRestoration.add(new FeatListModalImageRestoration(R.drawable.feat_card_two_x, "Enhance 2X"));
+        listImageRestoration.add(new FeatListModalImageRestoration(R.drawable.feat_card_four_x, "Enhance 4X"));
         FeatListModalAdapterImageRestoration featListModalAdapterImageRestoration = new FeatListModalAdapterImageRestoration(listImageRestoration, this);
         recyclerViewImageRestoration.setAdapter(featListModalAdapterImageRestoration);
         LinearLayoutManager layoutManagerImageRestoratiion = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
         recyclerViewImageRestoration.setLayoutManager(layoutManagerImageRestoratiion);
         recyclerViewImageRestoration.setNestedScrollingEnabled(false);
         recyclerViewImageRestoration.setOverScrollMode(View.OVER_SCROLL_NEVER);
+
+
+        arrowIconImageUpscaling.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                LinearLayoutManager layoutManager = (LinearLayoutManager) recyclerViewImageRestoration.getLayoutManager();
+                int lastVisibleItem = layoutManager.findLastVisibleItemPosition();
+                int totalItems = recyclerViewImageRestoration.getAdapter().getItemCount();
+
+                int nextPosition = lastVisibleItem + 1;
+//                if (nextPosition < totalItems) {
+                recyclerViewImageRestoration.smoothScrollToPosition(nextPosition);
+//                }
+            }
+        });
+
+
+//        <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<RecyclerView for pencil sketch generation>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+        RecyclerView recyclerViewPencilSketchGeneration = findViewById(R.id.recyclerView_feat_list_pencil_sketch_generation);
+        ArrayList<FeatListModelPencilSketchGeneration> listModelPencilSketchGenerations = new ArrayList<>();
+        listModelPencilSketchGenerations.add(new FeatListModelPencilSketchGeneration(R.drawable.feat_card_small_pencil, "✨ Soft Sketch"));
+        listModelPencilSketchGenerations.add(new FeatListModelPencilSketchGeneration(R.drawable.feat_card_medium_pencil, "✏\uFE0F Classic Sketch"));
+        listModelPencilSketchGenerations.add(new FeatListModelPencilSketchGeneration(R.drawable.feat_card_large_pencil, "\uD83D\uDD8C\uFE0F Bold Sketch"));
+        FeatListModalAdapterPencilSketchGeneration featListModalAdapterPencilSketchGeneration = new FeatListModalAdapterPencilSketchGeneration(listModelPencilSketchGenerations, this);
+        recyclerViewPencilSketchGeneration.setAdapter(featListModalAdapterPencilSketchGeneration);
+        LinearLayoutManager layoutManagerPencilSketchGeneration = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
+        recyclerViewPencilSketchGeneration.setLayoutManager(layoutManagerPencilSketchGeneration);
+        recyclerViewPencilSketchGeneration.setNestedScrollingEnabled(false);
+        recyclerViewPencilSketchGeneration.setOverScrollMode(View.OVER_SCROLL_NEVER);
+
+        arrowIconPencilSketchGeneration.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                LinearLayoutManager layoutManager = (LinearLayoutManager) recyclerViewPencilSketchGeneration.getLayoutManager();
+                int lastVisibleItem = layoutManager.findLastVisibleItemPosition();
+                int totalItems = recyclerViewPencilSketchGeneration.getAdapter().getItemCount();
+
+                int nextPosition = lastVisibleItem + 1;
+//                if (nextPosition < totalItems) {
+                recyclerViewPencilSketchGeneration.smoothScrollToPosition(nextPosition);
+//                }
+            }
+        });
 
 
 //        <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<Recycler view for face swap>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -232,6 +363,22 @@ public class MainActivity extends AppCompatActivity {
         recyclerViewImageFaceSwap.setNestedScrollingEnabled(false);
         recyclerViewImageFaceSwap.setOverScrollMode(View.OVER_SCROLL_NEVER);
 
+        arrowIconFaceSwap.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(MainActivity.this, "No items present", Toast.LENGTH_SHORT).show();
+
+//                LinearLayoutManager layoutManager = (LinearLayoutManager) recyclerViewImageFaceSwap.getLayoutManager();
+//                int lastVisibleItem = layoutManager.findLastVisibleItemPosition();
+//                int totalItems = recyclerViewImageFaceSwap.getAdapter().getItemCount();
+//
+//                int nextPosition = lastVisibleItem;
+//                if (nextPosition < totalItems) {
+//                    recyclerViewImageFaceSwap.smoothScrollToPosition(nextPosition);
+//                }
+            }
+        });
+
 
 //        <<<<<<<<<<<<<<<<<<<<<<< recycler view for image to painting>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
         RecyclerView recyclerView = findViewById(R.id.recyclerView_feat_list);
@@ -246,6 +393,20 @@ public class MainActivity extends AppCompatActivity {
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setNestedScrollingEnabled(false);
         recyclerView.setOverScrollMode(View.OVER_SCROLL_NEVER);
+        arrowIconImageToPainting.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                LinearLayoutManager layoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
+                int lastVisibleItem = layoutManager.findLastVisibleItemPosition();
+                int totalItems = recyclerView.getAdapter().getItemCount();
+
+                int nextPosition = lastVisibleItem + 1;
+//                if (nextPosition < totalItems) {
+                recyclerView.smoothScrollToPosition(nextPosition);
+//                }
+            }
+        });
 
 
 //        <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<recyclerview for season changer>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -260,6 +421,22 @@ public class MainActivity extends AppCompatActivity {
         recyclerView2.setNestedScrollingEnabled(false);
         recyclerView2.setOverScrollMode(View.OVER_SCROLL_NEVER);
 
+        arrowIconSeasonChanger.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(MainActivity.this, "No items present", Toast.LENGTH_SHORT).show();
+
+//                LinearLayoutManager layoutManager = (LinearLayoutManager) recyclerView2.getLayoutManager();
+//                int lastVisibleItem = layoutManager.findLastVisibleItemPosition();
+//                int totalItems = recyclerView2.getAdapter().getItemCount();
+//
+//                int nextPosition = lastVisibleItem + 1;
+//                recyclerView2.smoothScrollToPosition(nextPosition);
+            }
+        });
+
+
+//<<<<<<<<<<<<<<<<<<<<<<<<<<<in app update code >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
         activityResultLauncherForInAppUpdate = registerForActivityResult(
                 new ActivityResultContracts.StartIntentSenderForResult(),
                 new ActivityResultCallback<ActivityResult>() {

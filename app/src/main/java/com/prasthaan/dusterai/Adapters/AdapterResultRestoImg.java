@@ -128,7 +128,6 @@ public class AdapterResultRestoImg extends RecyclerView.Adapter<RecyclerView.Vie
             featureHolder.btn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Log.d("DownloadButton", "Clicked at position: " + position);
                     Toast.makeText(context, "Download started", Toast.LENGTH_SHORT).show();
 
                     // Safely call downloadImage() from the context if it's an instance of your Activity

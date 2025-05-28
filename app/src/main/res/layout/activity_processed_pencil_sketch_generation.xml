@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#1C2B46"
+    tools:context=".ProcessedActivityPencilSketchGeneration">
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/app_title_text_Card_processed"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        app:cardBackgroundColor="#1C2B46"
+        app:cardCornerRadius="12dp"
+        app:cardElevation="8dp">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:padding="8dp"
+            android:shadowColor="@android:color/black"
+            android:shadowRadius="4"
+            android:text="Download Image"
+            android:textColor="#F4F1F1"
+            android:textSize="24sp"
+            android:textStyle="bold" />
+    </androidx.cardview.widget.CardView>
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/frameLayoutExoPlayer"
+        android:layout_width="match_parent"
+        android:layout_height="300dp"
+        android:layout_below="@id/app_title_text_Card_processed"
+        android:layout_margin="5dp"
+        android:elevation="10dp">
+
+        <FrameLayout
+
+            android:layout_width="match_parent"
+            android:layout_height="300dp">
+
+            <androidx.media3.ui.PlayerView
+                android:id="@+id/player_view"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                app:resize_mode="fit"
+                app:show_buffering="when_playing"
+                app:use_controller="true" />
+
+            <!-- Download Button Overlay -->
+            <ImageView
+                android:id="@+id/btn_download_video"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_gravity="end|bottom"
+                android:layout_marginRight="50dp"
+                android:layout_marginBottom="5dp"
+                android:clickable="true"
+                android:contentDescription="Download"
+                android:focusable="true"
+                android:padding="8dp"
+                android:src="@drawable/baseline_download_24"
+                android:tint="@color/white" />
+
+        </FrameLayout>
+    </androidx.cardview.widget.CardView>
+
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/result_recyclerView_pencil_sketch_generation"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/frameLayoutExoPlayer" />
+
+</RelativeLayout>
