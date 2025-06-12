@@ -3,6 +3,7 @@ package com.prasthaan.dusterai;
 import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -22,6 +23,7 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.IntentSenderRequest;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -86,6 +88,7 @@ public class MainActivity extends AppCompatActivity {
             popupSnackbarForCompleteUpdate();
         }
     };
+    int updateType = 0;
     private LinearLayout dotContainer;
     private int totalItems;
 
@@ -453,9 +456,19 @@ public class MainActivity extends AppCompatActivity {
                     public void onActivityResult(ActivityResult result) {
                         // handle callback
                         if (result.getResultCode() != RESULT_OK) {
-//                            log(Double.parseDouble("Update flow failed! Result code: " + result.getResultCode()));
-                            // If the update is canceled or fails,
-                            // you can request to start the update again.
+                            if (updateType == 1) {
+                                AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+                                builder.setTitle("Update Required")
+                                        .setMessage("You must update the app to continue using it.")
+                                        .setCancelable(false)
+                                        .setPositiveButton("Exit", (dialog, which) -> {
+                                            finishAffinity();
+                                        })
+                                        .show();
+
+
+                            }
+
                         }
                     }
                 });
@@ -465,33 +478,64 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    private void CheckForInAppUpdate() {
-        appUpdateManager = AppUpdateManagerFactory.create(getApplicationContext());
-        appUpdateManager.registerListener(listener);
 
-// Returns an intent object that you use to check for an update.
+    private void CheckForInAppUpdate() {
+
+        appUpdateManager = AppUpdateManagerFactory.create(getApplicationContext());
+
         Task<AppUpdateInfo> appUpdateInfoTask = appUpdateManager.getAppUpdateInfo();
 
-// Checks that the platform will allow the specified type of update.
         appUpdateInfoTask.addOnSuccessListener(appUpdateInfo -> {
-            if (appUpdateInfo.updateAvailability() == UpdateAvailability.UPDATE_AVAILABLE
-                    // This example applies an immediate update. To apply a flexible update
-                    // instead, pass in AppUpdateType.FLEXIBLE
-                    && appUpdateInfo.isUpdateTypeAllowed(AppUpdateType.FLEXIBLE)) {
+            if (appUpdateInfo.updateAvailability() == UpdateAvailability.UPDATE_AVAILABLE) {
+                SharedPreferences prefs = getSharedPreferences("update_prefs", MODE_PRIVATE);
+                long firstSeen = prefs.getLong("first_seen_update", -1);
 
+                if (firstSeen == -1) {
+                    firstSeen = System.currentTimeMillis();
+                    prefs.edit().putLong("first_seen_update", firstSeen).apply();
+                }
 
-                appUpdateManager.startUpdateFlowForResult(
-                        // Pass the intent that is returned by 'getAppUpdateInfo()'.
-                        appUpdateInfo,
-                        // an activity result launcher registered via registerForActivityResult
-                        activityResultLauncherForInAppUpdate,
-                        // Or pass 'AppUpdateType.FLEXIBLE' to newBuilder() for
-                        // flexible updates.
-                        AppUpdateOptions.newBuilder(AppUpdateType.FLEXIBLE).build());
-                // Request the update.
+                long daysSinceFirstSeen = (System.currentTimeMillis() - firstSeen) / (1000 * 60 * 60 * 24);
+//                long minutesSinceFirstSeen = (System.currentTimeMillis() - firstSeen) / (1000 * 60);
+
+                if (daysSinceFirstSeen >= 5) {
+                    updateType = AppUpdateType.IMMEDIATE;
+                } else {
+                    updateType = AppUpdateType.FLEXIBLE;
+                }
+
+                if (appUpdateInfo.isUpdateTypeAllowed(updateType)) {
+                    AppUpdateOptions options = AppUpdateOptions.newBuilder(updateType).build();
+
+                    appUpdateManager.startUpdateFlowForResult(
+                            appUpdateInfo,
+                            activityResultLauncherForInAppUpdate,
+                            options
+                    );
+
+                    // Show reminder on day 3 and 4
+                    if (daysSinceFirstSeen == 3 || daysSinceFirstSeen == 4) {
+                        showUpdateReminderDialog();
+                    }
+                }
+            } else {
+                // Clear first seen time if no update is available (app updated)
+                getSharedPreferences("update_prefs", MODE_PRIVATE).edit().remove("first_seen_update").apply();
             }
         });
     }
+
+    private void showUpdateReminderDialog() {
+        new AlertDialog.Builder(this)
+                .setTitle("Update Available")
+                .setMessage("A new version of Duster AI is available. Please update soon, as after 5 days this update will be mandatory.")
+                .setPositiveButton("Update Now", (dialog, which) -> {
+                    CheckForInAppUpdate(); // Re-trigger update flow
+                })
+                .setNegativeButton("Later", null)
+                .show();
+    }
+
 
     private boolean isConnected() {
         ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
