@@ -91,6 +91,7 @@ public class ProcessedActivityRestoredImg extends AppCompatActivity {
             try {
                 // Directly pass the URL string to downloadImage
                 downloadImage(restoredImageUrl);
+                ReviewHelper.launchReviewIfEligible(this);
                 Toast.makeText(this, "Download started, see the notification", Toast.LENGTH_SHORT).show();
             } catch (Exception e) {
                 e.printStackTrace();

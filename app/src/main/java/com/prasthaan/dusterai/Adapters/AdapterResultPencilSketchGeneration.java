@@ -1,5 +1,6 @@
 package com.prasthaan.dusterai.Adapters;
 
+import android.app.Activity;
 import android.content.Context;
 import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
@@ -22,6 +23,7 @@ import com.google.android.gms.ads.nativead.NativeAdView;
 import com.prasthaan.dusterai.Models.ModelResultPencilSketchGeneration;
 import com.prasthaan.dusterai.ProcessedActivityPencilSketchGeneration;
 import com.prasthaan.dusterai.R;
+import com.prasthaan.dusterai.ReviewHelper;
 
 import java.util.ArrayList;
 
@@ -120,9 +122,11 @@ public class AdapterResultPencilSketchGeneration extends RecyclerView.Adapter<Re
                                 } else {
                                     Toast.makeText(context, "Unable to start download", Toast.LENGTH_SHORT).show();
                                 }
+                                if (context instanceof Activity) {
+                                    ReviewHelper.launchReviewIfEligible((Activity) context);
+                                }
                             })
                             .start();
-
                 }
             });
 
