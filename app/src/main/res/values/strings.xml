@@ -12,6 +12,9 @@
     <string name="carousel_native_ad1">ca-app-pub-4827086355311757/2601694718</string>
     <string name="carousel_native_ad2">ca-app-pub-4827086355311757/5551517029</string>
     <string name="ad_attribution">Ad</string>
+    <string name="facebook_app_id">1014498630891294</string>
+    <string name="fb_login_protocol_scheme">1014498630891294</string>
+    <string name="facebook_client_token">b46fc744e28a6e128a312deab7c44e7c</string>
 
 
 </resources>

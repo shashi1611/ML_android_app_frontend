@@ -30,6 +30,8 @@ import androidx.recyclerview.widget.PagerSnapHelper;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.SnapHelper;
 
+import com.facebook.FacebookSdk;
+import com.facebook.appevents.AppEventsLogger;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.play.core.appupdate.AppUpdateInfo;
@@ -179,6 +181,9 @@ public class MainActivity extends AppCompatActivity {
             return;
         }
         setContentView(R.layout.activity_main);
+        FacebookSdk.sdkInitialize(getApplicationContext());
+        AppEventsLogger.activateApp(this.getApplication());
+        AppEventsLogger logger = AppEventsLogger.newLogger(this);
 
         requestStoragePermissions();
         // Request notification permission if Android 13 or above (paste it inside onCreate method)
@@ -316,6 +321,10 @@ public class MainActivity extends AppCompatActivity {
 //                if (nextPosition < totalItems) {
                 recyclerViewImageRestoration.smoothScrollToPosition(nextPosition);
 //                }
+
+
+//                logger.logEvent("photoRestored");
+
             }
         });
 
