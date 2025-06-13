@@ -2,6 +2,7 @@ package com.prasthaan.dusterai;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.AlertDialog;
 import android.app.DownloadManager;
 import android.content.Context;
 import android.content.Intent;
@@ -31,10 +32,15 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import com.bumptech.glide.Glide;
+import com.google.android.gms.ads.AdError;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdSize;
 import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.FullScreenContentCallback;
+import com.google.android.gms.ads.LoadAdError;
 import com.google.android.gms.ads.MobileAds;
+import com.google.android.gms.ads.rewarded.RewardedAd;
+import com.google.android.gms.ads.rewarded.RewardedAdLoadCallback;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -63,6 +69,8 @@ public class ProcessedActivity extends AppCompatActivity {
                 }
             });
     String development_test_ad = "ca-app-pub-3940256099942544/9214589741";
+    String development_test_ad_rewarded_ad = "ca-app-pub-3940256099942544/5224354917";
+    String production_ad_rewarded_ad_enhance_2x = "ca-app-pub-4827086355311757/6989068229";
     private ImageView imageView;
     private Button btnDownload, btnShare;
     private String presignedUrl;
@@ -70,6 +78,7 @@ public class ProcessedActivity extends AppCompatActivity {
     private String downloadedImageName;
     private AdView adViewDownloadPage;
     private FrameLayout adContainerViewDownloadPage;
+    private RewardedAd rewardedAd;
 
     private void requestStoragePermissions() {
         List<String> permissionsNeeded = new ArrayList<>();
@@ -109,6 +118,21 @@ public class ProcessedActivity extends AppCompatActivity {
         }
     }
 
+    private void loadRewardedAd() {
+        AdRequest adRequest = new AdRequest.Builder().build();
+        RewardedAd.load(this, "ca-app-pub-3940256099942544/5224354917", adRequest, new RewardedAdLoadCallback() {
+            @Override
+            public void onAdLoaded(@NonNull RewardedAd ad) {
+                rewardedAd = ad;
+            }
+
+            @Override
+            public void onAdFailedToLoad(@NonNull LoadAdError adError) {
+                rewardedAd = null;
+            }
+        });
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -123,6 +147,7 @@ public class ProcessedActivity extends AppCompatActivity {
         imageView = findViewById(R.id.download_img);
         btnDownload = findViewById(R.id.download_img_vid_button);
         btnShare = findViewById(R.id.share_img_vid_button);
+        loadRewardedAd();
 
 
         // Get the presigned URL from intent
@@ -147,19 +172,72 @@ public class ProcessedActivity extends AppCompatActivity {
             Toast.makeText(this, "Image URL not received", Toast.LENGTH_SHORT).show();
         }
 
-        btnDownload.setOnClickListener(v -> {
+//        btnDownload.setOnClickListener(v -> {
+//
+//            try {
+//                JSONObject jsonObject = new JSONObject(presignedUrl);
+//                String imageUrl = jsonObject.getString("output"); // Extract URL
+//                downloadImage(imageUrl);
+//                ReviewHelper.launchReviewIfEligible(this);
+//                Toast.makeText(this, "Download started see the notification", Toast.LENGTH_SHORT).show();
+//            } catch (JSONException e) {
+//                e.printStackTrace();
+//                Toast.makeText(this, "Invalid URL format", Toast.LENGTH_SHORT).show();
+//            }
+//        });
 
-            try {
-                JSONObject jsonObject = new JSONObject(presignedUrl);
-                String imageUrl = jsonObject.getString("output"); // Extract URL
-                downloadImage(imageUrl);
-                ReviewHelper.launchReviewIfEligible(this);
-                Toast.makeText(this, "Download started see the notification", Toast.LENGTH_SHORT).show();
-            } catch (JSONException e) {
-                e.printStackTrace();
-                Toast.makeText(this, "Invalid URL format", Toast.LENGTH_SHORT).show();
+        btnDownload.setOnClickListener(v -> {
+            if (rewardedAd == null) {
+                Toast.makeText(this, "Ad not loaded yet. Please try again shortly.", Toast.LENGTH_SHORT).show();
+                loadRewardedAd(); // Preload if not ready
+                return;
             }
+
+            new AlertDialog.Builder(this)
+                    .setTitle("Unlock Download")
+                    .setMessage("Watch a short ad to unlock this image for download.")
+                    .setIcon(R.drawable.app_logo__icon)
+                    .setPositiveButton("Watch Ad", (dialog, which) -> {
+                        // User agreed to watch the ad
+                        rewardedAd.setFullScreenContentCallback(new FullScreenContentCallback() {
+                            @Override
+                            public void onAdDismissedFullScreenContent() {
+                                rewardedAd = null;
+                                loadRewardedAd(); // Preload next
+                            }
+
+                            @Override
+                            public void onAdFailedToShowFullScreenContent(AdError adError) {
+                                rewardedAd = null;
+                                loadRewardedAd();
+                            }
+
+                            @Override
+                            public void onAdShowedFullScreenContent() {
+                                rewardedAd = null;
+                            }
+                        });
+
+                        rewardedAd.show(this, rewardItem -> {
+                            // User watched the ad fully, unlock download
+                            try {
+                                JSONObject jsonObject = new JSONObject(presignedUrl);
+                                String imageUrl = jsonObject.getString("output");
+                                downloadImage(imageUrl);
+                                ReviewHelper.launchReviewIfEligible(this);
+                                Toast.makeText(this, "Download started. See the notification.", Toast.LENGTH_SHORT).show();
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                                Toast.makeText(this, "Invalid URL format", Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                    })
+                    .setNegativeButton("Cancel", (dialog, which) -> {
+                        dialog.dismiss(); // Do nothing if user declines
+                    })
+                    .show();
         });
+
 
         btnShare.setOnClickListener(v -> shareImage());
 
@@ -321,6 +399,11 @@ public class ProcessedActivity extends AppCompatActivity {
             Toast.makeText(this, "Failed to share image: " + e.getMessage(), Toast.LENGTH_SHORT).show();
         }
     }
+
+//    private void show_reward_pop_up() {
+//        AlertDialog.Builder alert = new AlertDialog.Builder(getApplicationContext());
+//        alert.setIcon(R.id.ad_app_icon)
+//    }
 
 
 }

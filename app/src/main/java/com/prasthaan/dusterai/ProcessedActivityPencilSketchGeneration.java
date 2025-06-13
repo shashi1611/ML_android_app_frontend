@@ -12,6 +12,8 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.FileProvider;
 import androidx.core.graphics.Insets;
@@ -23,6 +25,12 @@ import androidx.media3.ui.PlayerView;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.gms.ads.AdError;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.FullScreenContentCallback;
+import com.google.android.gms.ads.LoadAdError;
+import com.google.android.gms.ads.rewarded.RewardedAd;
+import com.google.android.gms.ads.rewarded.RewardedAdLoadCallback;
 import com.prasthaan.dusterai.Adapters.AdapterResultPencilSketchGeneration;
 import com.prasthaan.dusterai.Models.ModelResultPencilSketchGeneration;
 
@@ -34,8 +42,27 @@ import java.net.URL;
 import java.util.ArrayList;
 
 public class ProcessedActivityPencilSketchGeneration extends AppCompatActivity {
+    public RewardedAd rewardedAd;
     ExoPlayer player;
+    String development_test_ad = "ca-app-pub-3940256099942544/9214589741";
+    String development_test_ad_rewarded_ad = "ca-app-pub-3940256099942544/5224354917";
+    String production_ad_rewarded_ad_sketch_video = "ca-app-pub-4827086355311757/3217344170";
     private String downloadedImageName;
+
+    public void loadRewardedAd() {
+        AdRequest adRequest = new AdRequest.Builder().build();
+        RewardedAd.load(this, "ca-app-pub-3940256099942544/5224354917", adRequest, new RewardedAdLoadCallback() {
+            @Override
+            public void onAdLoaded(@NonNull RewardedAd ad) {
+                rewardedAd = ad;
+            }
+
+            @Override
+            public void onAdFailedToLoad(@NonNull LoadAdError adError) {
+                rewardedAd = null;
+            }
+        });
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,6 +75,7 @@ public class ProcessedActivityPencilSketchGeneration extends AppCompatActivity {
             return insets;
         });
         Intent intent = getIntent();
+        loadRewardedAd();
 
 //        <<<<<<<<<<<<<<<<<<<<<<<<<<video player>>>>>>>>>>>>>>>>>>>>>>>>>
         PlayerView playerView = findViewById(R.id.player_view);
@@ -82,8 +110,43 @@ public class ProcessedActivityPencilSketchGeneration extends AppCompatActivity {
 //        <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<download video >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
         ImageView btnDownload = findViewById(R.id.btn_download_video);
 
+//        btnDownload.setOnClickListener(v -> {
+//            // Click effect: scale + alpha
+//            v.animate()
+//                    .scaleX(0.85f)
+//                    .scaleY(0.85f)
+//                    .alpha(0.6f)
+//                    .setDuration(100)
+//                    .withEndAction(() -> {
+//                        v.animate()
+//                                .scaleX(1f)
+//                                .scaleY(1f)
+//                                .alpha(1f)
+//                                .setDuration(100)
+//                                .start();
+//
+//                        // Download code
+////                        String videoUrl = getIntent().getStringExtra("videoUrl");
+//                        if (videoUrl != null) {
+//                            DownloadManager downloadManager = (DownloadManager) getSystemService(Context.DOWNLOAD_SERVICE);
+//                            Uri uri = Uri.parse(videoUrl);
+//
+//                            DownloadManager.Request request = new DownloadManager.Request(uri);
+//                            request.setTitle("Downloading video");
+//                            request.setDescription("Saving video to Downloads");
+//                            request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
+//                            request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, "sketch_video.mp4");
+//
+//                            downloadManager.enqueue(request);
+//                            Toast.makeText(this, "Download started...", Toast.LENGTH_SHORT).show();
+//                        }
+//                    })
+//                    .start();
+//        });
+
+
         btnDownload.setOnClickListener(v -> {
-            // Click effect: scale + alpha
+            // Click effect: scale + alpha (keep this as-is)
             v.animate()
                     .scaleX(0.85f)
                     .scaleY(0.85f)
@@ -97,21 +160,56 @@ public class ProcessedActivityPencilSketchGeneration extends AppCompatActivity {
                                 .setDuration(100)
                                 .start();
 
-                        // Download code
-//                        String videoUrl = getIntent().getStringExtra("videoUrl");
-                        if (videoUrl != null) {
-                            DownloadManager downloadManager = (DownloadManager) getSystemService(Context.DOWNLOAD_SERVICE);
-                            Uri uri = Uri.parse(videoUrl);
-
-                            DownloadManager.Request request = new DownloadManager.Request(uri);
-                            request.setTitle("Downloading video");
-                            request.setDescription("Saving video to Downloads");
-                            request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
-                            request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, "sketch_video.mp4");
-
-                            downloadManager.enqueue(request);
-                            Toast.makeText(this, "Download started...", Toast.LENGTH_SHORT).show();
+                        // Now show reward ad confirmation dialog
+                        if (rewardedAd == null) {
+                            Toast.makeText(this, "Ad not loaded yet. Please try again shortly.", Toast.LENGTH_SHORT).show();
+                            loadRewardedAd();
+                            return;
                         }
+
+                        new AlertDialog.Builder(this)
+                                .setTitle("Unlock Video Download")
+                                .setMessage("Watch a short ad to unlock this video for download.")
+                                .setIcon(R.drawable.app_logo__icon) // optional, use your logo
+                                .setPositiveButton("Watch Ad", (dialog, which) -> {
+                                    rewardedAd.setFullScreenContentCallback(new FullScreenContentCallback() {
+                                        @Override
+                                        public void onAdDismissedFullScreenContent() {
+                                            rewardedAd = null;
+                                            loadRewardedAd();
+                                        }
+
+                                        @Override
+                                        public void onAdFailedToShowFullScreenContent(AdError adError) {
+                                            rewardedAd = null;
+                                            loadRewardedAd();
+                                        }
+
+                                        @Override
+                                        public void onAdShowedFullScreenContent() {
+                                            rewardedAd = null;
+                                        }
+                                    });
+
+                                    rewardedAd.show(this, rewardItem -> {
+                                        // Reward earned: start download
+                                        if (videoUrl != null) {
+                                            DownloadManager downloadManager = (DownloadManager) getSystemService(Context.DOWNLOAD_SERVICE);
+                                            Uri uri = Uri.parse(videoUrl);
+
+                                            DownloadManager.Request request = new DownloadManager.Request(uri);
+                                            request.setTitle("Downloading video");
+                                            request.setDescription("Saving video to Downloads");
+                                            request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
+                                            request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, "sketch_video.mp4");
+
+                                            downloadManager.enqueue(request);
+                                            Toast.makeText(this, "Download started...", Toast.LENGTH_SHORT).show();
+                                        }
+                                    });
+                                })
+                                .setNegativeButton("Cancel", (dialog, which) -> dialog.dismiss())
+                                .show();
                     })
                     .start();
         });

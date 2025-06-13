@@ -1,6 +1,5 @@
 package com.prasthaan.dusterai.Adapters;
 
-import android.app.Activity;
 import android.content.Context;
 import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
@@ -12,11 +11,14 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.google.android.gms.ads.AdError;
 import com.google.android.gms.ads.AdLoader;
 import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.FullScreenContentCallback;
 import com.google.android.gms.ads.LoadAdError;
 import com.google.android.gms.ads.nativead.NativeAd;
 import com.google.android.gms.ads.nativead.NativeAdView;
@@ -102,6 +104,34 @@ public class AdapterResultPencilSketchGeneration extends RecyclerView.Adapter<Re
                     .into(featureHolder.imageView);
 
 
+//            featureHolder.downloadBtn.setOnClickListener(new View.OnClickListener() {
+//                @Override
+//                public void onClick(View v) {
+//                    v.animate()
+//                            .scaleX(0.85f)
+//                            .scaleY(0.85f)
+//                            .alpha(0.6f)
+//                            .setDuration(100)
+//                            .withEndAction(() -> {
+//                                v.animate()
+//                                        .scaleX(1f)
+//                                        .scaleY(1f)
+//                                        .alpha(1f)
+//                                        .setDuration(100)
+//                                        .start();
+//                                if (context instanceof ProcessedActivityPencilSketchGeneration) {
+//                                    ((ProcessedActivityPencilSketchGeneration) context).downloadImage(model.getResultImg());
+//                                } else {
+//                                    Toast.makeText(context, "Unable to start download", Toast.LENGTH_SHORT).show();
+//                                }
+//                                if (context instanceof Activity) {
+//                                    ReviewHelper.launchReviewIfEligible((Activity) context);
+//                                }
+//                            })
+//                            .start();
+//                }
+//            });
+
             featureHolder.downloadBtn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -117,18 +147,88 @@ public class AdapterResultPencilSketchGeneration extends RecyclerView.Adapter<Re
                                         .alpha(1f)
                                         .setDuration(100)
                                         .start();
-                                if (context instanceof ProcessedActivityPencilSketchGeneration) {
-                                    ((ProcessedActivityPencilSketchGeneration) context).downloadImage(model.getResultImg());
-                                } else {
+
+                                // Check for rewarded ad in activity
+                                if (!(context instanceof ProcessedActivityPencilSketchGeneration)) {
                                     Toast.makeText(context, "Unable to start download", Toast.LENGTH_SHORT).show();
+                                    return;
                                 }
-                                if (context instanceof Activity) {
-                                    ReviewHelper.launchReviewIfEligible((Activity) context);
+
+                                ProcessedActivityPencilSketchGeneration activity = (ProcessedActivityPencilSketchGeneration) context;
+
+                                if (activity.rewardedAd == null) {
+                                    Toast.makeText(context, "Ad not loaded yet. Please try again shortly.", Toast.LENGTH_SHORT).show();
+                                    activity.loadRewardedAd(); // Reload if null
+                                    return;
                                 }
+
+                                // Show dialog with logo (optional)
+                                new AlertDialog.Builder(context)
+                                        .setTitle("Unlock Download")
+                                        .setMessage("Watch a short ad to unlock this image for download.")
+                                        .setIcon(R.drawable.app_logo__icon) // Optional: your app logo
+                                        .setPositiveButton("Watch Ad", (dialog, which) -> {
+                                            activity.rewardedAd.setFullScreenContentCallback(new FullScreenContentCallback() {
+                                                @Override
+                                                public void onAdDismissedFullScreenContent() {
+                                                    activity.rewardedAd = null;
+                                                    activity.loadRewardedAd();
+                                                }
+
+                                                @Override
+                                                public void onAdFailedToShowFullScreenContent(AdError adError) {
+                                                    activity.rewardedAd = null;
+                                                    activity.loadRewardedAd();
+                                                }
+
+                                                @Override
+                                                public void onAdShowedFullScreenContent() {
+                                                    activity.rewardedAd = null;
+                                                }
+                                            });
+
+                                            activity.rewardedAd.show(activity, rewardItem -> {
+                                                // Ad watched: start download
+                                                activity.downloadImage(model.getResultImg());
+                                                ReviewHelper.launchReviewIfEligible(activity);
+                                                Toast.makeText(context, "Download started...", Toast.LENGTH_SHORT).show();
+                                            });
+                                        })
+                                        .setNegativeButton("Cancel", (dialog, which) -> dialog.dismiss())
+                                        .show();
                             })
                             .start();
                 }
             });
+
+
+//            featureHolder.shareBtn.setOnClickListener(new View.OnClickListener() {
+//                @Override
+//                public void onClick(View v) {
+//
+//                    v.animate()
+//                            .scaleX(0.85f)
+//                            .scaleY(0.85f)
+//                            .alpha(0.6f)
+//                            .setDuration(100)
+//                            .withEndAction(() -> {
+//                                v.animate()
+//                                        .scaleX(1f)
+//                                        .scaleY(1f)
+//                                        .alpha(1f)
+//                                        .setDuration(100)
+//                                        .start();
+//                                if (context instanceof ProcessedActivityPencilSketchGeneration) {
+//                                    ((ProcessedActivityPencilSketchGeneration) context).shareImageFromPresignedUrl(model.getResultImg());
+//                                } else {
+//                                    Toast.makeText(context, "Unable to start download", Toast.LENGTH_SHORT).show();
+//                                }
+//
+//                            })
+//                            .start();
+//
+//                }
+//            });
 
             featureHolder.shareBtn.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -146,17 +246,57 @@ public class AdapterResultPencilSketchGeneration extends RecyclerView.Adapter<Re
                                         .alpha(1f)
                                         .setDuration(100)
                                         .start();
-                                if (context instanceof ProcessedActivityPencilSketchGeneration) {
-                                    ((ProcessedActivityPencilSketchGeneration) context).shareImageFromPresignedUrl(model.getResultImg());
-                                } else {
-                                    Toast.makeText(context, "Unable to start download", Toast.LENGTH_SHORT).show();
+
+                                if (!(context instanceof ProcessedActivityPencilSketchGeneration)) {
+                                    Toast.makeText(context, "Unable to share image", Toast.LENGTH_SHORT).show();
+                                    return;
                                 }
 
+                                ProcessedActivityPencilSketchGeneration activity = (ProcessedActivityPencilSketchGeneration) context;
+
+                                if (activity.rewardedAd == null) {
+                                    Toast.makeText(context, "Ad not loaded yet. Please try again shortly.", Toast.LENGTH_SHORT).show();
+                                    activity.loadRewardedAd(); // Trigger reload if needed
+                                    return;
+                                }
+
+                                new AlertDialog.Builder(context)
+                                        .setTitle("Unlock Sharing")
+                                        .setMessage("Watch a short ad to unlock the image sharing feature.")
+                                        .setIcon(R.drawable.app_logo__icon) // Optional logo
+                                        .setPositiveButton("Watch Ad", (dialog, which) -> {
+                                            activity.rewardedAd.setFullScreenContentCallback(new FullScreenContentCallback() {
+                                                @Override
+                                                public void onAdDismissedFullScreenContent() {
+                                                    activity.rewardedAd = null;
+                                                    activity.loadRewardedAd();
+                                                }
+
+                                                @Override
+                                                public void onAdFailedToShowFullScreenContent(AdError adError) {
+                                                    activity.rewardedAd = null;
+                                                    activity.loadRewardedAd();
+                                                }
+
+                                                @Override
+                                                public void onAdShowedFullScreenContent() {
+                                                    activity.rewardedAd = null;
+                                                }
+                                            });
+
+                                            activity.rewardedAd.show(activity, rewardItem -> {
+                                                // Ad watched, allow sharing
+                                                activity.shareImageFromPresignedUrl(model.getResultImg());
+                                                Toast.makeText(context, "Sharing unlocked", Toast.LENGTH_SHORT).show();
+                                            });
+                                        })
+                                        .setNegativeButton("Cancel", (dialog, which) -> dialog.dismiss())
+                                        .show();
                             })
                             .start();
-
                 }
             });
+
 
         }
     }

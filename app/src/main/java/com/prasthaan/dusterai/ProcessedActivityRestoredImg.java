@@ -15,6 +15,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.FileProvider;
 import androidx.core.graphics.Insets;
@@ -24,6 +26,12 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.google.android.gms.ads.AdError;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.FullScreenContentCallback;
+import com.google.android.gms.ads.LoadAdError;
+import com.google.android.gms.ads.rewarded.RewardedAd;
+import com.google.android.gms.ads.rewarded.RewardedAdLoadCallback;
 import com.prasthaan.dusterai.Adapters.AdapterResultRestoImg;
 import com.prasthaan.dusterai.Models.ModalResultRestoImg;
 
@@ -31,9 +39,28 @@ import java.io.File;
 import java.util.ArrayList;
 
 public class ProcessedActivityRestoredImg extends AppCompatActivity {
+    String development_test_ad = "ca-app-pub-3940256099942544/9214589741";
+    String development_test_ad_rewarded_ad = "ca-app-pub-3940256099942544/5224354917";
+    String production_ad_rewarded_ad_restore_img = "ca-app-pub-4827086355311757/5843507510";
     private Button btnDownload, btnShare;
     private String downloadedImageName;
 
+    private RewardedAd rewardedAd;
+
+    private void loadRewardedAd() {
+        AdRequest adRequest = new AdRequest.Builder().build();
+        RewardedAd.load(this, "ca-app-pub-3940256099942544/5224354917", adRequest, new RewardedAdLoadCallback() {
+            @Override
+            public void onAdLoaded(@NonNull RewardedAd ad) {
+                rewardedAd = ad;
+            }
+
+            @Override
+            public void onAdFailedToLoad(@NonNull LoadAdError adError) {
+                rewardedAd = null;
+            }
+        });
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,6 +72,7 @@ public class ProcessedActivityRestoredImg extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+        loadRewardedAd();
 
         ImageView imageViewRestoImg = findViewById(R.id.download_img_result_resto);
         RecyclerView recyclerViewImageRestorationRes = findViewById(R.id.recyclerView_result_list_image_restoration);
@@ -87,17 +115,66 @@ public class ProcessedActivityRestoredImg extends AppCompatActivity {
             textView.setText("");
         }
 
+//        btnDownload.setOnClickListener(v -> {
+//            try {
+//                // Directly pass the URL string to downloadImage
+//                downloadImage(restoredImageUrl);
+//                ReviewHelper.launchReviewIfEligible(this);
+//                Toast.makeText(this, "Download started, see the notification", Toast.LENGTH_SHORT).show();
+//            } catch (Exception e) {
+//                e.printStackTrace();
+//                Toast.makeText(this, "Error starting download", Toast.LENGTH_SHORT).show();
+//            }
+//        });
+
         btnDownload.setOnClickListener(v -> {
-            try {
-                // Directly pass the URL string to downloadImage
-                downloadImage(restoredImageUrl);
-                ReviewHelper.launchReviewIfEligible(this);
-                Toast.makeText(this, "Download started, see the notification", Toast.LENGTH_SHORT).show();
-            } catch (Exception e) {
-                e.printStackTrace();
-                Toast.makeText(this, "Error starting download", Toast.LENGTH_SHORT).show();
+            if (rewardedAd == null) {
+                Toast.makeText(this, "Ad not loaded yet. Please try again shortly.", Toast.LENGTH_SHORT).show();
+                loadRewardedAd(); // Load again if needed
+                return;
             }
+
+            new AlertDialog.Builder(this)
+                    .setTitle("Unlock Download")
+                    .setMessage("Watch a short ad to unlock this image for download.")
+                    .setIcon(R.drawable.app_logo__icon)
+                    .setPositiveButton("Watch Ad", (dialog, which) -> {
+                        // User agreed to watch ad
+                        rewardedAd.setFullScreenContentCallback(new FullScreenContentCallback() {
+                            @Override
+                            public void onAdDismissedFullScreenContent() {
+                                rewardedAd = null;
+                                loadRewardedAd(); // Preload for next time
+                            }
+
+                            @Override
+                            public void onAdFailedToShowFullScreenContent(AdError adError) {
+                                rewardedAd = null;
+                                loadRewardedAd();
+                            }
+
+                            @Override
+                            public void onAdShowedFullScreenContent() {
+                                rewardedAd = null;
+                            }
+                        });
+
+                        rewardedAd.show(this, rewardItem -> {
+                            // Reward earned, allow download
+                            try {
+                                downloadImage(restoredImageUrl);
+                                ReviewHelper.launchReviewIfEligible(this);
+                                Toast.makeText(this, "Download started, see the notification", Toast.LENGTH_SHORT).show();
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                                Toast.makeText(this, "Error starting download", Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                    })
+                    .setNegativeButton("Cancel", (dialog, which) -> dialog.dismiss())
+                    .show();
         });
+
 
         btnShare.setOnClickListener(v -> shareImage());
 
