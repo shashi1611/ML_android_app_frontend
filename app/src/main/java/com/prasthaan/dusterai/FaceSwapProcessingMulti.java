@@ -138,10 +138,12 @@ public class FaceSwapProcessingMulti extends AppCompatActivity {
         RelativeLayout relativeLayoutImageTemplate = findViewById(R.id.imageTemplateContainerMultiFace);
         ImageView imageViewUploadTargetImg = findViewById(R.id.uploadimageFaceSwapMulti);
         textView1 = findViewById(R.id.uploadTextMulti);
+        TextView textViewTitle = findViewById(R.id.featureNameTextView);
 
         relativeLayoutImageTemplate.setOnClickListener(view -> openGalleryTargetFaceMulti());
 
         String receivedText = getIntent().getStringExtra("text_key");
+        textViewTitle.setText(receivedText);
 
 
         adapterFaceSwapMulti = new AdapterFaceSwapMulti(

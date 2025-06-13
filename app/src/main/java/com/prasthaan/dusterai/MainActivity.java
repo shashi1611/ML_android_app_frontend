@@ -528,7 +528,7 @@ public class MainActivity extends AppCompatActivity {
     private void showUpdateReminderDialog() {
         new AlertDialog.Builder(this)
                 .setTitle("Update Available")
-                .setMessage("A new version of Duster AI is available. Please update soon, as after 5 days this update will be mandatory.")
+                .setMessage("A new version of Duster AI is available. Please update soon, as after 5 days this version wont be supported.")
                 .setPositiveButton("Update Now", (dialog, which) -> {
                     CheckForInAppUpdate(); // Re-trigger update flow
                 })
