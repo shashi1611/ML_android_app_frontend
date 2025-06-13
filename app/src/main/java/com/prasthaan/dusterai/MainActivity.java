@@ -22,7 +22,6 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.IntentSenderRequest;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -59,7 +58,7 @@ import com.prasthaan.dusterai.Models.carouselModel;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends BaseMenuActivity {
     private static final int REQUEST_NOTIFICATION_PERMISSION = 1001;
     private static final String TAG = "MainActivity";
     private final ActivityResultLauncher<String[]> requestPermissionLauncher =

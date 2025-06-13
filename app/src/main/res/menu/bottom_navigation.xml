@@ -1,0 +1,15 @@
+<!-- res/menu/bottom_navigation.xml -->
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/nav_home"
+        android:icon="@drawable/baseline_arrow_downward_24"
+        android:title="Home" />
+    <item
+        android:id="@+id/nav_history"
+        android:icon="@drawable/baseline_arrow_downward_24"
+        android:title="History" />
+    <item
+        android:id="@+id/nav_contact"
+        android:icon="@drawable/baseline_arrow_downward_24"
+        android:title="Contact Us" />
+</menu>
