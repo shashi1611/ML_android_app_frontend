@@ -153,6 +153,7 @@ public class ProcessedActivity extends AppCompatActivity {
                 JSONObject jsonObject = new JSONObject(presignedUrl);
                 String imageUrl = jsonObject.getString("output"); // Extract URL
                 downloadImage(imageUrl);
+                ReviewHelper.launchReviewIfEligible(this);
                 Toast.makeText(this, "Download started see the notification", Toast.LENGTH_SHORT).show();
             } catch (JSONException e) {
                 e.printStackTrace();

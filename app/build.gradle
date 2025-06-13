@@ -100,4 +100,7 @@ dependencies {
 
     implementation 'com.facebook.android:facebook-android-sdk:latest.release'
 
+    implementation "com.google.android.play:review:2.0.1"
+
+
 }
