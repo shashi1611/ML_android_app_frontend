@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#1C2B46"
+    android:fitsSystemWindows="true"
+    tools:context=".HistoryPage">
+
+    <!-- Toolbar Title -->
+    <androidx.cardview.widget.CardView
+        android:id="@+id/titlecard"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="5dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginRight="5dp"
+        android:layout_marginBottom="5dp"
+        android:background="#1C2B46"
+        android:backgroundTint="#1C2B46"
+        app:cardElevation="20dp">
+
+        <TextView
+            android:id="@+id/history_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="10dp"
+            android:text="History"
+            android:textAlignment="center"
+            android:textColor="@android:color/white"
+            android:textSize="24sp"
+            android:textStyle="bold" />
+    </androidx.cardview.widget.CardView>
+
+    <!-- RecyclerView -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerViewHistory"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@+id/bottom_navigation_card"
+        android:layout_below="@+id/titlecard"
+        android:clipToPadding="false" />
+
+    <!-- No History Text -->
+    <TextView
+        android:id="@+id/no_history_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:gravity="center"
+        android:text="No history yet!"
+        android:textColor="@color/white"
+        android:textSize="18sp"
+        android:visibility="gone" />
+
+    <!-- Optional Lottie Animation -->
+    <com.airbnb.lottie.LottieAnimationView
+        android:id="@+id/no_data_animation"
+        android:layout_width="250dp"
+        android:layout_height="250dp"
+        android:layout_centerInParent="true"
+        android:visibility="gone"
+        app:lottie_autoPlay="true"
+        app:lottie_fileName="no_data.json"
+        app:lottie_loop="true" />
+
+    <!-- White separator line -->
+    <View
+        android:id="@+id/separator_line"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_above="@id/bottom_navigation_card"
+        android:background="#FFFFFF"
+        android:backgroundTint="@color/white" />
+
+    <!-- Bottom Navigation -->
+    <androidx.cardview.widget.CardView
+        android:id="@+id/bottom_navigation_card"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="5dp"
+        android:background="#1C2B46"
+        android:elevation="20dp"
+        app:cardCornerRadius="10dp">
+
+        <com.google.android.material.bottomnavigation.BottomNavigationView
+            android:id="@+id/bottom_navigation"
+            android:layout_width="match_parent"
+            android:layout_height="70dp"
+            android:background="#1C2B46"
+            app:itemIconTint="@color/white"
+            app:itemTextColor="@color/white"
+            app:labelVisibilityMode="labeled"
+            app:menu="@menu/bottom_navigation" />
+    </androidx.cardview.widget.CardView>
+
+</RelativeLayout>
+
+
+    <!--<?xml version="1.0" encoding="utf-8"?>-->
+    <!--<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"-->
+    <!--    xmlns:app="http://schemas.android.com/apk/res-auto"-->
+    <!--    xmlns:tools="http://schemas.android.com/tools"-->
+    <!--    android:id="@+id/main"-->
+    <!--    android:layout_width="match_parent"-->
+    <!--    android:layout_height="match_parent"-->
+    <!--    android:background="#1C2B46"-->
+    <!--    android:fitsSystemWindows="true"-->
+    <!--    tools:context=".HistoryPage">-->
+    <!--    &lt;!&ndash; Toolbar Title &ndash;&gt;-->
+    <!--    <androidx.cardview.widget.CardView-->
+    <!--        android:id="@+id/titlecard"-->
+    <!--        android:layout_width="match_parent"-->
+    <!--        android:layout_height="wrap_content"-->
+    <!--        android:layout_margin="5dp"-->
+    <!--        android:background="#1C2B46"-->
+    <!--        android:backgroundTint="#1C2B46"-->
+    <!--        app:cardElevation="20dp">-->
+
+    <!--        <TextView-->
+    <!--            android:id="@+id/history_title"-->
+    <!--            android:layout_width="match_parent"-->
+    <!--            android:layout_height="wrap_content"-->
+    <!--            android:padding="10dp"-->
+    <!--            android:text="History"-->
+    <!--            android:textAlignment="center"-->
+    <!--            android:textColor="@android:color/white"-->
+    <!--            android:textSize="24sp"-->
+    <!--            android:textStyle="bold" />-->
+    <!--    </androidx.cardview.widget.CardView>-->
+
+    <!--    &lt;!&ndash; RecyclerView &ndash;&gt;-->
+    <!--    <androidx.recyclerview.widget.RecyclerView-->
+    <!--        android:id="@+id/recyclerViewHistory"-->
+    <!--        android:layout_width="match_parent"-->
+    <!--        android:layout_height="match_parent"-->
+    <!--        android:layout_above="@+id/bottom_navigation_card"-->
+    <!--        android:layout_below="@+id/titlecard"-->
+    <!--        android:clipToPadding="false" />-->
+    <!--    &lt;!&ndash; White separator line &ndash;&gt;-->
+    <!--    <View-->
+    <!--        android:id="@+id/separator_line"-->
+    <!--        android:layout_width="match_parent"-->
+    <!--        android:layout_height="1dp"-->
+    <!--        android:layout_above="@id/bottom_navigation_card"-->
+    <!--        android:background="#FFFFFF"-->
+    <!--        android:backgroundTint="@color/white" />-->
+
+    <!--    <androidx.cardview.widget.CardView-->
+    <!--        android:id="@+id/bottom_navigation_card"-->
+    <!--        android:layout_width="match_parent"-->
+    <!--        android:layout_height="wrap_content"-->
+    <!--        android:layout_alignParentBottom="true"-->
+    <!--        android:layout_marginLeft="5dp"-->
+    <!--        android:layout_marginRight="5dp"-->
+    <!--        android:background="#1C2B46"-->
+    <!--        android:elevation="20dp"-->
+    <!--        app:cardCornerRadius="10dp">-->
+
+    <!--        <com.google.android.material.bottomnavigation.BottomNavigationView-->
+    <!--            android:id="@+id/bottom_navigation"-->
+    <!--            android:layout_width="match_parent"-->
+    <!--            android:layout_height="70dp"-->
+    <!--            android:background="#1C2B46"-->
+    <!--            app:itemIconTint="@color/white"-->
+    <!--            app:itemTextColor="@color/white"-->
+    <!--            app:labelVisibilityMode="labeled"-->
+    <!--            app:menu="@menu/bottom_navigation" />-->
+    <!--    </androidx.cardview.widget.CardView>-->
+
+    <!--</RelativeLayout>-->

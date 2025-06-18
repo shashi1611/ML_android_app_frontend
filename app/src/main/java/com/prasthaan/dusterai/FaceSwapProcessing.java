@@ -17,6 +17,7 @@ import android.os.CountDownTimer;
 import android.provider.MediaStore;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
@@ -27,7 +28,6 @@ import androidx.activity.EdgeToEdge;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.PickVisualMediaRequest;
 import androidx.activity.result.contract.ActivityResultContracts;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
@@ -36,6 +36,7 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import com.bumptech.glide.Glide;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -51,7 +52,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class FaceSwapProcessing extends AppCompatActivity {
+public class FaceSwapProcessing extends BaseMenuActivity {
 
     private static final int TOTAL_TIME = 30;
     ActivityResultLauncher<PickVisualMediaRequest> imagePickerLauncherTargetFace;
@@ -112,6 +113,7 @@ public class FaceSwapProcessing extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS, WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
         setContentView(R.layout.activity_face_swap_processing);
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
@@ -128,6 +130,9 @@ public class FaceSwapProcessing extends AppCompatActivity {
         ImageView imageViewTargetFace = findViewById(R.id.uploadImageTargetFace);
         ImageView imageViewSourceFace = findViewById(R.id.uploadImageSourceFace);
         btnFaceSwap = findViewById(R.id.swapFaceButton);
+
+        BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
+        setupBottomNavigation(bottomNavigationView, -1);
 
         relativeLayoutImageTemplate.setOnClickListener(view -> openGalleryTargetFace());
         relativeLayoutUploadFace.setOnClickListener(view -> openGallerySourceFace());

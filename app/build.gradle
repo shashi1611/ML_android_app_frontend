@@ -100,7 +100,13 @@ dependencies {
 
     implementation 'com.facebook.android:facebook-android-sdk:latest.release'
 
+<<<<<<< HEAD
     implementation "com.google.android.play:review:2.0.1"
+=======
+    implementation 'com.google.android.material:material:1.12.0' // latest version as of now
+
+    implementation 'com.airbnb.android:lottie:6.1.0'
+>>>>>>> bottom_navigation
 
 
 }

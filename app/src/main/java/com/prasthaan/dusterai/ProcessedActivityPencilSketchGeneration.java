@@ -8,13 +8,13 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.FileProvider;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
@@ -23,7 +23,9 @@ import androidx.media3.common.MediaItem;
 import androidx.media3.exoplayer.ExoPlayer;
 import androidx.media3.ui.PlayerView;
 import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.LinearSnapHelper;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.SnapHelper;
 
 import com.google.android.gms.ads.AdError;
 import com.google.android.gms.ads.AdRequest;
@@ -31,6 +33,7 @@ import com.google.android.gms.ads.FullScreenContentCallback;
 import com.google.android.gms.ads.LoadAdError;
 import com.google.android.gms.ads.rewarded.RewardedAd;
 import com.google.android.gms.ads.rewarded.RewardedAdLoadCallback;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.prasthaan.dusterai.Adapters.AdapterResultPencilSketchGeneration;
 import com.prasthaan.dusterai.Models.ModelResultPencilSketchGeneration;
 
@@ -41,7 +44,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 
-public class ProcessedActivityPencilSketchGeneration extends AppCompatActivity {
+public class ProcessedActivityPencilSketchGeneration extends BaseMenuActivity {
     public RewardedAd rewardedAd;
     ExoPlayer player;
     String development_test_ad = "ca-app-pub-3940256099942544/9214589741";
@@ -68,6 +71,7 @@ public class ProcessedActivityPencilSketchGeneration extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS, WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
         setContentView(R.layout.activity_processed_pencil_sketch_generation);
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
@@ -76,6 +80,9 @@ public class ProcessedActivityPencilSketchGeneration extends AppCompatActivity {
         });
         Intent intent = getIntent();
         loadRewardedAd();
+
+        BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
+        setupBottomNavigation(bottomNavigationView, -1);
 
 //        <<<<<<<<<<<<<<<<<<<<<<<<<<video player>>>>>>>>>>>>>>>>>>>>>>>>>
         PlayerView playerView = findViewById(R.id.player_view);
@@ -101,49 +108,22 @@ public class ProcessedActivityPencilSketchGeneration extends AppCompatActivity {
 //                Log.d("response from pencil", "onCreate: the resultUrl =  " + url);
                 listImagePencilSketch.add(new ModelResultPencilSketchGeneration(url, "edge"));
             }
+            LinearLayoutManager layoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
+            recyclerView.setLayoutManager(layoutManager);
 
-            recyclerView.setLayoutManager(new LinearLayoutManager(this)); // vertical layout
-            AdapterResultPencilSketchGeneration adapter = new AdapterResultPencilSketchGeneration(listImagePencilSketch, this);
+            SnapHelper snapHelper = new LinearSnapHelper();
+            snapHelper.attachToRecyclerView(recyclerView);
+
+            AdapterResultPencilSketchGeneration adapter = new AdapterResultPencilSketchGeneration(listImagePencilSketch, this, recyclerView, layoutManager);
             recyclerView.setAdapter(adapter);
+
+//            recyclerView.setLayoutManager(new LinearLayoutManager(this)); // vertical layout
+//            AdapterResultPencilSketchGeneration adapter = new AdapterResultPencilSketchGeneration(listImagePencilSketch, this);
+//            recyclerView.setAdapter(adapter);
         }
 
 //        <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<download video >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
         ImageView btnDownload = findViewById(R.id.btn_download_video);
-
-//        btnDownload.setOnClickListener(v -> {
-//            // Click effect: scale + alpha
-//            v.animate()
-//                    .scaleX(0.85f)
-//                    .scaleY(0.85f)
-//                    .alpha(0.6f)
-//                    .setDuration(100)
-//                    .withEndAction(() -> {
-//                        v.animate()
-//                                .scaleX(1f)
-//                                .scaleY(1f)
-//                                .alpha(1f)
-//                                .setDuration(100)
-//                                .start();
-//
-//                        // Download code
-////                        String videoUrl = getIntent().getStringExtra("videoUrl");
-//                        if (videoUrl != null) {
-//                            DownloadManager downloadManager = (DownloadManager) getSystemService(Context.DOWNLOAD_SERVICE);
-//                            Uri uri = Uri.parse(videoUrl);
-//
-//                            DownloadManager.Request request = new DownloadManager.Request(uri);
-//                            request.setTitle("Downloading video");
-//                            request.setDescription("Saving video to Downloads");
-//                            request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
-//                            request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, "sketch_video.mp4");
-//
-//                            downloadManager.enqueue(request);
-//                            Toast.makeText(this, "Download started...", Toast.LENGTH_SHORT).show();
-//                        }
-//                    })
-//                    .start();
-//        });
-
 
         btnDownload.setOnClickListener(v -> {
             // Click effect: scale + alpha (keep this as-is)
@@ -228,7 +208,7 @@ public class ProcessedActivityPencilSketchGeneration extends AppCompatActivity {
     public void downloadImage(String imageUrl) {
         try {
             // Generate a unique filename
-            downloadedImageName = "downloaded_image_" + System.currentTimeMillis() + ".jpg";
+            downloadedImageName = "duster_ai_" + System.currentTimeMillis() + ".jpg";
 
             // Create Download Manager Request
             DownloadManager.Request request = new DownloadManager.Request(Uri.parse(imageUrl));
@@ -239,7 +219,7 @@ public class ProcessedActivityPencilSketchGeneration extends AppCompatActivity {
             request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
 
             // Set the download destination
-            request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, downloadedImageName);
+            request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, "Duster AI/" + downloadedImageName);
 
             // Get the system Download Manager
             DownloadManager downloadManager = (DownloadManager) getSystemService(Context.DOWNLOAD_SERVICE);

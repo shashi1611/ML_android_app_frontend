@@ -9,6 +9,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -32,13 +33,19 @@ import com.google.android.gms.ads.FullScreenContentCallback;
 import com.google.android.gms.ads.LoadAdError;
 import com.google.android.gms.ads.rewarded.RewardedAd;
 import com.google.android.gms.ads.rewarded.RewardedAdLoadCallback;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.prasthaan.dusterai.Adapters.AdapterResultRestoImg;
 import com.prasthaan.dusterai.Models.ModalResultRestoImg;
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
 
-public class ProcessedActivityRestoredImg extends AppCompatActivity {
+public class ProcessedActivityRestoredImg extends BaseMenuActivity {
+    String restoredImageUrl;
     String development_test_ad = "ca-app-pub-3940256099942544/9214589741";
     String development_test_ad_rewarded_ad = "ca-app-pub-3940256099942544/5224354917";
     String production_ad_rewarded_ad_restore_img = "ca-app-pub-4827086355311757/5843507510";
@@ -66,6 +73,7 @@ public class ProcessedActivityRestoredImg extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS, WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
         setContentView(R.layout.activity_processed_restored_img);
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
@@ -79,12 +87,14 @@ public class ProcessedActivityRestoredImg extends AppCompatActivity {
         TextView textView = findViewById(R.id.feature_banner_image_restoratiion);
         btnDownload = findViewById(R.id.download_img_vid_button_resto_img);
         btnShare = findViewById(R.id.share_img_vid_button_resto_img);
+        BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
+        setupBottomNavigation(bottomNavigationView, -1);
 
         ArrayList<ModalResultRestoImg> listImageRestorationRes = new ArrayList<>();
 
         Intent intent = getIntent();
 
-        String restoredImageUrl = intent.getStringExtra("RESTORED_IMAGE_URL");
+        restoredImageUrl = intent.getStringExtra("RESTORED_IMAGE_URL");
 
         ArrayList<String> faceUrls = intent.getStringArrayListExtra("RESTORED_FACE_URLS");
         if (restoredImageUrl != null) {
@@ -176,7 +186,7 @@ public class ProcessedActivityRestoredImg extends AppCompatActivity {
         });
 
 
-        btnShare.setOnClickListener(v -> shareImage());
+        btnShare.setOnClickListener(v -> shareImageFromPresignedUrl(restoredImageUrl));
 
 
     }
@@ -184,7 +194,7 @@ public class ProcessedActivityRestoredImg extends AppCompatActivity {
     public void downloadImage(String imageUrl) {
         try {
             // Generate a unique filename
-            downloadedImageName = "downloaded_image_" + System.currentTimeMillis() + ".jpg";
+            downloadedImageName = "duster_ai_" + System.currentTimeMillis() + ".jpg";
 
             // Create Download Manager Request
             DownloadManager.Request request = new DownloadManager.Request(Uri.parse(imageUrl));
@@ -195,7 +205,7 @@ public class ProcessedActivityRestoredImg extends AppCompatActivity {
             request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
 
             // Set the download destination
-            request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, downloadedImageName);
+            request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, "Duster AI/" + downloadedImageName);
 
             // Get the system Download Manager
             DownloadManager downloadManager = (DownloadManager) getSystemService(Context.DOWNLOAD_SERVICE);
@@ -229,34 +239,83 @@ public class ProcessedActivityRestoredImg extends AppCompatActivity {
         }
     }
 
-    private void shareImage() {
-        if (downloadedImageName == null) {
-            Toast.makeText(this, "No image found to share! Please download first.", Toast.LENGTH_SHORT).show();
-            return;
-        }
+//    private void shareImage() {
+//        if (downloadedImageName == null) {
+//            Toast.makeText(this, "No image found to share! Please download first.", Toast.LENGTH_SHORT).show();
+//            return;
+//        }
+//
+//        File imageFile = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), downloadedImageName);
+//
+//        if (!imageFile.exists()) {
+//            Toast.makeText(this, "Image not found!", Toast.LENGTH_SHORT).show();
+//            return;
+//        }
+//
+//
+//        try {
+//            Uri imageUri = FileProvider.getUriForFile(this, getPackageName() + ".fileprovider", imageFile);
+//
+//            grantUriPermission(getPackageName(), imageUri, Intent.FLAG_GRANT_READ_URI_PERMISSION);
+//
+//            Intent shareIntent = new Intent(Intent.ACTION_SEND);
+//            shareIntent.setType("image/*");
+//            shareIntent.putExtra(Intent.EXTRA_STREAM, imageUri);
+//            shareIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+//
+//            startActivity(Intent.createChooser(shareIntent, "Share Image via"));
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//            Toast.makeText(this, "Failed to share image: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+//        }
+//    }
 
-        File imageFile = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), downloadedImageName);
+    public void shareImageFromPresignedUrl(String imageUrl) {
+        new Thread(() -> {
+            try {
+                // Download image from presigned URL
+                URL url = new URL(imageUrl);
+                HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+                connection.connect();
 
-        if (!imageFile.exists()) {
-            Toast.makeText(this, "Image not found!", Toast.LENGTH_SHORT).show();
-            return;
-        }
+                if (connection.getResponseCode() != HttpURLConnection.HTTP_OK) {
+                    runOnUiThread(() -> Toast.makeText(this, "Failed to download image!", Toast.LENGTH_SHORT).show());
+                    return;
+                }
 
+                InputStream inputStream = connection.getInputStream();
+                File cacheDir = new File(getCacheDir(), "shared_images");
+                if (!cacheDir.exists()) cacheDir.mkdirs();
 
-        try {
-            Uri imageUri = FileProvider.getUriForFile(this, getPackageName() + ".fileprovider", imageFile);
+                File tempFile = new File(cacheDir, "shared_image.jpg");
+                FileOutputStream outputStream = new FileOutputStream(tempFile);
 
-            grantUriPermission(getPackageName(), imageUri, Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                byte[] buffer = new byte[4096];
+                int bytesRead;
 
-            Intent shareIntent = new Intent(Intent.ACTION_SEND);
-            shareIntent.setType("image/*");
-            shareIntent.putExtra(Intent.EXTRA_STREAM, imageUri);
-            shareIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                while ((bytesRead = inputStream.read(buffer)) != -1) {
+                    outputStream.write(buffer, 0, bytesRead);
+                }
 
-            startActivity(Intent.createChooser(shareIntent, "Share Image via"));
-        } catch (Exception e) {
-            e.printStackTrace();
-            Toast.makeText(this, "Failed to share image: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-        }
+                outputStream.close();
+                inputStream.close();
+
+                Uri contentUri = FileProvider.getUriForFile(this, getPackageName() + ".fileprovider", tempFile);
+
+                // Share via intent
+                Intent shareIntent = new Intent(Intent.ACTION_SEND);
+                shareIntent.setType("image/*");
+                shareIntent.putExtra(Intent.EXTRA_STREAM, contentUri);
+                shareIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+
+                runOnUiThread(() -> startActivity(Intent.createChooser(shareIntent, "Share Image via")));
+
+            } catch (Exception e) {
+                e.printStackTrace();
+                runOnUiThread(() -> Toast.makeText(this, "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show());
+            }
+        }).start();
     }
+
+
 }
