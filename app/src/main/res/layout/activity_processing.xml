@@ -45,13 +45,6 @@
         app:cardCornerRadius="12dp"
         app:cardElevation="8dp">
 
-        <!--        <ImageView-->
-        <!--            android:id="@+id/uploaded_img"-->
-        <!--            android:layout_width="match_parent"-->
-        <!--            android:layout_height="match_parent"-->
-        <!--            android:scaleType="centerCrop"-->
-        <!--            android:src="@drawable/upload_image_logo_default" />-->
-
         <RelativeLayout
             android:id="@+id/imageTemplateContainer"
             android:layout_width="match_parent"

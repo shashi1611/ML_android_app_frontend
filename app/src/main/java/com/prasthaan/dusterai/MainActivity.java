@@ -24,7 +24,6 @@ import androidx.activity.result.IntentSenderRequest;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -84,8 +83,6 @@ public class MainActivity extends BaseMenuActivity {
     ActivityResultLauncher<IntentSenderRequest> activityResultLauncherForInAppUpdate;
     InstallStateUpdatedListener listener = state -> {
         if (state.installStatus() == InstallStatus.DOWNLOADED) {
-            // After the update is downloaded, show a notification
-            // and request user confirmation to restart the app.
             popupSnackbarForCompleteUpdate();
         }
     };
@@ -93,26 +90,6 @@ public class MainActivity extends BaseMenuActivity {
     private LinearLayout dotContainer;
     private int totalItems;
 
-//    private void setupDots(int total, int selectedPosition) {
-//        dotContainer.removeAllViews();
-//
-//        for (int i = 0; i < total; i++) {
-//            ImageView dot = new ImageView(this);
-//            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
-//                    ViewGroup.LayoutParams.WRAP_CONTENT,
-//                    ViewGroup.LayoutParams.WRAP_CONTENT);
-//            params.setMargins(8, 0, 8, 0);
-//            dot.setLayoutParams(params);
-//
-//            if (i == selectedPosition) {
-//                dot.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.dot_active));
-//            } else {
-//                dot.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.dot_inactive));
-//            }
-//
-//            dotContainer.addView(dot);
-//        }
-//    }
 
     private void setupDots(int totalItems, int activePosition) {
         dotContainer.removeAllViews();
@@ -329,8 +306,6 @@ public class MainActivity extends BaseMenuActivity {
                 recyclerViewImageRestoration.smoothScrollToPosition(nextPosition);
 //                }
 
-
-//                logger.logEvent("photoRestored");
 
             }
         });

@@ -108,34 +108,6 @@ public class AdapterResultPencilSketchGeneration extends RecyclerView.Adapter<Re
                     .into(featureHolder.imageView);
 
 
-//            featureHolder.downloadBtn.setOnClickListener(new View.OnClickListener() {
-//                @Override
-//                public void onClick(View v) {
-//                    v.animate()
-//                            .scaleX(0.85f)
-//                            .scaleY(0.85f)
-//                            .alpha(0.6f)
-//                            .setDuration(100)
-//                            .withEndAction(() -> {
-//                                v.animate()
-//                                        .scaleX(1f)
-//                                        .scaleY(1f)
-//                                        .alpha(1f)
-//                                        .setDuration(100)
-//                                        .start();
-//                                if (context instanceof ProcessedActivityPencilSketchGeneration) {
-//                                    ((ProcessedActivityPencilSketchGeneration) context).downloadImage(model.getResultImg());
-//                                } else {
-//                                    Toast.makeText(context, "Unable to start download", Toast.LENGTH_SHORT).show();
-//                                }
-//                                if (context instanceof Activity) {
-//                                    ReviewHelper.launchReviewIfEligible((Activity) context);
-//                                }
-//                            })
-//                            .start();
-//                }
-//            });
-
             featureHolder.downloadBtn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -206,34 +178,6 @@ public class AdapterResultPencilSketchGeneration extends RecyclerView.Adapter<Re
             });
 
 
-//            featureHolder.shareBtn.setOnClickListener(new View.OnClickListener() {
-//                @Override
-//                public void onClick(View v) {
-//
-//                    v.animate()
-//                            .scaleX(0.85f)
-//                            .scaleY(0.85f)
-//                            .alpha(0.6f)
-//                            .setDuration(100)
-//                            .withEndAction(() -> {
-//                                v.animate()
-//                                        .scaleX(1f)
-//                                        .scaleY(1f)
-//                                        .alpha(1f)
-//                                        .setDuration(100)
-//                                        .start();
-//                                if (context instanceof ProcessedActivityPencilSketchGeneration) {
-//                                    ((ProcessedActivityPencilSketchGeneration) context).shareImageFromPresignedUrl(model.getResultImg());
-//                                } else {
-//                                    Toast.makeText(context, "Unable to start download", Toast.LENGTH_SHORT).show();
-//                                }
-//
-//                            })
-//                            .start();
-//
-//                }
-//            });
-
             featureHolder.shareBtn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -301,8 +245,7 @@ public class AdapterResultPencilSketchGeneration extends RecyclerView.Adapter<Re
                 }
             });
 
-<<<<<<< HEAD
-=======
+
             featureHolder.rightArrowBtn.setOnClickListener(v -> {
                 int nextPos = featureHolder.getAdapterPosition() + 1;
                 if (nextPos < list.size()) {
@@ -317,7 +260,6 @@ public class AdapterResultPencilSketchGeneration extends RecyclerView.Adapter<Re
                 }
             });
 
->>>>>>> bottom_navigation
 
         }
     }

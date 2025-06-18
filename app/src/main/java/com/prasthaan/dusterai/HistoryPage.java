@@ -10,6 +10,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
+import androidx.annotation.NonNull;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
@@ -34,17 +35,14 @@ public class HistoryPage extends BaseMenuActivity {
     List<ModalHistory> historyList;
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (PermissionUtils.handlePermissionResult(requestCode, permissions, grantResults)) {
-            // Permission granted ✅
-            Toast.makeText(this, "Storage permission granted", Toast.LENGTH_SHORT).show();
-        } else {
-            // Permission denied ❌
-            if (PermissionUtils.shouldShowRationale(this)) {
-                Toast.makeText(this, "Storage permission is required", Toast.LENGTH_SHORT).show();
+
+        if (requestCode == PermissionUtils.REQUEST_CODE_READ_STORAGE) {
+            if (PermissionUtils.isReadPermissionGranted(this)) {
+                loadHistoryImages(); // retry loading after permission
             } else {
-                PermissionUtils.openAppSettings(this);
+                Toast.makeText(this, "Permission required to view images", Toast.LENGTH_SHORT).show();
             }
         }
     }
@@ -74,10 +72,12 @@ public class HistoryPage extends BaseMenuActivity {
         adapterHistory = new AdapterHistory((ArrayList<ModalHistory>) historyList, this);
         recyclerView.setAdapter(adapterHistory);
 
-        if (!PermissionUtils.isStoragePermissionGranted(this)) {
-            PermissionUtils.requestStoragePermission(this);
+        if (!PermissionUtils.isReadPermissionGranted(this)) {
+            PermissionUtils.requestReadPermission(this);
+        } else {
+            loadHistoryImages(); // or your logic
         }
-        loadHistoryImages();
+
 
         if (historyList.isEmpty()) {
             recyclerView.setVisibility(View.GONE);

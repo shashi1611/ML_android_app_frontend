@@ -91,11 +91,6 @@ public class ProcessingActivity extends BaseMenuActivity {
     String videoUrl = "";
     ImageView open_cam_btn;
     RelativeLayout btnUpload;
-    //    String imageUpscaling = "image_upscaling";
-//    String sketch = "pencil_sketch";
-//    String faceSwap = "face_swap";
-//    String imagePainting = "image_painting";
-//    String seasonChanger = "season_changer";
     private ImageView imageView;
     private Uri imageUri;
     private File imageFileFromCamera = null;
@@ -407,11 +402,40 @@ public class ProcessingActivity extends BaseMenuActivity {
 
 
     //    <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<camera image capture on activity result>>>>>>>>>>>>>>>>>>>>>>>>>>
+//    @Override
+//    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+//        super.onActivityResult(requestCode, resultCode, data);
+//        if (requestCode == REQUEST_IMAGE_CAPTURE) {
+//            if (imageFileFromCamera != null) {
+//                RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(
+//                        RelativeLayout.LayoutParams.MATCH_PARENT,
+//                        RelativeLayout.LayoutParams.MATCH_PARENT
+//                );
+//                params.addRule(RelativeLayout.CENTER_IN_PARENT, RelativeLayout.TRUE);
+//                imageView.setLayoutParams(params);
+//                imageView.setImageTintList(null);
+//                imageView.setScaleType(ImageView.ScaleType.FIT_CENTER);
+//                textView1.setVisibility(View.GONE);
+//                imageUri = Uri.fromFile(imageFileFromCamera);
+//                Glide.with(this)
+//                        .load(imageUri)
+//                        .override(1024, 1024) // limit size
+//                        .into(imageView);
+//                imageFileFromCamera = copyUriToFile(imageUri);
+//                flagNewImage = true;
+//
+//
+//            }
+//        }
+//
+//    }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == REQUEST_IMAGE_CAPTURE) {
-            if (imageFileFromCamera != null) {
+
+        if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
+            if (imageFileFromCamera != null && imageFileFromCamera.exists()) {
                 RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(
                         RelativeLayout.LayoutParams.MATCH_PARENT,
                         RelativeLayout.LayoutParams.MATCH_PARENT
@@ -424,16 +448,18 @@ public class ProcessingActivity extends BaseMenuActivity {
                 imageUri = Uri.fromFile(imageFileFromCamera);
                 Glide.with(this)
                         .load(imageUri)
-                        .override(1024, 1024) // limit size
+                        .override(1024, 1024)
                         .into(imageView);
                 imageFileFromCamera = copyUriToFile(imageUri);
                 flagNewImage = true;
-
-
             }
+        } else {
+            // Handle cancel or failure here if needed
+            imageFileFromCamera = null;
+//            Toast.makeText(this, "No image Taken", Toast.LENGTH_SHORT).show();
         }
-
     }
+
 
     private File copyUriToFile(Uri uri) {
         File finalFile = new File(getCacheDir(), "original_image.jpg");

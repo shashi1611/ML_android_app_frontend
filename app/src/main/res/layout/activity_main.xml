@@ -1,8 +1,5 @@
-<<<<<<< HEAD
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-=======
+<?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
->>>>>>> bottom_navigation
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -14,9 +11,8 @@
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/bottom_navigation_card">
+        android:layout_above="@+id/separator_line">
 
-        <!-- CardView with FrameLayout inside -->
         <androidx.cardview.widget.CardView
             android:id="@+id/cardView"
             android:layout_width="match_parent"
@@ -65,8 +61,6 @@
 
         </androidx.cardview.widget.CardView>
 
-        <!-- Scrollable Content Below -->
-
 
         <ScrollView
             android:layout_width="match_parent"
@@ -101,7 +95,7 @@
                         android:layout_gravity="center_vertical"
                         android:layout_marginStart="8dp"
                         android:src="@drawable/baseline_arrow_forward_ios_24"
-                        android:tint="@color/white" />
+                        app:tint="@color/white" />
                 </LinearLayout>
 
                 <androidx.recyclerview.widget.RecyclerView
@@ -137,7 +131,7 @@
                         android:layout_gravity="center_vertical"
                         android:layout_marginStart="8dp"
                         android:src="@drawable/baseline_arrow_forward_ios_24"
-                        android:tint="@color/white" />
+                        app:tint="@color/white" />
                 </LinearLayout>
 
                 <androidx.recyclerview.widget.RecyclerView
@@ -173,7 +167,7 @@
                         android:layout_gravity="center_vertical"
                         android:layout_marginStart="8dp"
                         android:src="@drawable/baseline_arrow_forward_ios_24"
-                        android:tint="@color/white" />
+                        app:tint="@color/white" />
                 </LinearLayout>
 
 
@@ -212,7 +206,7 @@
                         android:layout_gravity="center_vertical"
                         android:layout_marginStart="8dp"
                         android:src="@drawable/baseline_arrow_forward_ios_24"
-                        android:tint="@color/white" />
+                        app:tint="@color/white" />
                 </LinearLayout>
 
                 <androidx.recyclerview.widget.RecyclerView
@@ -247,7 +241,7 @@
                         android:layout_gravity="center_vertical"
                         android:layout_marginStart="8dp"
                         android:src="@drawable/baseline_arrow_forward_ios_24"
-                        android:tint="@color/white" />
+                        app:tint="@color/white" />
                 </LinearLayout>
 
 
@@ -261,7 +255,7 @@
             </RelativeLayout>
         </ScrollView>
     </FrameLayout>
-    <!-- White separator line -->
+
     <View
         android:id="@+id/separator_line"
         android:layout_width="match_parent"
@@ -292,203 +286,5 @@
             app:menu="@menu/bottom_navigation" />
     </androidx.cardview.widget.CardView>
 
-<<<<<<< HEAD
-    <!-- Scrollable Content Below -->
-
-
-    <ScrollView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginTop="300dp">
-
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <LinearLayout
-                android:id="@+id/feature_banner_image_restoratiion"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center_vertical"
-                android:orientation="horizontal"
-                android:padding="10dp">
-
-                <TextView
-                    android:id="@+id/feature_banner_image_restoratiion1"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="Image Upscaling"
-                    android:textColor="@android:color/white"
-                    android:textSize="20sp" />
-
-                <ImageView
-                    android:id="@+id/swipeRightArrowImageUpscaling"
-                    android:layout_width="19dp"
-                    android:layout_height="19dp"
-                    android:layout_gravity="center_vertical"
-                    android:layout_marginStart="8dp"
-                    android:src="@drawable/baseline_arrow_forward_ios_24"
-                    app:tint="@color/white" />
-            </LinearLayout>
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/recyclerView_feat_list_image_restoration"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/feature_banner_image_restoratiion"
-                android:layout_marginTop="10dp" />
-
-
-            <LinearLayout
-                android:id="@+id/feature_banner_pencil_Sketch_generation"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@+id/recyclerView_feat_list_image_restoration"
-                android:gravity="center_vertical"
-                android:orientation="horizontal"
-                android:padding="10dp">
-
-                <TextView
-                    android:id="@+id/feature_banner_pencil_sketch_generation"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="Artistic Pencil Sketch"
-                    android:textColor="@android:color/white"
-                    android:textSize="20sp" />
-
-                <ImageView
-                    android:id="@+id/swipeRightArrowPencilSketchGeneration"
-                    android:layout_width="19dp"
-                    android:layout_height="19dp"
-                    android:layout_gravity="center_vertical"
-                    android:layout_marginStart="8dp"
-                    android:src="@drawable/baseline_arrow_forward_ios_24"
-                    app:tint="@color/white" />
-            </LinearLayout>
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/recyclerView_feat_list_pencil_sketch_generation"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/feature_banner_pencil_Sketch_generation"
-                android:layout_marginTop="10dp" />
-
-
-            <LinearLayout
-                android:id="@+id/feature_banner_face_swap"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@+id/recyclerView_feat_list_pencil_sketch_generation"
-                android:gravity="center_vertical"
-                android:orientation="horizontal"
-                android:padding="10dp">
-
-                <TextView
-                    android:id="@+id/feature_banner_face_swap_title"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="Face Swap"
-                    android:textColor="@android:color/white"
-                    android:textSize="20sp" />
-
-                <ImageView
-                    android:id="@+id/swipeRightArrowFaceSwap"
-                    android:layout_width="19dp"
-                    android:layout_height="19dp"
-                    android:layout_gravity="center_vertical"
-                    android:layout_marginStart="8dp"
-                    android:src="@drawable/baseline_arrow_forward_ios_24"
-                    app:tint="@color/white" />
-            </LinearLayout>
-
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/recyclerView_feat_list_face_swap"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/feature_banner_face_swap"
-                android:layout_marginTop="10dp" />
-
-            <LinearLayout
-                android:id="@+id/feature_banner"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/recyclerView_feat_list_face_swap"
-                android:gravity="center_vertical"
-                android:orientation="horizontal"
-                android:padding="10dp">
-
-                <TextView
-                    android:id="@+id/feature_banner1"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="Image To Painting"
-                    android:textColor="@android:color/white"
-                    android:textSize="20sp"
-
-
-                    />
-
-                <ImageView
-                    android:id="@+id/swipeRightArrowImageToPainting"
-                    android:layout_width="19dp"
-                    android:layout_height="19dp"
-                    android:layout_gravity="center_vertical"
-                    android:layout_marginStart="8dp"
-                    android:src="@drawable/baseline_arrow_forward_ios_24"
-                    app:tint="@color/white" />
-            </LinearLayout>
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/recyclerView_feat_list"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/feature_banner"
-                android:layout_marginTop="10dp" />
-
-            <LinearLayout
-                android:id="@+id/second_feature_banner"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/recyclerView_feat_list"
-                android:gravity="center_vertical"
-                android:orientation="horizontal"
-                android:padding="10dp">
-
-                <TextView
-                    android:id="@+id/second_feature_banner_title"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="Season Changer"
-                    android:textColor="@android:color/white"
-                    android:textSize="20sp" />
-
-                <ImageView
-                    android:id="@+id/swipeRightArrowSeasonChanger"
-                    android:layout_width="19dp"
-                    android:layout_height="19dp"
-                    android:layout_gravity="center_vertical"
-                    android:layout_marginStart="8dp"
-                    android:src="@drawable/baseline_arrow_forward_ios_24"
-                    app:tint="@color/white" />
-            </LinearLayout>
-
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/recyclerView_feat_list2"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/second_feature_banner"
-                android:layout_marginTop="10dp"
-                android:layout_marginBottom="20dp" />
-        </RelativeLayout>
-    </ScrollView>
-</FrameLayout>
-=======
 </RelativeLayout>
->>>>>>> bottom_navigation
+

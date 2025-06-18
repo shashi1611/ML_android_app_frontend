@@ -59,22 +59,15 @@ public class ContactUsPage extends BaseMenuActivity {
         setupBottomNavigation(bottomNavigationView, R.id.nav_contact);
         findViewById(R.id.email_section).setOnClickListener(v -> {
             Intent intent = new Intent(Intent.ACTION_SEND);
-            intent.putExtra(Intent.EXTRA_EMAIL, new String[]{"shashikantkuma69@gmail.com"});
+            intent.putExtra(Intent.EXTRA_EMAIL, new String[]{"dusterai01@gmail.com"});
             intent.setType("message/rfc822");
             startActivity(Intent.createChooser(intent, "Send Email"));
         });
 
         findViewById(R.id.website_section).setOnClickListener(v -> {
-            Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://dusterai.blogspot.com/"));
+            Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://dusteraiapp.blogspot.com/"));
             startActivity(browserIntent);
         });
-
-//        findViewById(R.id.whatsapp_section).setOnClickListener(v -> {
-//            String phone = "+919876543210"; // your support number
-//            Intent i = new Intent(Intent.ACTION_VIEW);
-//            i.setData(Uri.parse("https://wa.me/" + phone));
-//            startActivity(i);
-//        });
 
 
         findViewById(R.id.rate_us_section).setOnClickListener(v -> {

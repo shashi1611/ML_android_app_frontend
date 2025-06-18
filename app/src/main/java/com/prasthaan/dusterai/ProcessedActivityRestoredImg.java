@@ -18,7 +18,6 @@ import android.widget.Toast;
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.FileProvider;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
@@ -45,16 +44,15 @@ import java.net.URL;
 import java.util.ArrayList;
 
 public class ProcessedActivityRestoredImg extends BaseMenuActivity {
-    String restoredImageUrl;
+    public RewardedAd rewardedAd;
+    String restoredImageUrl = "";
     String development_test_ad = "ca-app-pub-3940256099942544/9214589741";
     String development_test_ad_rewarded_ad = "ca-app-pub-3940256099942544/5224354917";
     String production_ad_rewarded_ad_restore_img = "ca-app-pub-4827086355311757/5843507510";
     private Button btnDownload, btnShare;
     private String downloadedImageName;
 
-    private RewardedAd rewardedAd;
-
-    private void loadRewardedAd() {
+    public void loadRewardedAd() {
         AdRequest adRequest = new AdRequest.Builder().build();
         RewardedAd.load(this, "ca-app-pub-4827086355311757/5843507510", adRequest, new RewardedAdLoadCallback() {
             @Override
@@ -125,18 +123,6 @@ public class ProcessedActivityRestoredImg extends BaseMenuActivity {
             textView.setText("");
         }
 
-//        btnDownload.setOnClickListener(v -> {
-//            try {
-//                // Directly pass the URL string to downloadImage
-//                downloadImage(restoredImageUrl);
-//                ReviewHelper.launchReviewIfEligible(this);
-//                Toast.makeText(this, "Download started, see the notification", Toast.LENGTH_SHORT).show();
-//            } catch (Exception e) {
-//                e.printStackTrace();
-//                Toast.makeText(this, "Error starting download", Toast.LENGTH_SHORT).show();
-//            }
-//        });
-
         btnDownload.setOnClickListener(v -> {
             if (rewardedAd == null) {
                 Toast.makeText(this, "Ad not loaded yet. Please try again shortly.", Toast.LENGTH_SHORT).show();
@@ -186,7 +172,47 @@ public class ProcessedActivityRestoredImg extends BaseMenuActivity {
         });
 
 
-        btnShare.setOnClickListener(v -> shareImageFromPresignedUrl(restoredImageUrl));
+//        btnShare.setOnClickListener(v -> shareImageFromPresignedUrl(restoredImageUrl));
+        btnShare.setOnClickListener(v -> {
+            if (rewardedAd == null) {
+                Toast.makeText(this, "Ad not loaded yet. Please try again shortly.", Toast.LENGTH_SHORT).show();
+                loadRewardedAd(); // Load again if needed
+                return;
+            }
+
+            new AlertDialog.Builder(this)
+                    .setTitle("Unlock Share")
+                    .setMessage("Watch a short ad to unlock this image for Share.")
+                    .setIcon(R.drawable.app_logo__icon)
+                    .setPositiveButton("Watch Ad", (dialog, which) -> {
+                        // User agreed to watch ad
+                        rewardedAd.setFullScreenContentCallback(new FullScreenContentCallback() {
+                            @Override
+                            public void onAdDismissedFullScreenContent() {
+                                rewardedAd = null;
+                                loadRewardedAd(); // Preload for next time
+                            }
+
+                            @Override
+                            public void onAdFailedToShowFullScreenContent(AdError adError) {
+                                rewardedAd = null;
+                                loadRewardedAd();
+                            }
+
+                            @Override
+                            public void onAdShowedFullScreenContent() {
+                                rewardedAd = null;
+                            }
+                        });
+
+                        rewardedAd.show(this, rewardItem -> {
+                            // Reward earned, allow download
+                            shareImageFromPresignedUrl(restoredImageUrl);
+                        });
+                    })
+                    .setNegativeButton("Cancel", (dialog, which) -> dialog.dismiss())
+                    .show();
+        });
 
 
     }
@@ -239,36 +265,6 @@ public class ProcessedActivityRestoredImg extends BaseMenuActivity {
         }
     }
 
-//    private void shareImage() {
-//        if (downloadedImageName == null) {
-//            Toast.makeText(this, "No image found to share! Please download first.", Toast.LENGTH_SHORT).show();
-//            return;
-//        }
-//
-//        File imageFile = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), downloadedImageName);
-//
-//        if (!imageFile.exists()) {
-//            Toast.makeText(this, "Image not found!", Toast.LENGTH_SHORT).show();
-//            return;
-//        }
-//
-//
-//        try {
-//            Uri imageUri = FileProvider.getUriForFile(this, getPackageName() + ".fileprovider", imageFile);
-//
-//            grantUriPermission(getPackageName(), imageUri, Intent.FLAG_GRANT_READ_URI_PERMISSION);
-//
-//            Intent shareIntent = new Intent(Intent.ACTION_SEND);
-//            shareIntent.setType("image/*");
-//            shareIntent.putExtra(Intent.EXTRA_STREAM, imageUri);
-//            shareIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-//
-//            startActivity(Intent.createChooser(shareIntent, "Share Image via"));
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//            Toast.makeText(this, "Failed to share image: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-//        }
-//    }
 
     public void shareImageFromPresignedUrl(String imageUrl) {
         new Thread(() -> {

@@ -105,7 +105,6 @@ public class ProcessedActivityPencilSketchGeneration extends BaseMenuActivity {
 
         if (results != null && !results.isEmpty()) {
             for (String url : results) {
-//                Log.d("response from pencil", "onCreate: the resultUrl =  " + url);
                 listImagePencilSketch.add(new ModelResultPencilSketchGeneration(url, "edge"));
             }
             LinearLayoutManager layoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
@@ -116,10 +115,6 @@ public class ProcessedActivityPencilSketchGeneration extends BaseMenuActivity {
 
             AdapterResultPencilSketchGeneration adapter = new AdapterResultPencilSketchGeneration(listImagePencilSketch, this, recyclerView, layoutManager);
             recyclerView.setAdapter(adapter);
-
-//            recyclerView.setLayoutManager(new LinearLayoutManager(this)); // vertical layout
-//            AdapterResultPencilSketchGeneration adapter = new AdapterResultPencilSketchGeneration(listImagePencilSketch, this);
-//            recyclerView.setAdapter(adapter);
         }
 
 //        <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<download video >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>

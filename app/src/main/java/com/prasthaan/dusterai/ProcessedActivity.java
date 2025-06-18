@@ -165,7 +165,7 @@ public class ProcessedActivity extends BaseMenuActivity {
         if (presignedUrl != null) {
             try {
                 JSONObject jsonObject = new JSONObject(presignedUrl);
-                String imageUrl = jsonObject.getString("output"); // Extract the actual URL
+                imageUrl = jsonObject.getString("output"); // Extract the actual URL
 
                 Glide.with(this)
                         .load(imageUrl)
@@ -217,16 +217,16 @@ public class ProcessedActivity extends BaseMenuActivity {
 
                         rewardedAd.show(this, rewardItem -> {
                             // User watched the ad fully, unlock download
-                            try {
-                                JSONObject jsonObject = new JSONObject(presignedUrl);
-                                String imageUrl = jsonObject.getString("output");
-                                downloadImage(imageUrl);
-                                ReviewHelper.launchReviewIfEligible(this);
-                                Toast.makeText(this, "Download started. See the notification.", Toast.LENGTH_SHORT).show();
-                            } catch (JSONException e) {
-                                e.printStackTrace();
-                                Toast.makeText(this, "Invalid URL format", Toast.LENGTH_SHORT).show();
-                            }
+//                            try {
+//                                JSONObject jsonObject = new JSONObject(presignedUrl);
+//                                 imageUrl = jsonObject.getString("output");
+                            downloadImage(imageUrl);
+                            ReviewHelper.launchReviewIfEligible(this);
+                            Toast.makeText(this, "Download started. See the notification.", Toast.LENGTH_SHORT).show();
+//                            } catch () {
+//                                e.printStackTrace();
+//                                Toast.makeText(this, "Invalid URL format", Toast.LENGTH_SHORT).show();
+//                            }
                         });
                     })
                     .setNegativeButton("Cancel", (dialog, which) -> {
@@ -236,7 +236,48 @@ public class ProcessedActivity extends BaseMenuActivity {
         });
 
 
-        btnShare.setOnClickListener(v -> shareImageFromPresignedUrl(imageUrl));
+//        btnShare.setOnClickListener(v -> shareImageFromPresignedUrl(imageUrl));
+        btnShare.setOnClickListener(v -> {
+            if (rewardedAd == null) {
+                Toast.makeText(this, "Ad not loaded yet. Please try again shortly.", Toast.LENGTH_SHORT).show();
+                loadRewardedAd(); // Preload if not ready
+                return;
+            }
+
+            new AlertDialog.Builder(this)
+                    .setTitle("Unlock Share")
+                    .setMessage("Watch a short ad to unlock this image for download.")
+                    .setIcon(R.drawable.app_logo__icon)
+                    .setPositiveButton("Watch Ad", (dialog, which) -> {
+                        // User agreed to watch the ad
+                        rewardedAd.setFullScreenContentCallback(new FullScreenContentCallback() {
+                            @Override
+                            public void onAdDismissedFullScreenContent() {
+                                rewardedAd = null;
+                                loadRewardedAd(); // Preload next
+                            }
+
+                            @Override
+                            public void onAdFailedToShowFullScreenContent(AdError adError) {
+                                rewardedAd = null;
+                                loadRewardedAd();
+                            }
+
+                            @Override
+                            public void onAdShowedFullScreenContent() {
+                                rewardedAd = null;
+                            }
+                        });
+
+                        rewardedAd.show(this, rewardItem -> {
+                            shareImageFromPresignedUrl(imageUrl);
+                        });
+                    })
+                    .setNegativeButton("Cancel", (dialog, which) -> {
+                        dialog.dismiss(); // Do nothing if user declines
+                    })
+                    .show();
+        });
 
 //        <<<<<<<<<<<<<<<<<<<<<<<<<<<<ad part>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
@@ -304,7 +345,7 @@ public class ProcessedActivity extends BaseMenuActivity {
 //                downloadImage();
                 try {
                     JSONObject jsonObject = new JSONObject(presignedUrl);
-                    String imageUrl = jsonObject.getString("output"); // Extract URL
+                    imageUrl = jsonObject.getString("output"); // Extract URL
                     downloadImage(imageUrl);
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -329,14 +370,6 @@ public class ProcessedActivity extends BaseMenuActivity {
             request.setTitle("Downloading Image");
             request.setDescription("Saving image to Downloads folder...");
             request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
-
-            // Set the download destination
-            // Construct the full destination path manually for logging
-            String downloadDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getAbsolutePath();
-            String fullPath = downloadDir + "/Duster AI/" + downloadedImageName;
-
-// Log the path
-            Log.d("history page", "Image will be saved to: " + fullPath);
             request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, "Duster AI/" + downloadedImageName);
 
             // Get the system Download Manager
@@ -371,42 +404,11 @@ public class ProcessedActivity extends BaseMenuActivity {
         }
     }
 
-
-//    private void shareImage() {
-//        if (downloadedImageName == null) {
-//            Toast.makeText(this, "No image found to share! Please download first.", Toast.LENGTH_SHORT).show();
-//            return;
-//        }
-//
-//        File imageFile = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), downloadedImageName);
-//
-//        if (!imageFile.exists()) {
-//            Toast.makeText(this, "Image not found!", Toast.LENGTH_SHORT).show();
-//            return;
-//        }
-//
-//
-//        try {
-//            Uri imageUri = FileProvider.getUriForFile(this, getPackageName() + ".fileprovider", imageFile);
-//
-//            grantUriPermission(getPackageName(), imageUri, Intent.FLAG_GRANT_READ_URI_PERMISSION);
-//
-//            Intent shareIntent = new Intent(Intent.ACTION_SEND);
-//            shareIntent.setType("image/*");
-//            shareIntent.putExtra(Intent.EXTRA_STREAM, imageUri);
-//            shareIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-//
-//            startActivity(Intent.createChooser(shareIntent, "Share Image via"));
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//            Toast.makeText(this, "Failed to share image: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-//        }
-//    }
-
     public void shareImageFromPresignedUrl(String imageUrl) {
         new Thread(() -> {
             try {
                 // Download image from presigned URL
+                Log.d("share image issue", "shareImageFromPresignedUrl: the share image =  " + imageUrl);
                 URL url = new URL(imageUrl);
                 HttpURLConnection connection = (HttpURLConnection) url.openConnection();
                 connection.connect();

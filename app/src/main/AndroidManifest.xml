@@ -13,6 +13,7 @@
     <uses-permission
         android:name="android.permission.READ_EXTERNAL_STORAGE"
         android:maxSdkVersion="32" />
+
     <uses-permission
         android:name="android.permission.WRITE_EXTERNAL_STORAGE"
         android:maxSdkVersion="28" /> <!-- For Android 13+ (API 33 and above) -->
@@ -20,6 +21,10 @@
     <uses-permission android:name="android.permission.READ_MEDIA_VIDEO" /> <!-- <uses-permission android:name="android.permission.READ_MEDIA_AUDIO" /> -->
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" /> <!-- Required for receiving FCM messages -->
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+
+    <uses-permission
+        android:name="android.permission.MANAGE_EXTERNAL_STORAGE"
+        tools:ignore="ScopedStorage" />
 
 
     <application

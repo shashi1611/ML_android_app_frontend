@@ -16,17 +16,21 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.google.android.gms.ads.AdError;
 import com.google.android.gms.ads.AdLoader;
 import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.FullScreenContentCallback;
 import com.google.android.gms.ads.LoadAdError;
 import com.google.android.gms.ads.nativead.NativeAd;
 import com.google.android.gms.ads.nativead.NativeAdView;
 import com.prasthaan.dusterai.Models.ModalResultRestoImg;
 import com.prasthaan.dusterai.ProcessedActivityRestoredImg;
 import com.prasthaan.dusterai.R;
+import com.prasthaan.dusterai.ReviewHelper;
 
 import java.util.ArrayList;
 
@@ -117,28 +121,68 @@ public class AdapterResultRestoImg extends RecyclerView.Adapter<RecyclerView.Vie
             featureHolder.itemView.setLayoutParams(layoutParams);
 
 
-//        tilll here
-
-//            featureHolder.itemView.setOnClickListener((view) -> {
-////                Intent intent = new Intent(view.getContext(), ProcessingActivity.class);
-////                String text = featureHolder.textView.getText().toString();
-////                intent.putExtra("text_key", text);
-////                view.getContext().startActivity(intent);
-//            });
             featureHolder.btn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Toast.makeText(context, "Download started", Toast.LENGTH_SHORT).show();
-
-                    // Safely call downloadImage() from the context if it's an instance of your Activity
-                    if (context instanceof ProcessedActivityRestoredImg) {
-                        ((ProcessedActivityRestoredImg) context).downloadImage(model.getImgUrl());
-                    } else {
+                    if (!(context instanceof ProcessedActivityRestoredImg)) {
                         Toast.makeText(context, "Unable to start download", Toast.LENGTH_SHORT).show();
+                        return;
                     }
+
+                    ProcessedActivityRestoredImg activity = (ProcessedActivityRestoredImg) context;
+                    if (activity.rewardedAd == null) {
+                        Toast.makeText(context, "Ad not loaded yet. Please try again shortly.", Toast.LENGTH_SHORT).show();
+                        activity.loadRewardedAd(); // Reload if null
+                        return;
+                    }
+                    new AlertDialog.Builder(context)
+                            .setTitle("Unlock Download")
+                            .setMessage("Watch a short ad to unlock this image for download.")
+                            .setIcon(R.drawable.app_logo__icon) // Optional: your app logo
+                            .setPositiveButton("Watch Ad", (dialog, which) -> {
+                                activity.rewardedAd.setFullScreenContentCallback(new FullScreenContentCallback() {
+                                    @Override
+                                    public void onAdDismissedFullScreenContent() {
+                                        activity.rewardedAd = null;
+                                        activity.loadRewardedAd();
+                                    }
+
+                                    @Override
+                                    public void onAdFailedToShowFullScreenContent(AdError adError) {
+                                        activity.rewardedAd = null;
+                                        activity.loadRewardedAd();
+                                    }
+
+                                    @Override
+                                    public void onAdShowedFullScreenContent() {
+                                        activity.rewardedAd = null;
+                                    }
+                                });
+
+                                activity.rewardedAd.show(activity, rewardItem -> {
+                                    // Ad watched: start download
+                                    activity.downloadImage(model.getImgUrl());
+                                    ReviewHelper.launchReviewIfEligible(activity);
+                                    Toast.makeText(context, "Download started...", Toast.LENGTH_SHORT).show();
+                                });
+                            })
+                            .setNegativeButton("Cancel", (dialog, which) -> dialog.dismiss())
+                            .show();
+
+
+//                    Toast.makeText(context, "Download started", Toast.LENGTH_SHORT).show();
+//
+//                    // Safely call downloadImage() from the context if it's an instance of your Activity
+//                    if (context instanceof ProcessedActivityRestoredImg) {
+//                        ((ProcessedActivityRestoredImg) context).downloadImage(model.getImgUrl());
+//                    } else {
+//                        Toast.makeText(context, "Unable to start download", Toast.LENGTH_SHORT).show();
+//                    }
                 }
 
             });
+
+
         }
     }
 

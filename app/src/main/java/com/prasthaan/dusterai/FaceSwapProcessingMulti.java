@@ -142,7 +142,6 @@ public class FaceSwapProcessingMulti extends BaseMenuActivity {
         ImageView imageViewUploadTargetImg = findViewById(R.id.uploadimageFaceSwapMulti);
         textView1 = findViewById(R.id.uploadTextMulti);
         TextView textViewTitle = findViewById(R.id.featureNameTextView);
-        TextView textView2 = findViewById(R.id.featureNameTextView);
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
         setupBottomNavigation(bottomNavigationView, -1);
 
@@ -150,7 +149,6 @@ public class FaceSwapProcessingMulti extends BaseMenuActivity {
 
         String receivedText = getIntent().getStringExtra("text_key");
         textViewTitle.setText(receivedText);
-        textView2.setText(receivedText);
 
 
         adapterFaceSwapMulti = new AdapterFaceSwapMulti(
@@ -160,12 +158,9 @@ public class FaceSwapProcessingMulti extends BaseMenuActivity {
                     @Override
                     public void onImagePick(int adapterPosition) {
                         currentPickPosition = adapterPosition;
-//                        Log.d("current position = ", "onImagePick: the current position =  " + currentPickPosition);
-//                        dst_position.add(currentPickPosition);
                         if (!dst_position.contains(currentPickPosition)) {
                             dst_position.add(currentPickPosition);
                         }
-//                        Log.d("current position = ", "onImagePick: the current length of dst_position =  " + dst_position.size());
 
                         imagePickerLauncherSourceImages.launch(new PickVisualMediaRequest.Builder()
                                 .setMediaType(ActivityResultContracts.PickVisualMedia.ImageOnly.INSTANCE)
@@ -229,7 +224,6 @@ public class FaceSwapProcessingMulti extends BaseMenuActivity {
                                 .into(imageViewUploadTargetImg);
 
                         imageFileTargetImage = copyUriToFile(uri);
-//                        flagNewImage = true;
                         detectFace(imageFileTargetImage);
                         checkEnableButton();
 
