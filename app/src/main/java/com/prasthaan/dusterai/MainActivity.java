@@ -32,6 +32,7 @@ import androidx.recyclerview.widget.SnapHelper;
 import com.facebook.FacebookSdk;
 import com.facebook.appevents.AppEventsLogger;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.play.core.appupdate.AppUpdateInfo;
 import com.google.android.play.core.appupdate.AppUpdateManager;
@@ -192,6 +193,9 @@ public class MainActivity extends BaseMenuActivity {
             // For earlier versions, directly initialize FCM
             initializeFCM();
         }
+        BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
+
+        setupBottomNavigation(bottomNavigationView, R.id.nav_home);
 
 //        <<<<<<<<<<<<<<<<<<<<<<<<<<all the elements and their IDs >>>>>>>>>>>>>>>>>>>>>>>>>>>
         ImageView arrowIconImageUpscaling = findViewById(R.id.swipeRightArrowImageUpscaling);
@@ -297,9 +301,9 @@ public class MainActivity extends BaseMenuActivity {
 //        <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<recycler view for image upscaling feature>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
         RecyclerView recyclerViewImageRestoration = findViewById(R.id.recyclerView_feat_list_image_restoration);
         ArrayList<FeatListModalImageRestoration> listImageRestoration = new ArrayList<>();
-        listImageRestoration.add(new FeatListModalImageRestoration(R.drawable.restore_image_feat_card, "Restore image"));
-        listImageRestoration.add(new FeatListModalImageRestoration(R.drawable.feat_card_two_x, "Enhance 2X"));
-        listImageRestoration.add(new FeatListModalImageRestoration(R.drawable.feat_card_four_x, "Enhance 4X"));
+        listImageRestoration.add(new FeatListModalImageRestoration(R.drawable.restfeatcard, "Restore image"));
+        listImageRestoration.add(new FeatListModalImageRestoration(R.drawable.twoxfeatcard, "Enhance 2X"));
+        listImageRestoration.add(new FeatListModalImageRestoration(R.drawable.fourxfeatcard, "Enhance 4X"));
         FeatListModalAdapterImageRestoration featListModalAdapterImageRestoration = new FeatListModalAdapterImageRestoration(listImageRestoration, this);
         recyclerViewImageRestoration.setAdapter(featListModalAdapterImageRestoration);
         LinearLayoutManager layoutManagerImageRestoratiion = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
@@ -361,9 +365,9 @@ public class MainActivity extends BaseMenuActivity {
         RecyclerView recyclerViewImageFaceSwap = findViewById(R.id.recyclerView_feat_list_face_swap);
         ArrayList<FeatListModalFaceSwap> listFaceSwap = new ArrayList<>();
 //        listFaceSwap.add(new FeatListModalFaceSwap(R.drawable.restore_image_feat_card, "Single face"));
-        listFaceSwap.add(new FeatListModalFaceSwap(R.drawable.single_card_f, "Single face"));
+        listFaceSwap.add(new FeatListModalFaceSwap(R.drawable.singlefacecard, "Single face"));
 
-        listFaceSwap.add(new FeatListModalFaceSwap(R.drawable.multi_card_fi, "Multiple faces"));
+        listFaceSwap.add(new FeatListModalFaceSwap(R.drawable.multifacefeatcard, "Multiple faces"));
         FeatListModalAdapterFaceSwap featListModalAdapterFaceSwap = new FeatListModalAdapterFaceSwap(listFaceSwap, this);
         recyclerViewImageFaceSwap.setAdapter(featListModalAdapterFaceSwap);
         LinearLayoutManager layoutManagerFaceSwap = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);

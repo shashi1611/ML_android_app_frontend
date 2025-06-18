@@ -16,6 +16,7 @@ import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.provider.MediaStore;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
@@ -26,7 +27,6 @@ import androidx.activity.EdgeToEdge;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.PickVisualMediaRequest;
 import androidx.activity.result.contract.ActivityResultContracts;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
@@ -38,6 +38,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.prasthaan.dusterai.Adapters.AdapterFaceSwapMulti;
 import com.prasthaan.dusterai.Models.ModalFaceSwapMulti;
 
@@ -66,7 +67,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class FaceSwapProcessingMulti extends AppCompatActivity {
+public class FaceSwapProcessingMulti extends BaseMenuActivity {
 
     private static final int TOTAL_TIME = 45;
     RecyclerView recyclerView;
@@ -127,6 +128,7 @@ public class FaceSwapProcessingMulti extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS, WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
         setContentView(R.layout.activity_face_swap_processing_multi);
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
@@ -138,10 +140,14 @@ public class FaceSwapProcessingMulti extends AppCompatActivity {
         RelativeLayout relativeLayoutImageTemplate = findViewById(R.id.imageTemplateContainerMultiFace);
         ImageView imageViewUploadTargetImg = findViewById(R.id.uploadimageFaceSwapMulti);
         textView1 = findViewById(R.id.uploadTextMulti);
+        TextView textView2 = findViewById(R.id.featureNameTextView);
+        BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
+        setupBottomNavigation(bottomNavigationView, -1);
 
         relativeLayoutImageTemplate.setOnClickListener(view -> openGalleryTargetFaceMulti());
 
         String receivedText = getIntent().getStringExtra("text_key");
+        textView2.setText(receivedText);
 
 
         adapterFaceSwapMulti = new AdapterFaceSwapMulti(

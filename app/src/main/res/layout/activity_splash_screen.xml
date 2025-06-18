@@ -8,19 +8,18 @@
     android:fitsSystemWindows="true"
     tools:context=".SplashScreen">
 
-    <!--    <VideoView-->
-    <!--        android:id="@+id/splashVideo"-->
-    <!--        android:layout_width="match_parent"-->
-    <!--        android:layout_height="match_parent"-->
-    <!--        android:scaleY="1.2" />-->
-    <androidx.media3.ui.PlayerView
-        android:id="@+id/playerView"
+    <!-- Lottie animation covering full screen -->
+    <com.airbnb.lottie.LottieAnimationView
+        android:id="@+id/splash_lottie"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="#1C2B46"
-        app:resize_mode="zoom"
-        app:use_controller="false" />
+        android:layout_gravity="center"
+        app:lottie_autoPlay="true"
+        app:lottie_fileName="splash_loader2.json"
+        app:lottie_loop="false" />
 </FrameLayout>
+
+
 
 
 

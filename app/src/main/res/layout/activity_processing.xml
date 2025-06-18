@@ -6,6 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#1C2B46"
+    android:fitsSystemWindows="true"
     android:orientation="vertical"
     tools:context=".ProcessingActivity">
 
@@ -78,7 +79,7 @@
                 android:layout_below="@id/uploaded_img"
                 android:layout_centerHorizontal="true"
                 android:layout_marginTop="8dp"
-                android:text="Upload image from below button"
+                android:text="Tap To Upload Image"
                 android:textColor="#AAAAAA"
                 android:textSize="18sp"
                 android:textStyle="bold" />
@@ -92,7 +93,7 @@
         android:layout_height="wrap_content"
         android:layout_marginLeft="10dp"
         android:layout_marginRight="10dp"
-        android:layout_marginBottom="40dp"
+        android:layout_marginBottom="5dp"
         app:cardBackgroundColor="#22334F"
         app:cardCornerRadius="12dp"
         app:cardElevation="8dp">
@@ -111,32 +112,18 @@
                 android:gravity="center"
                 android:orientation="horizontal">
 
-                <Button
-                    android:id="@+id/upload_img_vid_button"
-                    android:layout_width="0dp"
-                    android:layout_height="50dp"
-                    android:layout_marginEnd="8dp"
-                    android:layout_weight="1"
-                    android:background="@drawable/bg_button"
-                    android:text="Upload Image"
-                    android:textAllCaps="false"
-                    android:textColor="#FFFFFF"
-                    app:backgroundTint="@null"
-                    app:rippleColor="@null" />
-
-
-                <Button
+                <ImageView
                     android:id="@+id/open_camera_button"
-                    android:layout_width="0dp"
-                    android:layout_height="50dp"
+                    android:layout_width="70dp"
+                    android:layout_height="70dp"
                     android:layout_marginStart="8dp"
-                    android:layout_weight="1"
-                    android:background="@drawable/bg_button"
-                    android:text="Open Camera"
-                    android:textAllCaps="false"
-                    android:textColor="#FFFFFF"
-                    app:backgroundTint="@null"
-                    app:rippleColor="@null" />
+                    android:clickable="true"
+                    android:contentDescription="Open Camera"
+                    android:focusable="true"
+                    android:padding="10dp"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/baseline_camera_alt_24"
+                    app:tint="@color/white" />
 
             </LinearLayout>
 
@@ -160,17 +147,36 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom" />
+    <!-- White separator line -->
+    <View
+        android:id="@+id/separator_line"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_above="@id/bottom_navigation_card"
+        android:background="#FFFFFF"
+        android:backgroundTint="@color/white" />
 
-    <com.google.android.material.bottomnavigation.BottomNavigationView
-        android:id="@+id/bottom_navigation"
+    <androidx.cardview.widget.CardView
+        android:id="@+id/bottom_navigation_card"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:background="@color/white"
-        app:itemIconTint="@color/black"
-        app:itemTextColor="@color/black"
-        app:labelVisibilityMode="labeled"
-        app:menu="@menu/bottom_navigation" />
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="5dp"
+        android:background="#1C2B46"
+        android:elevation="20dp"
+        app:cardCornerRadius="10dp">
+
+        <com.google.android.material.bottomnavigation.BottomNavigationView
+            android:id="@+id/bottom_navigation"
+            android:layout_width="match_parent"
+            android:layout_height="70dp"
+            android:background="#1C2B46"
+            app:itemIconTint="@color/white"
+            app:itemTextColor="@color/white"
+            app:labelVisibilityMode="labeled"
+            app:menu="@menu/bottom_navigation" />
+    </androidx.cardview.widget.CardView>
 
 </LinearLayout>
 

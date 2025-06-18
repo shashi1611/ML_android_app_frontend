@@ -33,10 +33,14 @@ public class AdapterResultPencilSketchGeneration extends RecyclerView.Adapter<Re
     String development_test_ad = "ca-app-pub-3940256099942544/2247696110";
     ArrayList<ModelResultPencilSketchGeneration> list;
     Context context;
+    RecyclerView recyclerView;
+    RecyclerView.LayoutManager layoutManager;
 
-    public AdapterResultPencilSketchGeneration(ArrayList<ModelResultPencilSketchGeneration> list, Context context) {
+    public AdapterResultPencilSketchGeneration(ArrayList<ModelResultPencilSketchGeneration> list, Context context, RecyclerView recyclerView, RecyclerView.LayoutManager layoutManager) {
         this.list = list;
         this.context = context;
+        this.recyclerView = recyclerView;
+        this.layoutManager = layoutManager;
     }
 
     @NonNull
@@ -154,6 +158,21 @@ public class AdapterResultPencilSketchGeneration extends RecyclerView.Adapter<Re
                 }
             });
 
+            featureHolder.rightArrowBtn.setOnClickListener(v -> {
+                int nextPos = featureHolder.getAdapterPosition() + 1;
+                if (nextPos < list.size()) {
+                    recyclerView.smoothScrollToPosition(nextPos);
+                }
+            });
+
+            ((FeatureViewHolder) holder).leftArrowBtn.setOnClickListener(v -> {
+                int prevPos = holder.getAdapterPosition() - 1;
+                if (prevPos >= 0) {
+                    recyclerView.smoothScrollToPosition(prevPos);
+                }
+            });
+
+
         }
     }
 
@@ -266,7 +285,7 @@ public class AdapterResultPencilSketchGeneration extends RecyclerView.Adapter<Re
 
     public static class FeatureViewHolder extends RecyclerView.ViewHolder {
         ImageView imageView;
-        ImageView shareBtn, downloadBtn;
+        ImageView shareBtn, downloadBtn, leftArrowBtn, rightArrowBtn;
 
 
         public FeatureViewHolder(@NonNull View itemView) {
@@ -274,6 +293,8 @@ public class AdapterResultPencilSketchGeneration extends RecyclerView.Adapter<Re
             imageView = itemView.findViewById(R.id.result_edge_pencil_sketch_generation);
             shareBtn = itemView.findViewById(R.id.result_share_btn_pencil_sketch_generation);
             downloadBtn = itemView.findViewById(R.id.result_download_btn_pencil_sketch_generation);
+            leftArrowBtn = itemView.findViewById(R.id.arrow_back);
+            rightArrowBtn = itemView.findViewById(R.id.arrow_forward);
 
 
         }

@@ -23,6 +23,7 @@ import android.os.Environment;
 import android.provider.MediaStore;
 import android.util.DisplayMetrics;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -36,7 +37,6 @@ import androidx.activity.result.PickVisualMediaRequest;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
@@ -48,6 +48,7 @@ import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdSize;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.MobileAds;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -69,7 +70,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 
-public class ProcessingActivity extends AppCompatActivity {
+public class ProcessingActivity extends BaseMenuActivity {
     private static final int REQUEST_IMAGE_CAPTURE = 1;
     private static final int REQUEST_PERMISSIONS = 101;
     private static final int TOTAL_TIME = 90; // 120 seconds
@@ -88,11 +89,18 @@ public class ProcessingActivity extends AppCompatActivity {
     TextView textView1;
     ArrayList<String> resultUrl = null;
     String videoUrl = "";
+    ImageView open_cam_btn;
+    RelativeLayout btnUpload;
+    //    String imageUpscaling = "image_upscaling";
+//    String sketch = "pencil_sketch";
+//    String faceSwap = "face_swap";
+//    String imagePainting = "image_painting";
+//    String seasonChanger = "season_changer";
     private ImageView imageView;
     private Uri imageUri;
     private File imageFileFromCamera = null;
     private File imageFileFromFileUploader;
-    private Button btnUpload, btnProcess, open_cam_btn;
+    private Button btnProcess;
     private Dialog progressDialog;
     private TextView timerText;
     private CountDownTimer countDownTimer;
@@ -235,10 +243,12 @@ public class ProcessingActivity extends AppCompatActivity {
         }
     }
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS, WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
         if (!isConnected()) {
             startActivity(new Intent(this, NoInternetActivity.class));
             finish();
@@ -246,11 +256,14 @@ public class ProcessingActivity extends AppCompatActivity {
         }
         setContentView(R.layout.activity_processing);
         imageView = findViewById(R.id.uploaded_img);
-        btnUpload = findViewById(R.id.upload_img_vid_button);
+        btnUpload = findViewById(R.id.imageTemplateContainer);
         btnProcess = findViewById(R.id.process_img_button);
         open_cam_btn = findViewById(R.id.open_camera_button);
 
         textView1 = findViewById(R.id.uploadTextSingleFace);
+
+        BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
+        setupBottomNavigation(bottomNavigationView, -1);
 
 
         receivedText = getIntent().getStringExtra("text_key");
@@ -591,14 +604,13 @@ public class ProcessingActivity extends AppCompatActivity {
                             flagNewImage = false;
                             if (isAppInForeground) {
                                 goToProcessedActivity(presignedUrl);
+//                                goToProcessedActivity(presignedUrl, imageUpscaling);
                             } else {
                                 pendingPresignedUrl = presignedUrl;
                                 sendProcessingCompletedNotification();
+//                                sendProcessingCompletedNotification(imageUpscaling);
                             }
                             flagNewImage = false;
-//                            Intent intent = new Intent(ProcessingActivity.this, ProcessedActivity.class);
-//                            intent.putExtra("PRESIGNED_URL", presignedUrl);
-//                            startActivity(intent);
                         } catch (IOException e) {
                             dismissDialog();
                             e.printStackTrace();
@@ -628,9 +640,11 @@ public class ProcessingActivity extends AppCompatActivity {
                             flagNewImage = false;
                             if (isAppInForeground) {
                                 goToProcessedActivity(presignedUrl);
+//                                goToProcessedActivity(presignedUrl, imageUpscaling);
                             } else {
                                 pendingPresignedUrl = presignedUrl;
                                 sendProcessingCompletedNotification();
+//                                sendProcessingCompletedNotification(imageUpscaling);
                             }
                             flagNewImage = false;
                         } catch (IOException e) {
@@ -670,6 +684,7 @@ public class ProcessingActivity extends AppCompatActivity {
                             pendingRestoredImageUrl = presignedUrl;
                             pendingRestoredFaceUrls = faceUrls;
                             sendRestoreCompletedNotification();
+
                         }
 
                     } else {
@@ -705,10 +720,12 @@ public class ProcessingActivity extends AppCompatActivity {
 
                         if (isAppInForeground) {
                             goToProcessedActivityPencilSketchGeneration(videoUrl, resultUrl);
+//                            goToProcessedActivityPencilSketchGeneration(videoUrl, resultUrl, sketch);
                         } else {
                             pendingSketchResultUrl = resultUrl;
                             pendingSketchVideoUrls = videoUrl;
                             sendPencilSketchGenerationNotification();
+//                            sendPencilSketchGenerationNotification(sketch);
                         }
 
                     } else {
@@ -737,15 +754,18 @@ public class ProcessingActivity extends AppCompatActivity {
                         Intent intent = new Intent(ProcessingActivity.this, ProcessedActivityPencilSketchGeneration.class);
                         intent.putStringArrayListExtra("resultUrls", resultUrl);
                         intent.putExtra("videoUrl", videoUrl);
+//                        intent.putExtra("featName", sketch);
                         startActivity(intent);
 
                         flagNewImage = false;
                         if (isAppInForeground) {
                             goToProcessedActivityPencilSketchGeneration(videoUrl, resultUrl);
+//                            goToProcessedActivityPencilSketchGeneration(videoUrl, resultUrl, sketch);
                         } else {
                             pendingSketchResultUrl = resultUrl;
                             pendingSketchVideoUrls = videoUrl;
                             sendPencilSketchGenerationNotification();
+//                            sendPencilSketchGenerationNotification(sketch);
                         }
                     } else {
                         Toast.makeText(ProcessingActivity.this, "Processing Failed", Toast.LENGTH_SHORT).show();
@@ -773,15 +793,18 @@ public class ProcessingActivity extends AppCompatActivity {
                         Intent intent = new Intent(ProcessingActivity.this, ProcessedActivityPencilSketchGeneration.class);
                         intent.putStringArrayListExtra("resultUrls", resultUrl);
                         intent.putExtra("videoUrl", videoUrl);
+//                        intent.putExtra("featName", sketch);
                         startActivity(intent);
 
                         flagNewImage = false;
                         if (isAppInForeground) {
                             goToProcessedActivityPencilSketchGeneration(videoUrl, resultUrl);
+//                            goToProcessedActivityPencilSketchGeneration(videoUrl, resultUrl, sketch);
                         } else {
                             pendingSketchResultUrl = resultUrl;
                             pendingSketchVideoUrls = videoUrl;
                             sendPencilSketchGenerationNotification();
+//                            sendPencilSketchGenerationNotification(sketch);
                         }
                     } else {
                         Toast.makeText(ProcessingActivity.this, "Processing Failed", Toast.LENGTH_SHORT).show();
@@ -808,12 +831,15 @@ public class ProcessingActivity extends AppCompatActivity {
                             flagNewImage = false;
                             Intent intent = new Intent(ProcessingActivity.this, ProcessedActivity.class);
                             intent.putExtra("PRESIGNED_URL", presignedUrl);
+//                            intent.putExtra("featName", imagePainting);
                             startActivity(intent);
                             if (isAppInForeground) {
                                 goToProcessedActivity(presignedUrl);
+//                                goToProcessedActivity(presignedUrl, imagePainting);
                             } else {
                                 pendingPresignedUrl = presignedUrl;
                                 sendProcessingCompletedNotification();
+//                                sendProcessingCompletedNotification(imagePainting);
                             }
                         } catch (IOException e) {
                             dismissDialog();
@@ -842,12 +868,15 @@ public class ProcessingActivity extends AppCompatActivity {
                             flagNewImage = false;
                             Intent intent = new Intent(ProcessingActivity.this, ProcessedActivity.class);
                             intent.putExtra("PRESIGNED_URL", presignedUrl);
+//                            intent.putExtra("featName", imagePainting);
                             startActivity(intent);
                             if (isAppInForeground) {
                                 goToProcessedActivity(presignedUrl);
+//                                goToProcessedActivity(presignedUrl, imagePainting);
                             } else {
                                 pendingPresignedUrl = presignedUrl;
                                 sendProcessingCompletedNotification();
+//                                sendProcessingCompletedNotification(imagePainting);
                             }
                         } catch (IOException e) {
                             dismissDialog();
@@ -877,12 +906,15 @@ public class ProcessingActivity extends AppCompatActivity {
                             flagNewImage = false;
                             Intent intent = new Intent(ProcessingActivity.this, ProcessedActivity.class);
                             intent.putExtra("PRESIGNED_URL", presignedUrl);
+//                            intent.putExtra("featName", imagePainting);
                             startActivity(intent);
                             if (isAppInForeground) {
                                 goToProcessedActivity(presignedUrl);
+//                                goToProcessedActivity(presignedUrl, imagePainting);
                             } else {
                                 pendingPresignedUrl = presignedUrl;
                                 sendProcessingCompletedNotification();
+//                                sendProcessingCompletedNotification(imagePainting);
                             }
                         } catch (IOException e) {
                             dismissDialog();
@@ -912,12 +944,15 @@ public class ProcessingActivity extends AppCompatActivity {
                             flagNewImage = false;
                             Intent intent = new Intent(ProcessingActivity.this, ProcessedActivity.class);
                             intent.putExtra("PRESIGNED_URL", presignedUrl);
+//                            intent.putExtra("featName", imagePainting);
                             startActivity(intent);
                             if (isAppInForeground) {
                                 goToProcessedActivity(presignedUrl);
+//                                goToProcessedActivity(presignedUrl, imagePainting);
                             } else {
                                 pendingPresignedUrl = presignedUrl;
                                 sendProcessingCompletedNotification();
+//                                sendProcessingCompletedNotification(imagePainting);
                             }
                         } catch (IOException e) {
                             dismissDialog();
@@ -947,12 +982,15 @@ public class ProcessingActivity extends AppCompatActivity {
                             flagNewImage = false;
                             Intent intent = new Intent(ProcessingActivity.this, ProcessedActivity.class);
                             intent.putExtra("PRESIGNED_URL", presignedUrl);
+//                            intent.putExtra("featName", seasonChanger);
                             startActivity(intent);
                             if (isAppInForeground) {
                                 goToProcessedActivity(presignedUrl);
+//                                goToProcessedActivity(presignedUrl, seasonChanger);
                             } else {
                                 pendingPresignedUrl = presignedUrl;
                                 sendProcessingCompletedNotification();
+//                                sendProcessingCompletedNotification(seasonChanger);
                             }
                         } catch (IOException e) {
                             dismissDialog();
@@ -982,12 +1020,15 @@ public class ProcessingActivity extends AppCompatActivity {
                             flagNewImage = false;
                             Intent intent = new Intent(ProcessingActivity.this, ProcessedActivity.class);
                             intent.putExtra("PRESIGNED_URL", presignedUrl);
+//                            intent.putExtra("featName", seasonChanger);
                             startActivity(intent);
                             if (isAppInForeground) {
                                 goToProcessedActivity(presignedUrl);
+//                                goToProcessedActivity(presignedUrl, seasonChanger);
                             } else {
                                 pendingPresignedUrl = presignedUrl;
                                 sendProcessingCompletedNotification();
+//                                sendProcessingCompletedNotification(seasonChanger);
                             }
                         } catch (IOException e) {
                             dismissDialog();
@@ -1039,6 +1080,7 @@ public class ProcessingActivity extends AppCompatActivity {
     private void sendProcessingCompletedNotification() {
         Intent intent = new Intent(this, ProcessedActivity.class);
         intent.putExtra("PRESIGNED_URL", pendingPresignedUrl);
+//        intent.putExtra("featName", featName);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
 
@@ -1068,6 +1110,7 @@ public class ProcessingActivity extends AppCompatActivity {
     private void goToProcessedActivity(String presignedUrl) {
         Intent intent = new Intent(ProcessingActivity.this, ProcessedActivity.class);
         intent.putExtra("PRESIGNED_URL", presignedUrl);
+//        intent.putExtra("featName", featName);
         startActivity(intent);
     }
 
@@ -1077,6 +1120,7 @@ public class ProcessingActivity extends AppCompatActivity {
         Intent intent = new Intent(ProcessingActivity.this, ProcessedActivityRestoredImg.class);
         intent.putExtra("RESTORED_IMAGE_URL", imageUrl);
         intent.putStringArrayListExtra("RESTORED_FACE_URLS", faceUrls);
+//        intent.putExtra("featName", featName);
         startActivity(intent);
     }
 
@@ -1084,6 +1128,7 @@ public class ProcessingActivity extends AppCompatActivity {
         Intent intent = new Intent(this, ProcessedActivityRestoredImg.class);
         intent.putExtra("RESTORED_IMAGE_URL", pendingRestoredImageUrl);
         intent.putStringArrayListExtra("RESTORED_FACE_URLS", pendingRestoredFaceUrls);
+//        intent.putExtra("featName", featName);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
 
         PendingIntent pendingIntent = PendingIntent.getActivity(
@@ -1120,6 +1165,7 @@ public class ProcessingActivity extends AppCompatActivity {
         Intent intent = new Intent(ProcessingActivity.this, ProcessedActivityPencilSketchGeneration.class);
         intent.putExtra("videoUrl", videoUrl);
         intent.putStringArrayListExtra("resultUrls", resultUrl);
+//        intent.putExtra("featName", featName);
         startActivity(intent);
     }
 
@@ -1127,6 +1173,7 @@ public class ProcessingActivity extends AppCompatActivity {
         Intent intent = new Intent(this, ProcessedActivityPencilSketchGeneration.class);
         intent.putExtra("videoUrl", pendingSketchVideoUrls);
         intent.putStringArrayListExtra("resultUrls", pendingSketchResultUrl);
+//        intent.putExtra("featName", featName);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
 
         PendingIntent pendingIntent = PendingIntent.getActivity(
