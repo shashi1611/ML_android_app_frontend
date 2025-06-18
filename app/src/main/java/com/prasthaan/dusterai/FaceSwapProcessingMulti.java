@@ -78,6 +78,7 @@ public class FaceSwapProcessingMulti extends BaseMenuActivity {
     List<File> src_faces = new ArrayList<>();
     List<Integer> dst_position = new ArrayList<>();
     Button btnFaceSwapMulti;
+
     TextView textView1;
 
     boolean flagNewTargetImage = false;
